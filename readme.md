@@ -8,6 +8,7 @@ PROTON aims at easing server-side development for all Python enthusiasts. Essent
 
 # Getting Started
 - Install postgres on your local machine. `sudo apt-get install postgresql`
+- Edit connection parameters for PROTON to achieve db connectivity @ `databaseConfig.ini`
 - Clone PROTON using `git clone https://github.com/PruthviKumarBK/PROTON.git`
 - Create a virtual environment. (If using anaconda, `conda create -n <env name> python=3`)
 - `cd PROTON`
