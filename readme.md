@@ -4,7 +4,7 @@
 
 PROTON is a high-level Python framework that facilitates rapid server-side development with clean & pragmatic design. Thanks for checking it out!
 
-PROTON aims at easing server-side development for all Python enthusiasts. Essentially, by running a shell command, developer will auto generate necessary Model, Controller and APIs! All of this with connectivity to Transactional Databases (PROTON supports Postgresql, MySQL & SQL Server),Cacheing (Redis middleware), Auto generated OpenAPI specs & descriptive logging! One command, to get a production ready server-side stack!
+PROTON aims at easing server-side development for all Python enthusiasts. Essentially, by running a shell command, developer will auto generate necessary Model, Controller and APIs! All of this with connectivity to Transactional Databases (PROTON supports Postgresql, MySQL & SQL Server),Caching (Redis middleware), Auto generated OpenAPI specs & descriptive logging! One command, to get a production ready server-side stack!
 
 # Getting Started
 - Install postgres on your local machine. `sudo apt-get install postgresql`
@@ -13,8 +13,8 @@ PROTON aims at easing server-side development for all Python enthusiasts. Essent
 - Create a virtual environment. (If using anaconda, `conda create -n <env name> python=3`)
 - `cd PROTON`
 - `pip install -r requirements.txt`
-- PROTON relies on Redis for cacheing. Install redis using `sudo apt-get install redis-server`
-- Thats it! You are ready to create your first MIC (Model, Interface, Controller) stack!
+- PROTON relies on Redis for Caching. Install redis using `sudo apt-get install redis-server`
+- That's it! You are ready to create your first MIC (Model, Interface, Controller) stack!
 
 # Example
 
