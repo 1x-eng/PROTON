@@ -1,0 +1,14 @@
+sqlalchemy
+pyodbc
+psycopg2
+pygogo
+Jinja2
+jinjasql
+numpy
+pandas
+falcon
+falcon_cors
+falcon-apispec
+redis
+gunicorn
+colorama
