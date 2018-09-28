@@ -21,7 +21,8 @@ Generate a new MIC stack named **testMic** :
 `
  ./protongen.sh -n testMic -p 3000
 `
-![PROTON MIC stack for testMic](https://github.com/PruthviKumarBK/PROTON/blob/master/screenshots/PROTON_newMicStack.png)
+
+![PROTON MIC stack for testMic](https://github.com/PruthviKumarBK/PROTON/blob/master/screenshots/PROTON_testMic.png)
 
 Your code base will now include, dynamically generated content for **testMic** all the way from Model, Controller & Interface!
 # Dynamically generated codebase screenshot
