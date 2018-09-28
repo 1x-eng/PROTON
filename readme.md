@@ -76,7 +76,7 @@ PROTON also ships with ability to automagically generate OpenAPI specs!
 
 ![PROTON OpenAPI](https://github.com/PruthviKumarBK/PROTON/blob/master/screenshots/PROTON_swagger.yaml.png)
 
-Should you want to delete from existing PROTON MIC stack, again, oyu stand one command away! Like Generator, PROTON also ships with Destroyer which pragmatically clears the desired MIC from PROTON stack. (This will also clean the Cache entries automagically; only for mic that is targeted to be killed.)
+Should you want to delete from existing PROTON MIC stack, you stand one command away! Like Generator, PROTON also ships with Destroyer which pragmatically clears the desired MIC from PROTON stack. (This will also clean the Cache entries automagically; only for mic that is targeted to be killed.)
 
 `./protonkill.sh -k <micName>`
 
