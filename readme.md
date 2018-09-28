@@ -1,4 +1,4 @@
-# PROTON logo
+![PROTON Logo](https://github.com/PruthviKumarBK/PROTON/blob/master/screenshots/PROTON-logo.png)
 # PROTON
 **The MIC stack genesis!**
 
