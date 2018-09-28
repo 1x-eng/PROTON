@@ -20,8 +20,8 @@
       <file leaf-file-name="readme.md" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/readme.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="384">
-              <caret line="24" column="115" lean-forward="false" selection-start-line="24" selection-start-column="115" selection-end-line="24" selection-end-column="115" />
+            <state relative-caret-position="304">
+              <caret line="61" column="123" lean-forward="false" selection-start-line="61" selection-start-column="123" selection-end-line="61" selection-end-column="123" />
               <folding />
             </state>
           </provider>
@@ -91,6 +91,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PROTON" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="PROTON" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mic" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -157,8 +171,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/readme.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="384">
-          <caret line="24" column="115" lean-forward="false" selection-start-line="24" selection-start-column="115" selection-end-line="24" selection-end-column="115" />
+        <state relative-caret-position="304">
+          <caret line="61" column="123" lean-forward="false" selection-start-line="61" selection-start-column="123" selection-end-line="61" selection-end-column="123" />
           <folding />
         </state>
       </provider>
