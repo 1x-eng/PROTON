@@ -29,7 +29,7 @@ class IextractorGen(LogUtilities, ProtonConfig):
                     pass
                 else:
                     file_name_contents = (filename.split('.py')[0].split('_'))
-                    desired_name = file_name_contents[len(file_name_contents) - 1]
+                    desired_name = '_'.join(file_name_contents[1:])
                     file_name = filename.split('.py')[0]
                     self.logger.info('i_extractor updated i_method_fetch.py with mic_name {}'.format(desired_name))
                     controllers.append({'micName': desired_name, 'fileName': file_name,
