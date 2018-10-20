@@ -12,14 +12,14 @@ class IFetch(object):
     def __init__(self):
         super(IFetch, self).__init__()
 
-    def extractControllerMethods(self):
-        controllerMethods = []
+    def extract_controller_methods(self):
+        controller_methods = []
         {% for controller in controllers %}
-        controllerMethods.append({'{{ controller.micName }}' : {
+        controller_methods.append({'{{ controller.mic_name }}' : {
             'fileName': '{{ controller.fileName }}',
             'controllerName': '{{ controller.controllerName }}',
-            'micName': '{{ controller.micName }}',
-            'exposedMethodsInController': list({{controller.controllerName}}().controllerProcessor().keys()) }
+            'mic_name': '{{ controller.mic_name }}',
+            'exposedMethodsInController': list({{controller.controllerName}}().controller_processor().keys()) }
         })
         {% endfor %}
-        return controllerMethods
+        return controller_methods

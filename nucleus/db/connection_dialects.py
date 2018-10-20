@@ -5,7 +5,7 @@ __version__ = "1.0"
 
 from configparser import ConfigParser
 from configuration import ProtonConfig
-from nucleus.generics.logUtilities import LogUtilities
+from nucleus.generics.log_utilities import LogUtilities
 
 
 class ConnectionDialects(ProtonConfig, LogUtilities):
@@ -23,35 +23,46 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     """
     def __init__(self):
         super(ConnectionDialects, self).__init__()
-        self.logger = self.getLogger(logFileName='connectionDialects_logs',
-                                     logFilePath='{}/trace/connectionDialects_logs.log'.format(self.ROOT_DIR))
-        self.dialectStore = self._configStoreParser
+        self.logger = self.get_logger(logFileName='connectionDialects_logs',
+                                      logFilePath='{}/trace/connectionDialects_logs.log'.format(self.ROOT_DIR))
+        self.dialect_store = self._config_store_parser
 
-    def _configStoreParser(self):
-        # By default pyReady ships with support for postgresql, mysql and sqlserver.
-        supportedDatabases = ['postgresql',]
+    def _config_store_parser(self):
+        """
+        Parse config file and prepare dialects for db supported by PROTON.
+        By default PROTON ships with support for postgresql, mysql and sqlserver.
+        :return: db Dialect
+        """
+        supported_databases = ['postgresql', ]  # v0.0.1 starts with support for pg.
         parser = ConfigParser()
-        configFile = '{}/databaseConfig.ini'.format(self.ROOT_DIR)
+        config_file = '{}/databaseConfig.ini'.format(self.ROOT_DIR)
         db = {}
-        parser.read(configFile)
+        parser.read(config_file)
 
-        def getParsedParameters(db, section):
+        def get_parsed_parameters(db_dialect, section):
+            """
+            Parser for databaseConfig.ini
+            :param db_dialect: supported db dialects by PROTON.
+            :param section: supported db name.
+            :return: db dialect
+            """
 
             if parser.has_section(section):
-                db[section] = {}
+                db_dialect[section] = {}
                 params = parser.items(section)
                 for param in params:
-                    db[section][param[0]] = param[1]
+                    db_dialect[section][param[0]] = param[1]
             else:
                 self.logger.exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                  'file.'.format(section))
                 raise Exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                 'file.'.format(section))
-            return db
+            return db_dialect
 
-        list(map(lambda sdb: getParsedParameters(db, sdb), supportedDatabases))
+        list(map(lambda sdb: get_parsed_parameters(db, sdb), supported_databases))
         return db
+
 
 if __name__ == '__main__':
     cdl = ConnectionDialects()
-    print(cdl.dialectStore())
+    print(cdl.dialect_store())

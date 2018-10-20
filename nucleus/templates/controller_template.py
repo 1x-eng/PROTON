@@ -14,9 +14,9 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
 
     def __init__(self):
         super( Ctrl_{{ controllerName }}, self ).__init__()
-        self.logger = self.getLogger(logFileName='{{ controllerName }}',
-                                     logFilePath='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
-        self.controllerProcessor = self.__processor
+        self.logger = self.get_logger(log_file_name='{{ controllerName }}',
+                                      log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
+        self.controller_processor = self.__processor
 
 
     def __processor(self):
@@ -28,7 +28,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         :return: serialized response ready for transmission to Interface.
         """
 
-        def schemaInformation(dbFlavour):
+        def schema_information(db_flavour):
 
             # This SQL is an example to list all tables in the current database.
             example_sql = """
@@ -41,7 +41,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 # to use getter methods, use self.getter; to use transaction methods, use self.transaction.
                 # to learn more, do dir(self.getter) and dir(self.transaction).
 
-                results = self.getter["getModelData"](dbFlavour, example_sql, binding_params)
+                results = self.getter["getModelData"](db_flavour, example_sql, binding_params)
                 return results
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while getting model data. '
@@ -51,7 +51,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
 
 
         return {
-            "schemaInformation": schemaInformation,
+            "schema_information": schema_information,
             # Similar to above, add more processor methods according to developer's convenience.
         }
 

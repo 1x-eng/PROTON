@@ -12,3 +12,4 @@ falcon-apispec
 redis
 gunicorn
 colorama
+apispec

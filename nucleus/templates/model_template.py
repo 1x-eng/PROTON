@@ -4,12 +4,11 @@ __license__ = "Public Domain"
 __version__ = "1.0"
 
 import json
-
 import pandas as pd
 from colorama import Fore
 from colorama import Style
 from jinjasql import JinjaSql
-from nucleus.db.connectionManager import ConnectionManager
+from nucleus.db.connection_manager import ConnectionManager
 from nucleus.generics.utilities import MyUtilities
 
 
@@ -21,21 +20,21 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
     def __init__(self):
         super(Model_{{ modelName }}, self).__init__()
 
-        self.__dbFlavourToCursorGeneratorMap = {
-            'postgresql': self.pgCursorGenerator,
+        self.__db_flavour_to_cursor_generator_map = {
+            'postgresql': self.pg_cursor_generator,
             #TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
         }
-        self.__jSql = JinjaSql()
-        self.__cursorEngine = self.connectionStore()
-        self.__alchemyEngine = self.alchemyEngine()
+        self.__j_sql = JinjaSql()
+        self.__cursor_engine = self.connection_store()
+        self.__alchemy_engine = self.alchemy_engine()
 
-        self.logger = self.getLogger(logFileName='{{ modelName }}',
-                                     logFilePath='{}/trace/{{ modelName }}.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='{{ modelName }}',
+                                      log_file_path='{}/trace/{{ modelName }}.log'.format(self.ROOT_DIR))
 
         self.getter = self.__getter()
         self.transaction = self.__transaction()
 
-    def generateSqlTemplate(self, sql):
+    def generate_sql_template(self, sql):
         """
         Generate Template for JinjaSql to act upon.
         :return:
@@ -51,7 +50,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         TODO: SPECIFY DB Flavour. Make getter work for all supported flavours of PROTON.
         :return:
         """
-        def getDataForModel(dbFlavour, sql, bindingParams):
+        def get_data_for_model(db_flavour, sql, binding_params):
             """
 
             :param sql: Template:
@@ -63,7 +62,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 AND projectId = {{ projectId }}
                 {% endif %}
 
-            :param bindingData: Template:
+            :param binding_params: Template:
 
                 data = {
                     "employeeId": 123,
@@ -73,9 +72,9 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             :return:
             """
             try:
-                with self.__dbFlavourToCursorGeneratorMap[dbFlavour](self.__cursorEngine) as cursor:
-                    query, bindParams = self.__jSql.prepare_query(self.generateSqlTemplate(sql), bindingParams)
-                    cursor.execute(query, bindParams)
+                with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
+                    query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                    cursor.execute(query, bind_params)
                     results = cursor.fetchall()
                     return json.dumps(results)
 
@@ -86,7 +85,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
 
         return {
-            "getModelData": getDataForModel,
+            "get_model_data": get_data_for_model,
             # For other getters, create respective closures and extend this dictionary accordingly as per your convenience.
         }
 
@@ -97,27 +96,28 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
-        def performInsertOperation(inputPayload, dbFlavour, dbName, tableName):
+        def perform_insert_operation(input_payload, db_flavour, db_name, table_name):
             """
             Closure for Insert Operation!
             This is also a proxy for CREATE operation. If table does not exist, SQL Alchemy will create one.
-            The newly created table will have best matching datatype for each column.
+            The newly created table will have best matching data type for each column.
 
-            :param inputPayload: A dictionary which is Pandas Ready.
+            :param input_payload: A dictionary which is Pandas Ready.
                 eg. [{'column-1': value, 'column-2: value, column-3: value },
                 {'column-1': value, 'column-2: value, column-3: value }]
-            :param dbFlavour: One of the supported versions. Must have an entry in dataBaseConfig.ini
-            :param dbName: Name of target Database
-            :param tableName: tableName into which the given payload is to be uploaded.
+            :param db_flavour: One of the supported versions. Must have an entry in dataBaseConfig.ini
+            :param db_name: Name of target Database
+            :param table_name: table_name into which the given payload is to be uploaded.
             :return: A boolean indicating success/failure of Insert Operation.
             """
             # Do this with SQL Alchemy and Pandas.
-            consistencyOfKeys = self.validateListOfDictsConsistency(inputPayload)
-            if consistencyOfKeys:
+            consistency_of_keys = self.validate_list_of_dicts_consistency(input_payload)
+            if consistency_of_keys:
                 try:
-                    dataToBeInserted = pd.DataFrame(inputPayload)
-                    self.__alchemyEngine[dbFlavour].execute('USE {}'.format(dbName))
-                    dataToBeInserted.to_sql(tableName, self.__alchemyEngine[dbFlavour], index=False, if_exists='append')
+                    data_to_be_inserted = pd.DataFrame(input_payload)
+                    self.__alchemy_engine[db_flavour].execute('USE {}'.format(db_name))
+                    data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                               if_exists='append')
                 except Exception as e:
                     self.logger.exception('[{{modelName}}]: {}'.format(str(e)))
                     raise (Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
@@ -128,7 +128,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                       'dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
 
 
-        def performUpdateOrDeleteOperation(sql, bindingParams):
+        def perform_update_or_delete_operation(sql, binding_params):
             """
 
             :param sql: Template:
@@ -141,7 +141,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 {% endif %}
 
 
-            :param bindingData: Template:
+            :param binding_params: Template:
 
                 data = {
                     "column_1_value": 123,
@@ -153,9 +153,9 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             """
 
             try:
-                with self.pgCursorGenerator(self.__cursorEngine) as cursor:
-                    query, bindParams = self.__jSql.prepare_query(self.generateSqlTemplate(sql), bindingParams)
-                    cursor.execute(query, bindParams)
+                with self.pg_cursor_generator(self.__cursor_engine) as cursor:
+                    query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                    cursor.execute(query, bind_params)
                     cursor.commit()
                     return True
             except Exception as e:
@@ -166,7 +166,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
 
         return {
-            'insert': performInsertOperation,
-            'update': performUpdateOrDeleteOperation,
-            'delete': performUpdateOrDeleteOperation
+            'insert': perform_insert_operation,
+            'update': perform_update_or_delete_operation,
+            'delete': perform_update_or_delete_operation
         }
+

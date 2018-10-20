@@ -6,7 +6,7 @@ __version__ = "1.0"
 import time
 import json
 from colorama import Fore, Style
-from nucleus.db.cacheManager import CacheManager
+from nucleus.db.cache_manager import CacheManager
 
 
 class Iface_watch(CacheManager):
@@ -17,8 +17,8 @@ class Iface_watch(CacheManager):
 
     def __init__(self):
         super(Iface_watch, self).__init__()
-        self.logger = self.getLogger(logFileName='interface_logs',
-                                     logFilePath='{}/trace/interface_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(logFileName='interface_logs',
+                                      logFilePath='{}/trace/interface_logs.log'.format(self.ROOT_DIR))
         self.timer = {"start": 0, "end": 0}
         self.cacheInstance = None
         self.cacheExists = False
@@ -37,8 +37,8 @@ class Iface_watch(CacheManager):
         else:
             # Check if response can be served from cache.
             # Instantiate Cache
-            self.cacheInstance = self.cacheProcessor()['initCache']()
-            self.cacheExistance = self.cacheProcessor()['pingCache'](self.cacheInstance)
+            self.cacheInstance = self.cache_processor()['initCache']()
+            self.cacheExistance = self.cache_processor()['pingCache'](self.cacheInstance)
 
             if (self.cacheExistance):
 
@@ -48,9 +48,9 @@ class Iface_watch(CacheManager):
                     cacheKey = routePathContents[len(routePathContents) - 2] + '_' + \
                                routePathContents[len(routePathContents) - 1]
 
-                    cacheResponse = self.cacheProcessor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
-                    timeWhenCacheWasSet = (self.cacheProcessor()['getFromCache'](self.cacheInstance, 'c_setTime_'
-                                                                             + cacheKey))
+                    cacheResponse = self.cache_processor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
+                    timeWhenCacheWasSet = (self.cache_processor()['getFromCache'](self.cacheInstance, 'c_setTime_'
+                                                                                  + cacheKey))
                     cacheSetTime = 0 if timeWhenCacheWasSet==None else int(timeWhenCacheWasSet)
                     currentTime = int(time.time())
                     if (cacheSetTime != None):
@@ -60,8 +60,8 @@ class Iface_watch(CacheManager):
 
                     if (cacheResponse != None):
                         if (cacheDeltaForRoute > self.CACHE_LIFESPAN):
-                            self.cacheProcessor()['deleteFromCache'](self.cacheInstance, 'c_' + cacheKey)
-                            self.cacheProcessor()['deleteFromCache'](self.cacheInstance, 'c_setTime_' + cacheKey)
+                            self.cache_processor()['deleteFromCache'](self.cacheInstance, 'c_' + cacheKey)
+                            self.cache_processor()['deleteFromCache'](self.cacheInstance, 'c_setTime_' + cacheKey)
                             self.logger.info('Cache is deleted for route {}. It has exceeded its '
                                              'lifespan!'.format(req.path))
                         else:
@@ -102,11 +102,11 @@ class Iface_watch(CacheManager):
                     cacheKey = routePathContents[len(routePathContents) - 2] + '_' + \
                                routePathContents[len(routePathContents) - 1]
 
-                    cacheResponse = self.cacheProcessor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
+                    cacheResponse = self.cache_processor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
                     if (cacheResponse == None):
-                        self.cacheProcessor()['setToCache'](self.cacheInstance, 'c_' + cacheKey, json.loads(resp.body))
+                        self.cache_processor()['setToCache'](self.cacheInstance, 'c_' + cacheKey, json.loads(resp.body))
                         timeWhenSet = int(time.time())
-                        self.cacheProcessor()['setToCache'](self.cacheInstance, 'c_setTime_' + cacheKey, timeWhenSet)
+                        self.cache_processor()['setToCache'](self.cacheInstance, 'c_setTime_' + cacheKey, timeWhenSet)
                         self.logger.info('Cache set for key : {} @ {}'.format('c_'+ cacheKey, timeWhenSet))
                         print(Fore.GREEN + 'Cache is set for route {}. Subsequent requests for this route will be '
                                            'serviced by cache.'.format(req.path) + Style.RESET_ALL)

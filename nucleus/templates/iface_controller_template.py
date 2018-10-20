@@ -3,8 +3,8 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "Public Domain"
 __version__ = "1.0"
 
-import json
 import falcon
+import json
 from colorama import Fore
 from colorama import Style
 {% for controller in iCtrlHash %}
@@ -17,8 +17,8 @@ class Ictrl_get_{{controller.iControllerName}} ({{controller.controllerName}}):
 
     def __init__(self):
         super(Ictrl_get_{{controller.iControllerName}}, self).__init__()
-        self.logger = self.getLogger(logFileName='{{ controller.iControllerName }}',
-                                     logFilePath='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
+                                      log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
 
     def on_get(self, req, resp):
         """
@@ -37,7 +37,7 @@ class Ictrl_get_{{controller.iControllerName}} ({{controller.controllerName}}):
             # If you have newer methods available under Controller, reference that below as per your convenience.
             print(Fore.BLUE + 'Request for route {} is being serviced by conventional db service of '
                               'PROTON stack'.format(req) + Style.RESET_ALL)
-            response = json.dumps(self.controllerProcessor()['{{ controller.iControllerName }}']("postgresql"))
+            response = json.dumps(self.controller_processor()['{{ controller.iControllerName }}']("postgresql"))
             status = falcon.HTTP_200
         except Exception as e:
             response = json.dumps({'message': 'Server has failed to service this request.',
@@ -55,8 +55,8 @@ class Ictrl_post_{{controller.iControllerName}} ({{controller.controllerName}}):
 
     def __init__(self):
         super(Ictrl_post_{{controller.iControllerName}}, self).__init__()
-        self.logger = self.getLogger(logFileName='{{ controller.iControllerName }}',
-                                     logFilePath='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+        self.logger = self.getLogger(log_file_name='{{ controller.iControllerName }}',
+                                     log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
 
     def on_post(self, req, resp):
         """
