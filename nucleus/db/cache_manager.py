@@ -21,8 +21,8 @@ class CacheManager(ProtonConfig, LogUtilities):
             'port': 6379,
             'db': 0
         }
-        self.logger = self.get_logger(logFileName='cacheManager_logs',
-                                      logFilePath='{}/trace/cacheManager_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='cacheManager_logs',
+                                      log_file_path='{}/trace/cacheManager_logs.log'.format(self.ROOT_DIR))
         self.cache_processor = self.__processor
 
     def __processor(self):

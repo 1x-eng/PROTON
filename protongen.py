@@ -25,7 +25,7 @@ class ProtonGen(MetaGen, ExecGen):
                                                       'by re-generating main with existing iFace!')
         self.proton_args = self.parser.parse_args()
 
-        if self.proton_args.micName is None:
+        if self.proton_args.mic_name is None:
             if self.proton_args.forceStart is not None:
                 self.generate_executor(port=3000)
                 print(Fore.GREEN + 'PROTON initialized with existing iFace stack! Starting service '
@@ -37,7 +37,7 @@ class ProtonGen(MetaGen, ExecGen):
         else:
             if self.proton_args.port is None:
                 self.proton_args.port = 8000
-            self.__creator(self.proton_args.micName, self.proton_args.port)
+            self.__creator(self.proton_args.mic_name, self.proton_args.port)
 
     def __creator(self, mic_name, port):
 

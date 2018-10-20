@@ -20,8 +20,8 @@ class ConnectionManager(ConnectionDialects):
     def __init__(self):
         super(ConnectionManager, self).__init__()
         self.__connection_dialects = self.dialect_store()
-        self.logger = self.get_logger(logFileName='connectionManager_logs',
-                                      logFilePath='{}/trace/connectionManager_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='connectionManager_logs',
+                                      log_file_path='{}/trace/connectionManager_logs.log'.format(self.ROOT_DIR))
         self.connection_store = self.__connection_store
         self.pg_cursor_generator = self.__pg_cursor_generator
         self.alchemy_engine = self.__alchemy_engine

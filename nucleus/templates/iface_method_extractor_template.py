@@ -15,10 +15,10 @@ class IFetch(object):
     def extract_controller_methods(self):
         controller_methods = []
         {% for controller in controllers %}
-        controller_methods.append({'{{ controller.mic_name }}' : {
+        controller_methods.append({'{{ controller.micName }}' : {
             'fileName': '{{ controller.fileName }}',
             'controllerName': '{{ controller.controllerName }}',
-            'mic_name': '{{ controller.mic_name }}',
+            'micName': '{{ controller.micName }}',
             'exposedMethodsInController': list({{controller.controllerName}}().controller_processor().keys()) }
         })
         {% endfor %}

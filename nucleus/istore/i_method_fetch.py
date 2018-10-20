@@ -4,14 +4,13 @@ __license__ = "Public Domain"
 __version__ = "1.0"
 
 
+
 class IFetch(object):
-    """
-    Facilitates extracting methods in API controller for generated MIC stack.
-    """
 
     def __init__(self):
         super(IFetch, self).__init__()
 
     def extract_controller_methods(self):
         controller_methods = []
+        
         return controller_methods

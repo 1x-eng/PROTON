@@ -23,8 +23,8 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     """
     def __init__(self):
         super(ConnectionDialects, self).__init__()
-        self.logger = self.get_logger(logFileName='connectionDialects_logs',
-                                      logFilePath='{}/trace/connectionDialects_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='connectionDialects_logs',
+                                      log_file_path='{}/trace/connectionDialects_logs.log'.format(self.ROOT_DIR))
         self.dialect_store = self._config_store_parser
 
     def _config_store_parser(self):

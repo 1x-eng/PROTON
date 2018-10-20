@@ -25,14 +25,14 @@ class IextractorGen(LogUtilities, ProtonConfig):
         controllers = []
         for root, dirs, files in os.walk("{}/mic/controllers/".format(self.ROOT_DIR)):
             for filename in files:
-                if ('__init__' in filename or 'cpython' in filename):
+                if '__init__' in filename or 'cpython' in filename:
                     pass
                 else:
                     file_name_contents = (filename.split('.py')[0].split('_'))
                     desired_name = file_name_contents[len(file_name_contents) - 1]
                     file_name = filename.split('.py')[0]
                     self.logger.info('i_extractor updated i_method_fetch.py with mic_name {}'.format(desired_name))
-                    controllers.append({'mic_name': desired_name, 'file_name': file_name,
+                    controllers.append({'micName': desired_name, 'fileName': file_name,
                                         'controllerName': 'Ctrl_{}'.format(desired_name)})
 
         with open(self.__iface_store_root + '/i_method_fetch.py', 'w+') as isf:

@@ -51,13 +51,12 @@ class ExecGen(CacheManager):
                         iface_controller_methods_hash.append({'fileName': mic_stacks[mic]['fileName'],
                                                               'controllerName': mic_stacks[mic]['controllerName'],
                                                               'iControllerName': method})
-
                         get_controller_name = 'Ictrl_get_' + method
                         post_controller_name = 'Ictrl_post_' + method
 
-                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['mic_name'],
+                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
                                                   'controllerName': get_controller_name})
-                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['mic_name'],
+                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
                                                   'controllerName': post_controller_name})
 
                         routes.append({'controllerName': get_controller_name,

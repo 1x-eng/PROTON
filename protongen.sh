@@ -60,7 +60,8 @@ else
         echo -e "\e[33m Instantiating PROTON stack for micName: \e[0m"$micName "\e[33m  @ port: \e[0m"$port
         echo -e "------------------------------------------------------------------------------------------------------"
     fi
-    python protongen.py --micName $micName --port $port
+    mkdir -p trace
+    python protongen.py --mic_name $micName --port $port
     pkill gunicorn
     gunicorn -b localhost:$port main:app --reload
 fi

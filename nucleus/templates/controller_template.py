@@ -41,7 +41,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 # to use getter methods, use self.getter; to use transaction methods, use self.transaction.
                 # to learn more, do dir(self.getter) and dir(self.transaction).
 
-                results = self.getter["getModelData"](db_flavour, example_sql, binding_params)
+                results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
                 return results
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while getting model data. '

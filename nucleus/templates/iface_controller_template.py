@@ -55,7 +55,7 @@ class Ictrl_post_{{controller.iControllerName}} ({{controller.controllerName}}):
 
     def __init__(self):
         super(Ictrl_post_{{controller.iControllerName}}, self).__init__()
-        self.logger = self.getLogger(log_file_name='{{ controller.iControllerName }}',
+        self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
                                      log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
 
     def on_post(self, req, resp):

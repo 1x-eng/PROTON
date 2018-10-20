@@ -18,7 +18,7 @@ class IExtractor(ProtonConfig, LogUtilities, IFetch):
         self.logger.info('Extracting available controller methods using IFetch!')
         self.keys_per_controller_in_proton_stack = []
         self.keys_of_requested_controller = []
-        if (mic_name != None):
+        if mic_name is not None:
             controller_methods_in_mic_stack = self.extract_controller_methods()
             for index in range(len(controller_methods_in_mic_stack)):
                 for key in controller_methods_in_mic_stack[index]:

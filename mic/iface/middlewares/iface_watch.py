@@ -3,8 +3,8 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "Public Domain"
 __version__ = "1.0"
 
-import time
 import json
+import time
 from colorama import Fore, Style
 from nucleus.db.cache_manager import CacheManager
 
@@ -17,11 +17,11 @@ class Iface_watch(CacheManager):
 
     def __init__(self):
         super(Iface_watch, self).__init__()
-        self.logger = self.get_logger(logFileName='interface_logs',
-                                      logFilePath='{}/trace/interface_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='interface_logs',
+                                      log_file_path='{}/trace/interface_logs.log'.format(self.ROOT_DIR))
         self.timer = {"start": 0, "end": 0}
-        self.cacheInstance = None
-        self.cacheExists = False
+        self.cache_instance = None
+        self.cache_exists = False
 
     def process_request(self, req, resp):
         """
@@ -37,37 +37,39 @@ class Iface_watch(CacheManager):
         else:
             # Check if response can be served from cache.
             # Instantiate Cache
-            self.cacheInstance = self.cache_processor()['initCache']()
-            self.cacheExistance = self.cache_processor()['pingCache'](self.cacheInstance)
+            self.cache_instance = self.cache_processor()['init_cache']()
+            self.cache_existance = self.cache_processor()['ping_cache'](self.cache_instance)
 
-            if (self.cacheExistance):
+            if self.cache_existance:
 
-                print(Fore.MAGENTA + 'PROTON stack has the instantiated Cache! We are on STEROIDS now!!' + Style.RESET_ALL)
+                print(
+                    Fore.MAGENTA + 'PROTON stack has the instantiated Cache! We are on STEROIDS now!!' + Style.RESET_ALL)
                 try:
-                    routePathContents = (req.path).split('_')
-                    cacheKey = routePathContents[len(routePathContents) - 2] + '_' + \
-                               routePathContents[len(routePathContents) - 1]
+                    route_path_contents = req.path.split('_')
+                    cache_key = route_path_contents[len(route_path_contents) - 2] + '_' + \
+                                route_path_contents[len(route_path_contents) - 1]
 
-                    cacheResponse = self.cache_processor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
-                    timeWhenCacheWasSet = (self.cache_processor()['getFromCache'](self.cacheInstance, 'c_setTime_'
-                                                                                  + cacheKey))
-                    cacheSetTime = 0 if timeWhenCacheWasSet==None else int(timeWhenCacheWasSet)
-                    currentTime = int(time.time())
-                    if (cacheSetTime != None):
-                        cacheDeltaForRoute = currentTime - cacheSetTime
+                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
+                    time_when_cache_was_set = (
+                        self.cache_processor()['get_from_cache'](self.cache_instance, 'c_setTime_'
+                                                                 + cache_key))
+                    cache_set_time = 0 if time_when_cache_was_set is None else int(time_when_cache_was_set)
+                    current_time = int(time.time())
+                    if cache_set_time is not None:
+                        cache_delta_for_route = current_time - cache_set_time
                     else:
-                        cacheDeltaForRoute = 0
+                        cache_delta_for_route = 0
 
-                    if (cacheResponse != None):
-                        if (cacheDeltaForRoute > self.CACHE_LIFESPAN):
-                            self.cache_processor()['deleteFromCache'](self.cacheInstance, 'c_' + cacheKey)
-                            self.cache_processor()['deleteFromCache'](self.cacheInstance, 'c_setTime_' + cacheKey)
+                    if cache_response is not None:
+                        if cache_delta_for_route > self.CACHE_LIFESPAN:
+                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_' + cache_key)
+                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_setTime_' + cache_key)
                             self.logger.info('Cache is deleted for route {}. It has exceeded its '
                                              'lifespan!'.format(req.path))
                         else:
                             print(Fore.GREEN + 'Response is served from cache for route {}. DB service of PROTON stack '
                                                'is spared!'.format(req.path) + Style.RESET_ALL)
-                            resp.body = cacheResponse
+                            resp.body = cache_response
                             req.path = '/fast-serve'
                     else:
                         # Go through conventional PROTON stack.
@@ -75,8 +77,6 @@ class Iface_watch(CacheManager):
                 except Exception as e:
                     self.logger.exception('[Iface_watch]. Error while extracting response from cache. '
                                           'Details: {}'.format(str(e)))
-                    # Letting the request go through to conventional PROTON stack.
-                    pass
             else:
                 print(Fore.LIGHTMAGENTA_EX + 'Cache is unavailable. PROTON will continue to rely on database & function'
                                              ' as usual.' + Style.RESET_ALL)
@@ -96,18 +96,20 @@ class Iface_watch(CacheManager):
         if (req.path in ['/', '/fast-serve']):
             pass
         else:
-            if (self.cacheExistance):
+            if self.cache_existance:
                 try:
-                    routePathContents = (req.path).split('_')
-                    cacheKey = routePathContents[len(routePathContents) - 2] + '_' + \
-                               routePathContents[len(routePathContents) - 1]
+                    route_path_contents = (req.path).split('_')
+                    cache_key = route_path_contents[len(route_path_contents) - 2] + '_' + \
+                                route_path_contents[len(route_path_contents) - 1]
 
-                    cacheResponse = self.cache_processor()['getFromCache'](self.cacheInstance, 'c_' + cacheKey)
-                    if (cacheResponse == None):
-                        self.cache_processor()['setToCache'](self.cacheInstance, 'c_' + cacheKey, json.loads(resp.body))
-                        timeWhenSet = int(time.time())
-                        self.cache_processor()['setToCache'](self.cacheInstance, 'c_setTime_' + cacheKey, timeWhenSet)
-                        self.logger.info('Cache set for key : {} @ {}'.format('c_'+ cacheKey, timeWhenSet))
+                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
+                    if cache_response is None:
+                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_' + cache_key,
+                                                               json.loads(resp.body))
+                        time_when_set = int(time.time())
+                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_' + cache_key,
+                                                             time_when_set)
+                        self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
                         print(Fore.GREEN + 'Cache is set for route {}. Subsequent requests for this route will be '
                                            'serviced by cache.'.format(req.path) + Style.RESET_ALL)
                     else:
@@ -118,7 +120,3 @@ class Iface_watch(CacheManager):
                     self.logger.exception('[Iface_watch]. Error while extracting response from cache. '
                                           'Details: {}'.format(str(e)))
                     # Letting the request go through to conventional PROTON stack.
-                    pass
-            else:
-                pass
-
