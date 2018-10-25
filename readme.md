@@ -99,6 +99,10 @@ NOTE: PROTON uses Gunicorn as High Performance Server. Gunicorn is built to util
 # Support
 For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensure to have a valid subject line, detailed message with appropriate stack trace to expect prompt/quick response.
 
+# Tags
+0.0.1 - PROTON confirms to PEP8 standards.
+
+0.0.2 - Cache is unique not only per route but to query params per route.
 # License
 
 BSD 3-Clause License
