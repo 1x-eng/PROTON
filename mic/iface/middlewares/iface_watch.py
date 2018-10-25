@@ -45,9 +45,11 @@ class Iface_watch(CacheManager):
                 print(
                     Fore.MAGENTA + 'PROTON stack has the instantiated Cache! We are on STEROIDS now!!' + Style.RESET_ALL)
                 try:
-                    route_path_contents = req.path.split('_')
-                    cache_key = route_path_contents[len(route_path_contents) - 2] + '_' + \
-                                route_path_contents[len(route_path_contents) - 1]
+                    route_path_contents = req.path.split('_')[1:]
+                    cache_key = '_'.join(route_path_contents)
+
+                    for key, value in req.params.items():
+                        cache_key = cache_key + '_' + key + '_' + value
 
                     cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
                     time_when_cache_was_set = (
@@ -98,9 +100,11 @@ class Iface_watch(CacheManager):
         else:
             if self.cache_existance:
                 try:
-                    route_path_contents = (req.path).split('_')
-                    cache_key = route_path_contents[len(route_path_contents) - 2] + '_' + \
-                                route_path_contents[len(route_path_contents) - 1]
+                    route_path_contents = req.path.split('_')[1:]
+                    cache_key = '_'.join(route_path_contents)
+
+                    for key, value in req.params.items():
+                        cache_key = cache_key + '_' + key + '_' + value
 
                     cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
                     if cache_response is None:
@@ -110,8 +114,9 @@ class Iface_watch(CacheManager):
                         self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_' + cache_key,
                                                              time_when_set)
                         self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
-                        print(Fore.GREEN + 'Cache is set for route {}. Subsequent requests for this route will be '
-                                           'serviced by cache.'.format(req.path) + Style.RESET_ALL)
+                        print(Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
+                                           'Subsequent requests for this route will be serviced by '
+                                           'cache.'.format(req.path) + Style.RESET_ALL)
                     else:
                         # Cache is already set to this route,
                         pass
