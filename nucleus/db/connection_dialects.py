@@ -33,7 +33,7 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
         By default PROTON ships with support for postgresql, mysql and sqlserver.
         :return: db Dialect
         """
-        supported_databases = ['postgresql', ]  # v0.0.1 starts with support for pg.
+        supported_databases = ['sqlite','postgresql', ]  # v0.0.2 starts with support for sqlite & pg.
         parser = ConfigParser()
         config_file = '{}/databaseConfig.ini'.format(self.ROOT_DIR)
         db = {}

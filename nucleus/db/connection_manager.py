@@ -26,6 +26,30 @@ class ConnectionManager(ConnectionDialects):
         self.pg_cursor_generator = self.__pg_cursor_generator
         self.alchemy_engine = self.__alchemy_engine
 
+    def __connection_store(self):
+        pg_connection_pool = self.__pg_pool()
+        connection_manager = {
+            'sqlite': {
+                'getEngine':
+            }
+            'postgresql': {
+                'getCursor': self.__pg_cursor,
+                'pool': pg_connection_pool
+            },
+            'mysql': None,
+            'sqlServer': None
+        }
+        return connection_manager
+
+    @contextmanager
+    def _sqlite_engine(self):
+        """
+        Get engine to generate cursors for sqlLite. Not using pooing here for now as sqlite multi-threading is not priority now.
+        :return:
+        """
+        connection_dialect = self.__connection_dialects['sqlite3']
+
+
     def __pg_pool(self):
         """
         ConnectionPool for Postgres governed by psycopg2.
@@ -49,18 +73,6 @@ class ConnectionManager(ConnectionDialects):
         finally:
             connection_pool.putconn(connection)
 
-    def __connection_store(self):
-        pg_connection_pool = self.__pg_pool()
-        connection_manager = {
-            'postgresql': {
-                'getCursor': self.__pg_cursor,
-                'pool': pg_connection_pool
-            },
-            'mysql': None,
-            'sqlServer': None
-        }
-        return connection_manager
-
     @staticmethod
     def __pg_cursor_generator(connection_store):
         """
@@ -83,12 +95,15 @@ class ConnectionManager(ConnectionDialects):
         alchemy_connection_strings = {}
         alchemy_engine_store = {}
         for dialect in self.__connection_dialects:
-            alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
-                                                                            self.__connection_dialects[dialect]['user'],
-                                                                            self.__connection_dialects[dialect][
+            if dialect == 'sqlite':
+                alchemy_connection_strings[dialect] = '{}://{}'.format(dialect, self.__connection_dialects[dialect]['path'])
+            else:
+                alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
+                                                                                self.__connection_dialects[dialect]['user'],
+                                                                                self.__connection_dialects[dialect][
                                                                                 'password'],
-                                                                            self.__connection_dialects[dialect]['host'],
-                                                                            self.__connection_dialects[dialect]['port'])
+                                                                                self.__connection_dialects[dialect]['host'],
+                                                                                self.__connection_dialects[dialect]['port'])
 
         for connection in alchemy_connection_strings:
             alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection])
