@@ -21,6 +21,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         super(Model_{{ modelName }}, self).__init__()
 
         self.__db_flavour_to_cursor_generator_map = {
+            'sqlite': self.sqlite_connection_generator,
             'postgresql': self.pg_cursor_generator,
             #TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
         }
@@ -71,17 +72,35 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
             :return:
             """
-            try:
-                with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
+            if db_flavour == 'sqlite':
+                # lite database
+                try:
+                    connection = self.sqlite_connection_generator()
+                    cursor = connection.cursor()
                     query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                     cursor.execute(query, bind_params)
                     results = cursor.fetchall()
-                    return json.dumps(results)
+                    return results
+                except Exception as e:
+                    connection.rollback()
+                    self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    raise Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                                             'Details: {}'.format(str(e)) + Style.RESET_ALL
+                finally:
+                    connection.close()
+            else:
+                # Prodgrade databases
+                try:
+                    with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
+                        query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                        cursor.execute(query, bind_params)
+                        results = cursor.fetchall()
+                        return json.dumps(results)
 
-            except Exception as e:
-                self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
-                raise Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
-                                         'Details: {}'.format(str(e)) + Style.RESET_ALL
+                except Exception as e:
+                    self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    raise Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                                             'Details: {}'.format(str(e)) + Style.RESET_ALL
 
 
         return {

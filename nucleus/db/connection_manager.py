@@ -85,7 +85,8 @@ class ConnectionManager(ConnectionDialects):
         pg_connection_pool = cls.__pg_pool()
         connection_manager = {
             'sqlite': {
-                'getConnection': cls.sqlite_connection_generator
+                'getConnection': cls.sqlite_connection_generator,
+                'getCursor':
             },
             'postgresql': {
                 'getCursor': cls.__pg_cursor,
@@ -110,40 +111,7 @@ class ConnectionManager(ConnectionDialects):
             raise Exception('[ConnectionManager]: Connection Store does not contain an entry for postgresql.'
                             'Check/Debug __connection_store in ConnectionManager.')
 
-    #TODO: SQLite executor for pandas df.
-    def sqlite_executor(self, query, commit_flag=False):
-        try:
-            connection = self.sqlite_connection_generator()
-            cursor = connection.cursor()
-            cursor.execute(query)
-            if commit_flag:
-                connection.commit()
-                results = 'Commit successful'
-            else:
-                # if commit flag is false, assuming the query is SELECT.
-                results = cursor.fetchall()
-            return results
-        except Exception as e:
-            connection.rollback()
-            raise e
-        finally:
-            connection.close()
-
 
 if __name__ == '__main__':
     cm = ConnectionManager()
-    # cursorEngine = cm.connection_store()
-    # with cm.pg_cursor_generator(cursorEngine) as cursor:
-    #     cursor.execute("SELECT * FROM public.pk_authenticated_users;")
-    #     results = cursor.fetchall()
-    #     print(results)
-    #
-    # with cm.pg_cursor_generator(cursorEngine) as cursor:
-    #     cursor.execute("SELECT username FROM public.pk_authenticated_users;")
-    #     results = cursor.fetchall()
-    #     print(results)
-
-    r2 = cm.sqlite_executor("""
-    SELECT * FROM Test1
-    """)
-    print(r2)
+    cursorEngine = cm.connection_store()
