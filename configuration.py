@@ -9,3 +9,6 @@ class ProtonConfig(object):
 
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     CACHE_LIFESPAN = 86400  # equivalent of 1 day = 86400 s.
+    TARGET_DB = 'sqlite' # Other supported DB include postgresql, mysql, sqlserver.
+
+    # If you change TARGET_DB to other provider, ensure databaseConfig.ini is updated accordingly.
