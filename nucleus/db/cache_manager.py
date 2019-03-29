@@ -13,19 +13,17 @@ class CacheManager(ProtonConfig, LogUtilities):
     CacheManager facilitates redis to support underlying databases supported
     by PROTON. All redis activities are controlled within CacheManager.
     """
+    __redisConfig = {
+        'host': 'localhost',
+        'port': 6379,
+        'db': 0
+    }
+    logger = LogUtilities().get_logger(log_file_name='cacheManager_logs',
+                                       log_file_path='{}/trace/cacheManager_logs.log'.format(ProtonConfig.ROOT_DIR))
 
-    def __init__(self):
-        super(CacheManager, self).__init__()
-        self.__redisConfig = {
-            'host': 'localhost',
-            'port': 6379,
-            'db': 0
-        }
-        self.logger = self.get_logger(log_file_name='cacheManager_logs',
-                                      log_file_path='{}/trace/cacheManager_logs.log'.format(self.ROOT_DIR))
-        self.cache_processor = self.__processor
 
-    def __processor(self):
+    @classmethod
+    def cache_processor(cls):
         """
         Closure for CacheManager
 
@@ -38,12 +36,12 @@ class CacheManager(ProtonConfig, LogUtilities):
             :return: redis_instance object.
             """
             try:
-                redis_instance = redis.StrictRedis(host=self.__redisConfig['host'], port=self.__redisConfig['port'],
-                                                  db=self.__redisConfig['db'])
-                self.logger.info('Successfully instantiated cache!')
+                redis_instance = redis.StrictRedis(host=cls.__redisConfig['host'], port=cls.__redisConfig['port'],
+                                                   db=cls.__redisConfig['db'])
+                cls.logger.info('Successfully instantiated cache!')
                 return redis_instance
             except Exception as e:
-                self.logger.exception('Exception while instantiating cache. Details: {}'.format(str(e)))
+                cls.logger.exception('Exception while instantiating cache. Details: {}'.format(str(e)))
                 raise str(e)
 
         def set_to_cache(redis_instance, key, value):
@@ -56,9 +54,9 @@ class CacheManager(ProtonConfig, LogUtilities):
             """
             try:
                 redis_instance.set(key, value)
-                self.logger.info('Cache set for key: {}'.format(key))
+                cls.logger.info('Cache set for key: {}'.format(key))
             except Exception as e:
-                self.logger.exception('Exception while setting value to cache. Details: {}'.format(str(e)))
+                cls.logger.exception('Exception while setting value to cache. Details: {}'.format(str(e)))
                 raise str(e)
 
         def get_from_cache(redis_instance, key):
@@ -70,10 +68,10 @@ class CacheManager(ProtonConfig, LogUtilities):
             """
             try:
                 data_from_cache = redis_instance.get(key)
-                self.logger.info('Data from cache successful for key: {}'.format(key))
+                cls.logger.info('Data from cache successful for key: {}'.format(key))
                 return data_from_cache
             except Exception as e:
-                self.logger.exception('Data from cache for key: {} is unsuccessful. Details: {}'.format(key, str(e)))
+                cls.logger.exception('Data from cache for key: {} is unsuccessful. Details: {}'.format(key, str(e)))
                 raise str(e)
 
         def ping_cache(redis_instance):
@@ -84,10 +82,10 @@ class CacheManager(ProtonConfig, LogUtilities):
             """
             try:
                 redis_instance.ping()
-                self.logger.info('Redis instance is available!')
+                cls.logger.info('Redis instance is available!')
                 return True
             except Exception as e:
-                self.logger.exception('Redis instance is unavailable on ping!. Details : {}'.format(str(e)))
+                cls.logger.exception('Redis instance is unavailable on ping!. Details : {}'.format(str(e)))
                 return False
 
         def delete_from_cache(redis_instance, key):
@@ -99,11 +97,11 @@ class CacheManager(ProtonConfig, LogUtilities):
             """
             try:
                 redis_instance.delete(key)
-                self.logger.info('{} deleted from Redis cache!'.format(key))
+                cls.logger.info('{} deleted from Redis cache!'.format(key))
                 return True
             except Exception as e:
-                self.logger.exception(('Redis instance is unavailable to delete key: {}. '
-                                       'Details: {}'.format(key, str(e))))
+                cls.logger.exception(('Redis instance is unavailable to delete key: {}. '
+                                      'Details: {}'.format(key, str(e))))
                 return False
 
         return {
