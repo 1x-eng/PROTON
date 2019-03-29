@@ -28,7 +28,7 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     def dialect_store(cls):
         """
         Parse config file and prepare dialects for db supported by PROTON.
-        By default PROTON ships with support for postgresql, mysql and sqlserver.
+        By default PROTON ships with support for sqlite, postgresql, mysql and sqlserver.
         :return: db Dialect
         """
         supported_databases = ['sqlite','postgresql', ]  # v0.0.2 starts with support for sqlite & pg.
