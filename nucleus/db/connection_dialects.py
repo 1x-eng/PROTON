@@ -21,13 +21,11 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     NOTE: ConnectionDialect is reliant on databaseConfig.ini to establish valid connection. Please ensure
     you don't delete any existing config parameters.
     """
-    def __init__(self):
-        super(ConnectionDialects, self).__init__()
-        self.logger = self.get_logger(log_file_name='connectionDialects_logs',
-                                      log_file_path='{}/trace/connectionDialects_logs.log'.format(self.ROOT_DIR))
-        self.dialect_store = self._config_store_parser
+    logger = LogUtilities().get_logger(log_file_name='connectionDialects_logs',
+                                  log_file_path='{}/trace/connectionDialects_logs.log'.format(ProtonConfig.ROOT_DIR))
 
-    def _config_store_parser(self):
+    @classmethod
+    def dialect_store(cls):
         """
         Parse config file and prepare dialects for db supported by PROTON.
         By default PROTON ships with support for postgresql, mysql and sqlserver.
@@ -35,7 +33,7 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
         """
         supported_databases = ['sqlite','postgresql', ]  # v0.0.2 starts with support for sqlite & pg.
         parser = ConfigParser()
-        config_file = '{}/databaseConfig.ini'.format(self.ROOT_DIR)
+        config_file = '{}/databaseConfig.ini'.format(ProtonConfig.ROOT_DIR)
         db = {}
         parser.read(config_file)
 
@@ -53,7 +51,7 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
                 for param in params:
                     db_dialect[section][param[0]] = param[1]
             else:
-                self.logger.exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
+                cls.logger.exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                  'file.'.format(section))
                 raise Exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                 'file.'.format(section))
