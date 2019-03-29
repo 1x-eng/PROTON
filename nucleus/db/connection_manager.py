@@ -4,9 +4,11 @@ __license__ = "Public Domain"
 __version__ = "1.0"
 
 from contextlib import contextmanager
+from configuration import ProtonConfig
 from psycopg2.pool import SimpleConnectionPool
 from sqlalchemy import create_engine
 from nucleus.db.connection_dialects import ConnectionDialects
+from nucleus.generics.log_utilities import LogUtilities
 import sqlite3
 
 
@@ -19,11 +21,11 @@ class ConnectionManager(ConnectionDialects):
     """
 
     __connection_dialects = ConnectionDialects.dialect_store()
+    logger = LogUtilities().get_logger(log_file_name='connectionManager_logs',
+                                       log_file_path='{}/trace/connectionManager_logs.log'.format(ProtonConfig.ROOT_DIR))
 
     def __init__(self):
         super(ConnectionManager, self).__init__()
-        self.logger = self.get_logger(log_file_name='connectionManager_logs',
-                                      log_file_path='{}/trace/connectionManager_logs.log'.format(self.ROOT_DIR))
         self.pg_cursor_generator = self.__pg_cursor_generator
 
     @classmethod
@@ -82,21 +84,30 @@ class ConnectionManager(ConnectionDialects):
 
     @classmethod
     def connection_store(cls):
-        pg_connection_pool = cls.__pg_pool()
+
         connection_manager = {
             'sqlite': {
                 'getConnection': cls.sqlite_connection_generator
-            },
-            'postgresql': {
+            }
+        }
+
+        try:
+            pg_connection_pool = cls.__pg_pool()
+            cls.logger.info('[connection_manager]: Postgres operational. PROTON will successfully include PG!')
+            connection_manager.update({'postgresql': {
                 'getCursor': cls.__pg_cursor,
                 'pool': pg_connection_pool
-            },
-            'mysql': None,
-            'sqlServer': None
-        }
-        return connection_manager
+            }})
 
-    # TODO: cursorGenerators for MySql and SQL Server.
+        except Exception as e:
+            connection_manager.update({'postgresql': None})
+            cls.logger.exception('[connection_manager]: Postgres is either not installed or not configured on port provided'
+                                 'within ini file. PROTON will not include postgres. Stack trace to follow.')
+            cls.logger.error(str(e))
+
+        #TODO: Add support for mysql and sqlserver
+        connection_manager.update({'mysql': None, 'sqlServer': None})
+        return connection_manager
 
     @staticmethod
     def __pg_cursor_generator(connection_store):
