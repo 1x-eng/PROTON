@@ -85,8 +85,7 @@ class ConnectionManager(ConnectionDialects):
         pg_connection_pool = cls.__pg_pool()
         connection_manager = {
             'sqlite': {
-                'getConnection': cls.sqlite_connection_generator,
-                'getCursor':
+                'getConnection': cls.sqlite_connection_generator
             },
             'postgresql': {
                 'getCursor': cls.__pg_cursor,
