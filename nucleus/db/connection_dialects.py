@@ -12,9 +12,10 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     """
     One stop shop to get connectivity to any RDMBS for models.
     Current implementation covers:
-    1. Postgres
-    2. MySql
-    3. SQL Server
+    1. SQLite
+    2. Postgres
+    3. MySql
+    4. SQL Server
 
     To add more support, add supporting config parameters into databaseConfig.ini file.
 
