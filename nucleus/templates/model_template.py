@@ -148,6 +148,9 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     print(Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
                     if connection:
                         connection.close()
+                finally:
+                    if connection:
+                        connection.close()
             else:
                 self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
                       'dictionaries is consistent in terms of `keys`.')
