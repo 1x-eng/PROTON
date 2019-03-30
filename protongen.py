@@ -5,6 +5,7 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "Public Domain"
 __version__ = "1.0"
 
+import os
 import argparse
 from colorama import Fore, Style
 from nucleus.execgen import ExecGen
@@ -44,8 +45,10 @@ class ProtonGen(MetaGen, ExecGen):
         try:
             self.new_mic(mic_name=mic_name)
             self.generate_executor(port=port)
-            print(Fore.GREEN + 'PROTON initialized for {}. Starting service @ {}'.format(mic_name, port) + Style.RESET_ALL)
-            self.logger.info('[ProtonGen] Proton initialized for mic_name - {} @ port {}'.format(mic_name, port))
+            print(Fore.GREEN + 'PROTON initialized for {}. Starting service @ {} & target table for this MIC stack is - '
+                               '{}'.format(mic_name, port, os.environ['PROTON_target_table_for_{}'.format(mic_name)]) + Style.RESET_ALL)
+            self.logger.info('[ProtonGen] Proton initialized for mic_name - {} @ port {} & target table for this MIC stack is -'
+                             '{}'.format(mic_name, port, os.environ['PROTON_target_table_for_{}'.format(mic_name)]))
         except Exception as e:
             self.logger.exception('[ProtonGen] Error during protonGen initialization for mic_name '
                                   '{}. Details: {}'.format(mic_name, str(e)))
