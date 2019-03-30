@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from colorama import Fore
 from colorama import Style
+from configuration import ProtonConfig
 from mic.models.{{ modelName }}.model_{{ modelName }} import Model_{{modelName}}
 
 class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
@@ -31,12 +32,23 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         def schema_information(db_flavour):
 
             # This SQL is an example to list all tables in the current database.
-            example_sql = """
-            SELECT table_schema, table_name
-            FROM information_schema.tables
-            ORDER BY table_schema,table_name;
-            """
-            binding_params = {}
+            if ProtonConfig.TARGET_DB == 'sqlite':
+                example_sql = """
+                SELECT 'Non Existant' as Tbl, 'Non Existant' as Status
+                """
+                binding_params = {}
+            elif ProtonConfig.TARGET_DB == 'postgresql':
+                example_sql = """
+                SELECT table_schema, table_name
+                FROM information_schema.tables
+                ORDER BY table_schema,table_name;
+                """
+                binding_params = {}
+            else:
+                example_sql = """
+                """
+                binding_params = {}
+
             try:
                 # to use getter methods, use self.getter; to use transaction methods, use self.transaction.
                 # to learn more, do dir(self.getter) and dir(self.transaction).

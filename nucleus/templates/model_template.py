@@ -77,15 +77,18 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 try:
                     connection = self.sqlite_connection_generator()
                     cursor = connection.cursor()
+                    print('query: {}\nbindingparams: {}'.format(sql, binding_params))
                     query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                    print('query: {}\nbindparams: {}'.format(sql, bind_params))
+
                     cursor.execute(query, bind_params)
                     results = cursor.fetchall()
                     return results
                 except Exception as e:
                     connection.rollback()
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
-                    raise Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
-                                             'Details: {}'.format(str(e)) + Style.RESET_ALL
+                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                                             'Details: {}'.format(str(e)) + Style.RESET_ALL)
                 finally:
                     connection.close()
             else:
@@ -99,8 +102,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
                 except Exception as e:
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
-                    raise Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
-                                             'Details: {}'.format(str(e)) + Style.RESET_ALL
+                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                                             'Details: {}'.format(str(e)) + Style.RESET_ALL)
 
 
         return {
@@ -134,16 +137,21 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             if consistency_of_keys:
                 try:
                     data_to_be_inserted = pd.DataFrame(input_payload)
-                    self.__alchemy_engine[db_flavour].execute('USE {}'.format(db_name))
-                    data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                               if_exists='append')
+                    connection = self.__alchemy_engine[db_flavour].connect()
+                    with connection.begin() as transaction:
+                        data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                if_exists='append')
+                        transaction.commit()
+                    connection.close()
                 except Exception as e:
                     self.logger.exception('[{{modelName}}]: {}'.format(str(e)))
-                    raise (Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
+                    print(Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
+                    if connection:
+                        connection.close()
             else:
                 self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
                       'dictionaries is consistent in terms of `keys`.')
-                raise(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
+                print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
                       'dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
 
 
@@ -179,7 +187,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     return True
             except Exception as e:
                 self.logger.exception('[{{modelName}} -  Exception during UPDATE operation. Details: {}]'.format(str(e)))
-                raise (Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
+                print(Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
                                           '{}]'.format(str(e)) + Style.RESET_ALL)
 
 

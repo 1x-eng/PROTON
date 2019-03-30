@@ -69,7 +69,7 @@ class ConnectionManager(ConnectionDialects):
         alchemy_engine_store = {}
         for dialect in cls.__connection_dialects:
             if dialect == 'sqlite':
-                alchemy_connection_strings[dialect] = '{}://{}'.format(dialect, cls.__connection_dialects[dialect]['path'])
+                alchemy_connection_strings[dialect] = '{}:///{}'.format(dialect, cls.__connection_dialects[dialect]['path'])
             else:
                 alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
                                                                                 cls.__connection_dialects[dialect]['user'],
