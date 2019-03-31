@@ -71,8 +71,7 @@ else
         echo -e "------------------------------------------------------------------------------------------------------"
         echo -e "\e[33m Target table not specified. PROTON will rely on default table for this MIC stack. \e[0m"
         echo -e "------------------------------------------------------------------------------------------------------"
-        echo $micName
-        export "PROTON_target_table_for_$micName=default"
+        export "PROTON_target_table_for_$micName=PROTON_default"
 
     else
         echo -e "------------------------------------------------------------------------------------------------------"

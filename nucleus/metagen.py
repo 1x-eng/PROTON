@@ -29,6 +29,38 @@ class MetaGen(CacheManager):
         :param mic_name:
         :return:
         """
+
+        # Generate default PROTON db in desired db_flavour if it doesnt already exist.
+        from configuration import ProtonConfig
+        from nucleus.db.connection_manager import ConnectionManager
+        from sqlalchemy import MetaData, Table, Column, Integer, DateTime, String, insert
+        from datetime import datetime
+
+        try:
+            engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
+            metadata = MetaData(bind=engine)
+            if ProtonConfig.TARGET_DB == 'sqlite':
+                target_table = os.environ['PROTON_target_table_for_{}'.format(mic_name)]
+                if not engine.dialect.has_table(engine, target_table):
+                    # Create a table with the appropriate Columns
+                    Table(target_table, metadata,
+                          Column('Id', Integer, primary_key=True, nullable=False, autoincrement=True),
+                          Column('Date Time', DateTime),
+                          Column('MIC Stack', String))
+                    metadata.create_all()
+
+                # Add row to default DB
+                proton_default = Table(target_table, metadata, autoload=True)
+                ins = proton_default.insert()
+                ins.execute({"Date Time": datetime.now(), "MIC Stack": mic_name})
+
+        except Exception as e:
+            self.logger.exception('[Metagen]: Could not successfully create PROTON default db & PROTON default table OR'
+                                  ' insert new row in PROTON default db for MIC stack - {}. Stack trace to '
+                                  'follow.'.format(mic_name))
+            self.logger.exception(str(e))
+
+        # Create MIC Stack
         new_model = self.__models_root + '/{}'.format(mic_name)
         try:
             if not os.path.exists(new_model):
