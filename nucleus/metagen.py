@@ -33,7 +33,7 @@ class MetaGen(CacheManager):
         # Generate default PROTON db in desired db_flavour if it doesnt already exist.
         from configuration import ProtonConfig
         from nucleus.db.connection_manager import ConnectionManager
-        from sqlalchemy import MetaData, Table, Column, Integer, DateTime, String, insert
+        from sqlalchemy import MetaData, Table, Column, Integer, DateTime, String
         from datetime import datetime
 
         try:
@@ -41,6 +41,7 @@ class MetaGen(CacheManager):
             metadata = MetaData(bind=engine)
             if ProtonConfig.TARGET_DB == 'sqlite':
                 target_table = os.environ['PROTON_target_table_for_{}'.format(mic_name)]
+                print('******************* target table is {}'.format(target_table))
                 if not engine.dialect.has_table(engine, target_table):
                     # Create a table with the appropriate Columns
                     Table(target_table, metadata,

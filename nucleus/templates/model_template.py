@@ -77,13 +77,11 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 try:
                     connection = self.sqlite_connection_generator()
                     cursor = connection.cursor()
-                    print('query: {}\nbindingparams: {}'.format(sql, binding_params))
                     query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
-                    print('query: {}\nbindparams: {}'.format(sql, bind_params))
-
-                    cursor.execute(query, bind_params)
+                    cursor.execute(query, binding_params)
                     results = cursor.fetchall()
-                    return results
+                    results_df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
+                    return json.loads(results_df.to_json(orient='records'))
                 except Exception as e:
                     connection.rollback()
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))

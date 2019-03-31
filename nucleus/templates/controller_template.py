@@ -3,6 +3,7 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "Public Domain"
 __version__ = "1.0"
 
+import os
 import json
 import numpy as np
 import pandas as pd
@@ -29,20 +30,24 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         :return: serialized response ready for transmission to Interface.
         """
 
-        def schema_information(db_flavour):
+        def proton_default(db_flavour):
 
-            # This SQL is an example to list all tables in the current database.
             if ProtonConfig.TARGET_DB == 'sqlite':
+                target_table = os.environ['PROTON_target_table_for_{}'.format('{{ modelName }}')]
+
                 example_sql = """
-                SELECT 'Non Existant' as Tbl, 'Non Existant' as Status
-                """
+                SELECT * from {} LIMIT 10
+                """.format(target_table)
                 binding_params = {}
+
             elif ProtonConfig.TARGET_DB == 'postgresql':
+
                 example_sql = """
                 SELECT table_schema, table_name
                 FROM information_schema.tables
                 ORDER BY table_schema,table_name;
                 """
+
                 binding_params = {}
             else:
                 example_sql = """
@@ -63,7 +68,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
 
 
         return {
-            "schema_information": schema_information,
+            "default_MIC": proton_default,
             # Similar to above, add more processor methods according to developer's convenience.
         }
 
