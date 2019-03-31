@@ -43,12 +43,16 @@ class ProtonGen(MetaGen, ExecGen):
     def __creator(self, mic_name, port):
 
         try:
+
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name )) as f:
+                target_table_for_mic = f.read().replace('\n', '')
+
             self.new_mic(mic_name=mic_name)
             self.generate_executor(port=port)
             print(Fore.GREEN + 'PROTON initialized for {}. Starting service @ {} & target table for this MIC stack is - '
-                               '{}'.format(mic_name, port, os.environ['PROTON_target_table_for_{}'.format(mic_name)]) + Style.RESET_ALL)
+                               '{}'.format(mic_name, port, target_table_for_mic) + Style.RESET_ALL)
             self.logger.info('[ProtonGen] Proton initialized for mic_name - {} @ port {} & target table for this MIC stack is -'
-                             '{}'.format(mic_name, port, os.environ['PROTON_target_table_for_{}'.format(mic_name)]))
+                             '{}'.format(mic_name, port, target_table_for_mic))
         except Exception as e:
             self.logger.exception('[ProtonGen] Error during protonGen initialization for mic_name '
                                   '{}. Details: {}'.format(mic_name, str(e)))

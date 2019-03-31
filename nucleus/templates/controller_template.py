@@ -16,10 +16,25 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
 
     def __init__(self):
         super( Ctrl_{{ controllerName }}, self ).__init__()
+        self.target_db_table = self.__targetTable()
         self.logger = self.get_logger(log_file_name='{{ controllerName }}',
                                       log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
         self.controller_processor = self.__processor
 
+
+
+    def __targetTable(self):
+        target_table_for_mic = ''
+        try:
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR, '{{ modelName }}')) as f:
+                target_table_for_mic = f.read().replace('\n', '')
+
+            return target_table_for_mic
+        except Exception as e:
+            self.logger.exception('[{{ controllerName }}] - Exception while getting target table for {{ modelName }}. '
+                                  'Details: {}'.format(str(e)))
+        finally:
+            return target_table_for_mic
 
     def __processor(self):
         """
@@ -33,7 +48,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         def proton_default(db_flavour):
 
             if ProtonConfig.TARGET_DB == 'sqlite':
-                target_table = os.environ['PROTON_target_table_for_{}'.format('{{ modelName }}')]
+                target_table = 'PROTON_default'
 
                 example_sql = """
                 SELECT * from {} LIMIT 10

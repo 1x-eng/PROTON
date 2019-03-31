@@ -37,23 +37,30 @@ class MetaGen(CacheManager):
         from datetime import datetime
 
         try:
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name )) as f:
+                target_table_for_mic = f.read().replace('\n', '')
+
             engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
             metadata = MetaData(bind=engine)
             if ProtonConfig.TARGET_DB == 'sqlite':
-                target_table = os.environ['PROTON_target_table_for_{}'.format(mic_name)]
-                print('******************* target table is {}'.format(target_table))
+                target_table = 'PROTON_default'
                 if not engine.dialect.has_table(engine, target_table):
-                    # Create a table with the appropriate Columns
+                    # Create a table with the appropriate columns
                     Table(target_table, metadata,
-                          Column('Id', Integer, primary_key=True, nullable=False, autoincrement=True),
-                          Column('Date Time', DateTime),
-                          Column('MIC Stack', String))
+                          Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
+                          Column('Creation_Date_Time', DateTime),
+                          Column('Target_MIC_Stack', String),
+                          Column('Target_Database', String),
+                          Column('Target_Table', String)),
                     metadata.create_all()
 
                 # Add row to default DB
                 proton_default = Table(target_table, metadata, autoload=True)
                 ins = proton_default.insert()
-                ins.execute({"Date Time": datetime.now(), "MIC Stack": mic_name})
+                ins.execute({"Creation_Date_Time": datetime.now(),
+                             "Target_MIC_Stack": mic_name,
+                             "Target_Database": ProtonConfig.TARGET_DB,
+                             "Target_Table": target_table_for_mic})
 
         except Exception as e:
             self.logger.exception('[Metagen]: Could not successfully create PROTON default db & PROTON default table OR'

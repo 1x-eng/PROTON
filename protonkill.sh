@@ -40,6 +40,7 @@ else
     echo -e "----------------------------------------------------------------------------------------------------------"
     echo -e "\e[33m Killing PROTON stack for micName: \e[0m"$micNameToKill
     python protonkill.py --micNameToKill $micNameToKill
+    rm -r ./proton_vars/target_table_for_$micNameToKill.txt
     echo -e "\e[33m Restarting Gunicorn with remaining PROTON stack \e[0m"
 fi
 

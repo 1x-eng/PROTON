@@ -71,13 +71,19 @@ else
         echo -e "------------------------------------------------------------------------------------------------------"
         echo -e "\e[33m Target table not specified. PROTON will rely on default table for this MIC stack. \e[0m"
         echo -e "------------------------------------------------------------------------------------------------------"
-        export "PROTON_target_table_for_$micName=PROTON_default"
+
+        mkdir -p proton_vars
+        touch ./proton_vars/target_table_for_$micName.txt
+        echo "PROTON_default" >> ./proton_vars/target_table_for_$micName.txt
 
     else
         echo -e "------------------------------------------------------------------------------------------------------"
         echo -e "\e[33m Target table for $micName MIC stack will be set to $targetDbTable. \e[0m"
         echo -e "------------------------------------------------------------------------------------------------------"
-        export "PROTON_target_table_for_$micName=$targetDbTable"
+
+        mkdir -p proton_vars
+        touch ./proton_vars/target_table_for_$micName.txt
+        echo $targetDbTable >> ./proton_vars/target_table_for_$micName.txt
 
     fi
 
