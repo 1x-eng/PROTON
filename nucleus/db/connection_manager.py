@@ -30,9 +30,15 @@ class ConnectionManager(ConnectionDialects):
 
     @classmethod
     def sqlite_connection_generator(cls):
-        dialect = cls.__connection_dialects['sqlite']
-        connection = sqlite3.connect(dialect['path'])
-        return connection
+        try:
+            with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
+                dialect = file.read().replace('\n', '')
+                connection = sqlite3.connect(dialect)
+                return connection
+        except Exception as e:
+            cls.logger.exception(
+                '[connection_manager]: SQLite connection could not be established. Stack trace to follow.')
+            cls.logger.error(str(e))
 
     @classmethod
     def __pg_pool(cls):
@@ -67,15 +73,16 @@ class ConnectionManager(ConnectionDialects):
         """
         alchemy_connection_strings = {}
         alchemy_engine_store = {}
+        with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
+            sqlite_dialect = file.read().replace('\n', '')
+            alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
+
         for dialect in cls.__connection_dialects:
-            if dialect == 'sqlite':
-                alchemy_connection_strings[dialect] = '{}:///{}'.format(dialect, cls.__connection_dialects[dialect]['path'])
-            else:
-                alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
-                                                                                cls.__connection_dialects[dialect]['user'],
-                                                                                cls.__connection_dialects[dialect]['password'],
-                                                                                cls.__connection_dialects[dialect]['host'],
-                                                                                cls.__connection_dialects[dialect]['port'])
+            alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
+                                                                            cls.__connection_dialects[dialect]['user'],
+                                                                            cls.__connection_dialects[dialect]['password'],
+                                                                            cls.__connection_dialects[dialect]['host'],
+                                                                            cls.__connection_dialects[dialect]['port'])
 
         for connection in alchemy_connection_strings:
             alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection])
@@ -124,4 +131,4 @@ class ConnectionManager(ConnectionDialects):
 
 if __name__ == '__main__':
     cm = ConnectionManager()
-    cursorEngine = cm.connection_store()
+    print(cm.alchemy_engine())
