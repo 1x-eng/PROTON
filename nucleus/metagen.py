@@ -49,6 +49,7 @@ class MetaGen(CacheManager):
                     Table(target_table, metadata,
                           Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                           Column('Creation_Date_Time', DateTime),
+                          Column('Deletion_Date_Time', DateTime, nullable=True),
                           Column('Target_MIC_Stack', String),
                           Column('Target_Database', String),
                           Column('Target_Table', String)),
