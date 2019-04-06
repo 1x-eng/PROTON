@@ -45,7 +45,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         :return: serialized response ready for transmission to Interface.
         """
 
-        def proton_default(db_flavour):
+        def proton_default_get(db_flavour):
 
             if ProtonConfig.TARGET_DB == 'sqlite':
                 target_table = 'PROTON_default'
@@ -81,9 +81,12 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while getting model data. ' \
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
 
+        def proton_default_post(db_flavour):
+            pass
+
 
         return {
-            "default_MIC": proton_default,
+            "default": {'get': proton_default_get, 'post': proton_default_post}, # Supported methods are 'get', 'post'.
             # Similar to above, add more processor methods according to developer's convenience.
         }
 

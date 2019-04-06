@@ -52,18 +52,12 @@ class ExecGen(CacheManager):
                                                               'micName': mic_stacks[mic]['micName'],
                                                               'controllerName': mic_stacks[mic]['controllerName'],
                                                               'iControllerName': method})
-                        get_controller_name = 'Ictrl_get_' + mic_stacks[mic]['micName'] + '_' + method
-                        post_controller_name = 'Ictrl_post_' + mic_stacks[mic]['micName'] + '_' + method
-
-                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
-                                                  'controllerName': get_controller_name})
-                        iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
-                                                  'controllerName': post_controller_name})
-
-                        routes.append({'controllerName': get_controller_name,
-                                       'routeName': 'get_{}_{}'.format(mic, method)})
-                        routes.append({'controllerName': post_controller_name,
-                                       'routeName': 'post_{}_{}'.format(mic, method)})
+                        for method_type in method:
+                            method_controller_name = 'Ictrl_'+method_type+'_' + mic_stacks[mic]['micName'] + '_' + method[method_type]
+                            iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
+                                                      'controllerName': method_controller_name})
+                            routes.append({'controllerName': method_controller_name,
+                                           'routeName': method_type+'_{}_{}'.format(mic, method)})
 
                 for mic in mic_stacks:
                     # Generate Interface Controller. The I of MIC stack per mic entry in PROTON stack.
