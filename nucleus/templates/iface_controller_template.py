@@ -96,11 +96,9 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
 
             post_payload = json.loads(req.stream.read())
             validity = MyUtilities.validate_proton_post_payload(post_payload)
-            print('validity: {}'.format(validity))
 
             if validity:
                 post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['table_name'], post_payload['payload'])
-                print('post response: {}'.format(post_response))
                 response = json.dumps(post_response)
                 status = falcon.HTTP_201
             else:
