@@ -47,12 +47,14 @@ class ExecGen(CacheManager):
             for mic_stacks in iface_methods_in_proton_stack:
                 iface_controller_methods_hash = []
                 for mic in mic_stacks:
-                    for method in mic_stacks[mic]['exposedMethodsInController']:
+                    for ix, method in enumerate(mic_stacks[mic]['restMethodsPerExposedMethod']):
                         iface_controller_methods_hash.append({'fileName': mic_stacks[mic]['fileName'],
                                                               'micName': mic_stacks[mic]['micName'],
                                                               'controllerName': mic_stacks[mic]['controllerName'],
-                                                              'iControllerName': method})
-                        for method_type in method:
+                                                              'iControllerName': method,
+                                                              'exposedRESTmethods': mic_stacks[mic]['restMethodsPerExposedMethod'][ix][method].keys()})
+
+                        for method_type in mic_stacks[mic]['restMethodsPerExposedMethod'][ix][method]:
                             method_controller_name = 'Ictrl_'+method_type+'_' + mic_stacks[mic]['micName'] + '_' + method[method_type]
                             iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
                                                       'controllerName': method_controller_name})

@@ -14,7 +14,7 @@ from mic.controllers.{{ controller.fileName }} import {{ controller.controllerNa
 
 {% for controller in iCtrlHash %}
 
-    {% for methodName in controller.iControllerName %}
+    {% for methodName in controller.exposedRESTmethods %}
 
         {% if methodName == 'get' %}
 
@@ -101,5 +101,7 @@ from mic.controllers.{{ controller.fileName }} import {{ controller.controllerNa
             pass
 
         {% endif %}
+
+    {% endfor %}
 
 {% endfor %}
