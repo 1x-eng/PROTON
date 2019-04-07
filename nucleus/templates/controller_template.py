@@ -73,6 +73,14 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 # to use getter methods, use self.getter; to use transaction methods, use self.transaction.
                 # to learn more, do dir(self.getter) and dir(self.transaction).
 
+                ###########################
+                # Method Definition Index
+                ###########################
+
+                # Insert: self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
+                # Update: self.transaction['update'](db_flavour, sql, binding_params)
+                # Delete: self.transaction['update'](db_flavour, sql, binding_params)
+
                 results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
                 return results
             except Exception as e:
@@ -81,8 +89,28 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while getting model data. ' \
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
 
-        def proton_default_post(db_flavour):
-            pass
+        def proton_default_post(db_flavour, db_name, table_name, input_payload):
+            exception = ''
+            try:
+                self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
+                return {
+                    'Message': 'Insert operation to {} table in {} database under {} is successful'.format(table_name,
+                                                                                                           db_name,
+                                                                                                           db_flavour)}
+            except Exception as e:
+                exception = str(e)
+                self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
+                                      'Details: {}'.format(str(e)))
+                raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while inserting data. ' \
+                                         'Details: {}'.format(str(e)) + Style.RESET_ALL
+            finally:
+                return {
+                    'Message': 'Insert operation to {} table in {} database under {} is unsuccessful'.format(table_name,
+                                                                                                           db_name,
+                                                                                                           db_flavour),
+                    'Stack Trace': exception
+                }
+
 
 
         return {

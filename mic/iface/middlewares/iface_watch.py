@@ -109,7 +109,7 @@ class Iface_watch(CacheManager):
 
                     cache_response = self.cache_processor()['get_from_cache'](self.cache_instance,
                                                                               'c_{}'.format(cache_key))
-                    if cache_response is None:
+                    if cache_response is None or 'post' not in cache_key:
                         self.cache_processor()['set_to_cache'](self.cache_instance, 'c_{}'.format(cache_key),
                                                                json.dumps(resp.body))
                         time_when_set = int(time.time())
@@ -120,7 +120,7 @@ class Iface_watch(CacheManager):
                                            'Subsequent requests for this route will be serviced by '
                                            'cache.'.format(req.path) + Style.RESET_ALL)
                     else:
-                        # Cache is already set to this route,
+                        # Cache is already set to this route or the request type is POST
                         pass
 
                 except Exception as e:

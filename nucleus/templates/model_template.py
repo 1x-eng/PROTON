@@ -116,7 +116,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
-        def perform_insert_operation(input_payload, db_flavour, db_name, table_name):
+        def perform_insert_operation(db_flavour, db_name, table_name, input_payload):
             """
             Closure for Insert Operation!
             This is also a proxy for CREATE operation. If table does not exist, SQL Alchemy will create one.

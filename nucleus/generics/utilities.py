@@ -11,9 +11,6 @@ class MyUtilities(object):
     Generic utility functions for PROTON stack
     """
 
-    def __init__(self):
-        super(MyUtilities, self).__init__()
-
     @staticmethod
     def validate_list_of_dicts_consistency(list_of_dicts):
         """
@@ -25,3 +22,20 @@ class MyUtilities(object):
         """
         c_rd = copy.deepcopy(list_of_dicts)
         return any(reduce(lambda i1, i2: i1 if i1 == i2 else [], map(lambda rd: list(rd.keys()), c_rd)))
+
+    @staticmethod
+    def validate_proton_post_payload(post_payload):
+        """
+        Validate if PROTON post payload is in the right format and contains all required fields.
+        :param post_payload: a dict. Essentially, falcon post payload.
+        :return: A boolean indicating validity
+        """
+        proton_post_payload = copy.deepcopy(post_payload)
+        if type(proton_post_payload) is not dict:
+            return False
+        required_keys = ['db_flavour', 'db_name', 'table_name', 'payload']
+        actual_keys = list(proton_post_payload.keys())
+        if set(required_keys) == set(actual_keys):
+            if MyUtilities.validate_list_of_dicts_consistency(proton_post_payload['payload']):
+                return True
+        return False

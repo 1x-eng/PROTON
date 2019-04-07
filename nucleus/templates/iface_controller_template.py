@@ -8,6 +8,7 @@ import json
 from colorama import Fore
 from colorama import Style
 from configuration import ProtonConfig
+from nucleus.generics.utilities import MyUtilities
 {% for controller in iCtrlHash %}
 from mic.controllers.{{ controller.fileName }} import {{ controller.controllerName }}
 {% endfor %}
@@ -78,11 +79,40 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
                     description: <Add description relevant to POST. This will be picked by Swagger generator>
                     schema: <Schema of Response>
         """
-        payload = json.loads(req.stream.read())
         try:
-            # use payload to your convenience.
-            response = json.dumps({'message': 'POST route is activated. Default response is served.'})
-            status = falcon.HTTP_200
+
+            ##############################
+            # POST payload format
+            ##############################
+            # {
+            #     'db_flavour': '', # sqlite or postgres
+            #     'db_name': '', # target db name, either it should already exist, if not, this will be created
+            #     'table_name': '', # target table name.
+            #     'payload': [{'column-1': 'value', 'column-2': 'value', 'column-3': 'value' },
+            #                 {'column-1': 'value', 'column-2': 'value', 'column-3': 'value' }]
+            # }
+
+            from nucleus.generics.utilities import MyUtilities
+            
+            post_payload = json.loads(req.stream.read())
+            validity = MyUtilities.validate_proton_post_payload(post_payload)
+
+            if validity:
+                post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['table_name'], post_payload['payload'])
+                response = json.dumps(post_response)
+                status = falcon.HTTP_201
+            else:
+                response = json.dumps({
+                    'Message': 'POST Payload invalid. Please input payload in PROTON standard format.',
+                    'Sample Format': {
+                                'db_flavour': 'sqlite or postgres',
+                                'db_name': 'target db name, either it should already exist, if not, this will be created',
+                                'table_name': 'target table name',
+                                'payload': [{'column-1': 'value', 'column-2': 'value', 'column-3': 'value' },
+                                            {'column-1': 'value', 'column-2': 'value', 'column-3': 'value' }]
+                    }
+                })
+                status = falcon.HTTP_400
 
         except Exception as e:
             response = json.dumps({'message': 'Server has failed to service this request.',
