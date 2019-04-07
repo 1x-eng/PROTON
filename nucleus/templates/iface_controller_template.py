@@ -14,94 +14,90 @@ from mic.controllers.{{ controller.fileName }} import {{ controller.controllerNa
 
 {% for controller in iCtrlHash %}
 
-    {% for methodName in controller.exposedRESTmethods %}
+{% for methodName in controller.exposedRESTmethods %}
 
-        {% if methodName == 'get' %}
+{% if methodName == 'get' %}
 
-            class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
+class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
 
-                def __init__(self):
-                    super(Ictrl_get_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
-                    self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
-                                                  log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+    def __init__(self):
+        super(Ictrl_get_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
+        self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
+                                      log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
 
-                def on_get(self, req, resp):
-                    """
-                    This is recipient of REST GET request.
+    def on_get(self, req, resp):
+        """
+        This is recipient of REST GET request.
 
-                    Extract query params, use req.get_param(<queryParamId>)
+        Extract query params, use req.get_param(<queryParamId>)
 
-                    ---
-                        description: GET call for {{ iControllerName }} leveraging Ctrl_{{ controllerName }} of PROTON MIC
-                        responses:
-                            200:
-                                description: <Add description relevant to GET. This will be picked by Swagger generator>
-                                schema: <Schema of Response>
-                    """
-                    try:
-                        # If you have newer methods available under Controller, reference that below as per your convenience.
-                        print(Fore.BLUE + 'Request for route {} is being serviced by conventional db service of '
-                                          'PROTON stack'.format(req) + Style.RESET_ALL)
-                        response = json.dumps(self.controller_processor()['{{ controller.iControllerName["get"] }}'](self.TARGET_DB))
-                        status = falcon.HTTP_200
-                    except Exception as e:
-                        response = json.dumps({'message': 'Server has failed to service this request.',
-                                               'stackTrace': str(e)})
-                        status = falcon.HTTP_500
-                        print(Fore.LIGHTRED_EX + '[Ictrl_{{ controller.iControllerName }}]: GET is unsuccessful. '
-                                                 'InterfaceController has returned HTTP 500 to client. '
-                                                 'Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
-                    finally:
-                        resp.body = response
-                        resp.status = status
+        ---
+            description: GET call for {{ iControllerName }} leveraging Ctrl_{{ controllerName }} of PROTON MIC
+            responses:
+                200:
+                    description: <Add description relevant to GET. This will be picked by Swagger generator>
+                    schema: <Schema of Response>
+        """
+        try:
+            # If you have newer methods available under Controller, reference that below as per your convenience.
+            print(Fore.BLUE + 'Request for route {} is being serviced by conventional db service of '
+                              'PROTON stack'.format(req) + Style.RESET_ALL)
+            response = json.dumps(self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](self.TARGET_DB))
+            status = falcon.HTTP_200
+        except Exception as e:
+            response = json.dumps({'message': 'Server has failed to service this request.',
+                                   'stackTrace': str(e)})
+            status = falcon.HTTP_500
+            print(Fore.LIGHTRED_EX + '[Ictrl_{{ controller.iControllerName }}]: GET is unsuccessful. '
+                                     'InterfaceController has returned HTTP 500 to client. '
+                                     'Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
+        finally:
+            resp.body = response
+            resp.status = status
 
-        {% elif methodName == 'post' %}
+{% elif methodName == 'post' %}
 
 
-            class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
+class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
 
-                def __init__(self):
-                    super(Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
-                    self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
-                                                 log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+    def __init__(self):
+        super(Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
+        self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
+                                     log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
 
-                def on_post(self, req, resp):
-                    """
-                    This is recipient of REST POST request.
+    def on_post(self, req, resp):
+        """
+        This is recipient of REST POST request.
 
-                    Extract POST payload using json.loads(req.stream.read())
+        Extract POST payload using json.loads(req.stream.read())
 
-                    ---
-                        description: POST call for {{ iControllerName }} leveraging Ctrl_{{ controllerName }} of PROTON MIC
-                        responses:
-                            201:
-                                description: <Add description relevant to POST. This will be picked by Swagger generator>
-                                schema: <Schema of Response>
-                    """
-                    payload = json.loads(req.stream.read())
-                    try:
-                        # use payload to your convenience.
-                        response = json.dumps({'message': 'POST route is activated. Default response is served.'})
-                        status = falcon.HTTP_200
+        ---
+            description: POST call for {{ iControllerName }} leveraging Ctrl_{{ controllerName }} of PROTON MIC
+            responses:
+                201:
+                    description: <Add description relevant to POST. This will be picked by Swagger generator>
+                    schema: <Schema of Response>
+        """
+        payload = json.loads(req.stream.read())
+        try:
+            # use payload to your convenience.
+            response = json.dumps({'message': 'POST route is activated. Default response is served.'})
+            status = falcon.HTTP_200
 
-                    except Exception as e:
-                        response = json.dumps({'message': 'Server has failed to service this request.',
-                                               'stackTrace': str(e)})
-                        status = falcon.HTTP_500
-                        print(
-                            Fore.LIGHTRED_EX + '[Ictrl_{{ iControllerName }}]: POST is unsuccessful. InterfaceController has returned HTTP 500'
-                                               ' to client. Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
+        except Exception as e:
+            response = json.dumps({'message': 'Server has failed to service this request.',
+                                   'stackTrace': str(e)})
+            status = falcon.HTTP_500
+            print(
+                Fore.LIGHTRED_EX + '[Ictrl_{{ iControllerName }}]: POST is unsuccessful. InterfaceController has returned HTTP 500'
+                                   ' to client. Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
 
-                    finally:
-                        resp.body = response
-                        resp.status = status
+        finally:
+            resp.body = response
+            resp.status = status
 
-        (% else %)
+{% endif %}
 
-            pass
-
-        {% endif %}
-
-    {% endfor %}
+{% endfor %}
 
 {% endfor %}

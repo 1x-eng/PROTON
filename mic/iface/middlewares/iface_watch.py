@@ -51,21 +51,22 @@ class Iface_watch(CacheManager):
                     for key, value in req.params.items():
                         cache_key = cache_key + '_' + key + '_' + value
 
-                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
+                    cache_response = json.loads(self.cache_processor()['get_from_cache'](self.cache_instance,
+                                                                              'c_{}'.format(cache_key)))
                     time_when_cache_was_set = (
-                        self.cache_processor()['get_from_cache'](self.cache_instance, 'c_setTime_'
-                                                                 + cache_key))
+                        self.cache_processor()['get_from_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key)))
                     cache_set_time = 0 if time_when_cache_was_set is None else int(time_when_cache_was_set)
                     current_time = int(time.time())
-                    if cache_set_time is not None:
+                    if time_when_cache_was_set is not None:
                         cache_delta_for_route = current_time - cache_set_time
                     else:
                         cache_delta_for_route = 0
 
                     if cache_response is not None:
                         if cache_delta_for_route > self.CACHE_LIFESPAN:
-                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_' + cache_key)
-                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_setTime_' + cache_key)
+                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_{}'.format(cache_key))
+                            self.cache_processor()['delete_from_cache'](self.cache_instance,
+                                                                        'c_setTime_{}'.format(cache_key))
                             self.logger.info('Cache is deleted for route {}. It has exceeded its '
                                              'lifespan!'.format(req.path))
                         else:
@@ -106,13 +107,14 @@ class Iface_watch(CacheManager):
                     for key, value in req.params.items():
                         cache_key = cache_key + '_' + key + '_' + value
 
-                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance, 'c_' + cache_key)
+                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance,
+                                                                              'c_{}'.format(cache_key))
                     if cache_response is None:
-                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_' + cache_key,
-                                                               json.loads(resp.body))
+                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_{}'.format(cache_key),
+                                                               json.dumps(resp.body))
                         time_when_set = int(time.time())
-                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_' + cache_key,
-                                                             time_when_set)
+                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key),
+                                                               time_when_set)
                         self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
                         print(Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
                                            'Subsequent requests for this route will be serviced by '

@@ -51,15 +51,15 @@ class ExecGen(CacheManager):
                         iface_controller_methods_hash.append({'fileName': mic_stacks[mic]['fileName'],
                                                               'micName': mic_stacks[mic]['micName'],
                                                               'controllerName': mic_stacks[mic]['controllerName'],
-                                                              'iControllerName': method,
-                                                              'exposedRESTmethods': mic_stacks[mic]['restMethodsPerExposedMethod'][ix][method].keys()})
+                                                              'iControllerName': list(method.keys())[0],
+                                                              'exposedRESTmethods': method[list(method.keys())[0]]})
 
-                        for method_type in mic_stacks[mic]['restMethodsPerExposedMethod'][ix][method]:
-                            method_controller_name = 'Ictrl_'+method_type+'_' + mic_stacks[mic]['micName'] + '_' + method[method_type]
+                        for method_type in method[list(method.keys())[0]]:
+                            method_controller_name = 'Ictrl_{}_{}_{}'.format(method_type, mic_stacks[mic]['micName'], list(method.keys())[0])
                             iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
                                                       'controllerName': method_controller_name})
                             routes.append({'controllerName': method_controller_name,
-                                           'routeName': method_type+'_{}_{}'.format(mic, method)})
+                                           'routeName': method_type+'_{}_{}'.format(mic, list(method.keys())[0])})
 
                 for mic in mic_stacks:
                     # Generate Interface Controller. The I of MIC stack per mic entry in PROTON stack.
