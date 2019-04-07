@@ -93,12 +93,14 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
             # }
 
             from nucleus.generics.utilities import MyUtilities
-            
+
             post_payload = json.loads(req.stream.read())
             validity = MyUtilities.validate_proton_post_payload(post_payload)
+            print('validity: {}'.format(validity))
 
             if validity:
                 post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['table_name'], post_payload['payload'])
+                print('post response: {}'.format(post_response))
                 response = json.dumps(post_response)
                 status = falcon.HTTP_201
             else:
@@ -115,11 +117,11 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
                 status = falcon.HTTP_400
 
         except Exception as e:
-            response = json.dumps({'message': 'Server has failed to service this request.',
+            response = json.dumps({'Message': 'Server has failed to service this request.',
                                    'stackTrace': str(e)})
             status = falcon.HTTP_500
             print(
-                Fore.LIGHTRED_EX + '[Ictrl_{{ iControllerName }}]: POST is unsuccessful. InterfaceController has returned HTTP 500'
+                Fore.LIGHTRED_EX + '[Ictrl_{{ controller.iControllerName }}]: POST is unsuccessful. InterfaceController has returned HTTP 500'
                                    ' to client. Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
 
         finally:

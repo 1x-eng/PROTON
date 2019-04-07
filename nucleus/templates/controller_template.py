@@ -51,7 +51,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 target_table = 'PROTON_default'
 
                 example_sql = """
-                SELECT * from {} LIMIT 10
+                SELECT * from {} ORDER BY id DESC LIMIT 10
                 """.format(target_table)
                 binding_params = {}
 
@@ -90,7 +90,6 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
 
         def proton_default_post(db_flavour, db_name, table_name, input_payload):
-            exception = ''
             try:
                 self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
                 return {
@@ -98,19 +97,10 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                                                                                                            db_name,
                                                                                                            db_flavour)}
             except Exception as e:
-                exception = str(e)
                 self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
                                       'Details: {}'.format(str(e)))
                 raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while inserting data. ' \
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
-            finally:
-                return {
-                    'Message': 'Insert operation to {} table in {} database under {} is unsuccessful'.format(table_name,
-                                                                                                           db_name,
-                                                                                                           db_flavour),
-                    'Stack Trace': exception
-                }
-
 
 
         return {

@@ -45,35 +45,36 @@ class Iface_watch(CacheManager):
                 print(
                     Fore.MAGENTA + 'PROTON stack has the instantiated Cache! We are on STEROIDS now!!' + Style.RESET_ALL)
                 try:
-                    route_path_contents = req.path.split('_')[1:]
-                    cache_key = '_'.join(route_path_contents)
+                    if req.method != 'POST':
+                        route_path_contents = req.path.split('_')[1:]
+                        cache_key = '_'.join(route_path_contents)
 
-                    for key, value in req.params.items():
-                        cache_key = cache_key + '_' + key + '_' + value
+                        for key, value in req.params.items():
+                            cache_key = cache_key + '_' + key + '_' + value
 
-                    cache_response = json.loads(self.cache_processor()['get_from_cache'](self.cache_instance,
-                                                                              'c_{}'.format(cache_key)))
-                    time_when_cache_was_set = (
-                        self.cache_processor()['get_from_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key)))
-                    cache_set_time = 0 if time_when_cache_was_set is None else int(time_when_cache_was_set)
-                    current_time = int(time.time())
-                    if time_when_cache_was_set is not None:
-                        cache_delta_for_route = current_time - cache_set_time
-                    else:
-                        cache_delta_for_route = 0
-
-                    if cache_response is not None:
-                        if cache_delta_for_route > self.CACHE_LIFESPAN:
-                            self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_{}'.format(cache_key))
-                            self.cache_processor()['delete_from_cache'](self.cache_instance,
-                                                                        'c_setTime_{}'.format(cache_key))
-                            self.logger.info('Cache is deleted for route {}. It has exceeded its '
-                                             'lifespan!'.format(req.path))
+                        cache_response = json.loads(self.cache_processor()['get_from_cache'](self.cache_instance,
+                                                                                             'c_{}'.format(cache_key)))
+                        time_when_cache_was_set = (
+                            self.cache_processor()['get_from_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key)))
+                        cache_set_time = 0 if time_when_cache_was_set is None else int(time_when_cache_was_set)
+                        current_time = int(time.time())
+                        if time_when_cache_was_set is not None:
+                            cache_delta_for_route = current_time - cache_set_time
                         else:
-                            print(Fore.GREEN + 'Response is served from cache for route {}. DB service of PROTON stack '
-                                               'is spared!'.format(req.path) + Style.RESET_ALL)
-                            resp.body = cache_response
-                            req.path = '/fast-serve'
+                            cache_delta_for_route = 0
+
+                        if cache_response is not None:
+                            if cache_delta_for_route > self.CACHE_LIFESPAN:
+                                self.cache_processor()['delete_from_cache'](self.cache_instance, 'c_{}'.format(cache_key))
+                                self.cache_processor()['delete_from_cache'](self.cache_instance,
+                                                                            'c_setTime_{}'.format(cache_key))
+                                self.logger.info('Cache is deleted for route {}. It has exceeded its '
+                                                 'lifespan!'.format(req.path))
+                            else:
+                                print(Fore.GREEN + 'Response is served from cache for route {}. DB service of PROTON stack '
+                                                   'is spared!'.format(req.path) + Style.RESET_ALL)
+                                resp.body = cache_response
+                                req.path = '/fast-serve'
                     else:
                         # Go through conventional PROTON stack.
                         pass
@@ -101,24 +102,25 @@ class Iface_watch(CacheManager):
         else:
             if self.cache_existance:
                 try:
-                    route_path_contents = req.path.split('_')[1:]
-                    cache_key = '_'.join(route_path_contents)
+                    if req.method != 'POST':
+                        route_path_contents = req.path.split('_')[1:]
+                        cache_key = '_'.join(route_path_contents)
 
-                    for key, value in req.params.items():
-                        cache_key = cache_key + '_' + key + '_' + value
+                        for key, value in req.params.items():
+                            cache_key = cache_key + '_' + key + '_' + value
 
-                    cache_response = self.cache_processor()['get_from_cache'](self.cache_instance,
-                                                                              'c_{}'.format(cache_key))
-                    if cache_response is None or 'post' not in cache_key:
-                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_{}'.format(cache_key),
-                                                               json.dumps(resp.body))
-                        time_when_set = int(time.time())
-                        self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key),
-                                                               time_when_set)
-                        self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
-                        print(Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
-                                           'Subsequent requests for this route will be serviced by '
-                                           'cache.'.format(req.path) + Style.RESET_ALL)
+                        cache_response = self.cache_processor()['get_from_cache'](self.cache_instance,
+                                                                                  'c_{}'.format(cache_key))
+                        if cache_response is None:
+                            self.cache_processor()['set_to_cache'](self.cache_instance, 'c_{}'.format(cache_key),
+                                                                   json.dumps(resp.body))
+                            time_when_set = int(time.time())
+                            self.cache_processor()['set_to_cache'](self.cache_instance, 'c_setTime_{}'.format(cache_key),
+                                                                   time_when_set)
+                            self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
+                            print(Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
+                                               'Subsequent requests for this route will be serviced by '
+                                               'cache.'.format(req.path) + Style.RESET_ALL)
                     else:
                         # Cache is already set to this route or the request type is POST
                         pass
