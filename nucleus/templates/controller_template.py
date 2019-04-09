@@ -92,16 +92,15 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
         def proton_default_post(db_flavour, db_name, table_name, input_payload):
             try:
                 self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
-                return {
+                return json.dumps({
                     'Message': 'Insert operation to {} table in {} database under {} is successful'.format(table_name,
                                                                                                            db_name,
-                                                                                                           db_flavour)}
+                                                                                                           db_flavour)})
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
                                       'Details: {}'.format(str(e)))
                 raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while inserting data. ' \
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
-
 
         return {
             "default": {'get': proton_default_get, 'post': proton_default_post}, # Supported methods are 'get', 'post'.

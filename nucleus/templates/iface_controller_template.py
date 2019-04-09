@@ -43,7 +43,7 @@ class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{control
             # If you have newer methods available under Controller, reference that below as per your convenience.
             print(Fore.BLUE + 'Request for route {} is being serviced by conventional db service of '
                               'PROTON stack'.format(req) + Style.RESET_ALL)
-            response = json.dumps(self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](self.TARGET_DB))
+            response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](self.TARGET_DB)
             status = falcon.HTTP_200
         except Exception as e:
             response = json.dumps({'message': 'Server has failed to service this request.',
@@ -99,7 +99,7 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
 
             if validity:
                 post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['table_name'], post_payload['payload'])
-                response = json.dumps(post_response)
+                response = post_response
                 status = falcon.HTTP_201
             else:
                 response = json.dumps({

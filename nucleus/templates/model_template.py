@@ -81,7 +81,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     cursor.execute(query, binding_params)
                     results = cursor.fetchall()
                     results_df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
-                    return json.loads(results_df.to_json(orient='records'))
+                    return results_df.to_json(orient='records')
                 except Exception as e:
                     connection.rollback()
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
