@@ -137,8 +137,12 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     data_to_be_inserted = pd.DataFrame(input_payload)
                     connection = self.__alchemy_engine[db_flavour].connect()
                     with connection.begin() as transaction:
-                        data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                                if_exists='append')
+                        if db_flavour == 'sqlite':
+                            data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                    if_exists='append')
+                        else:
+                            data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                    if_exists='append', schema=db_name)
                         transaction.commit()
                     connection.close()
                 except Exception as e:
