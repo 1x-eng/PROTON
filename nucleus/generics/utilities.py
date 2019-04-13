@@ -33,7 +33,7 @@ class MyUtilities(object):
         proton_post_payload = copy.deepcopy(post_payload)
         if type(proton_post_payload) is not dict:
             return False
-        required_keys = ['db_flavour', 'db_name', 'table_name', 'payload']
+        required_keys = ['db_flavour', 'db_name', 'schema_name', 'table_name', 'payload']
         actual_keys = list(proton_post_payload.keys())
         if set(required_keys) == set(actual_keys):
             if MyUtilities.validate_list_of_dicts_consistency(proton_post_payload['payload']):

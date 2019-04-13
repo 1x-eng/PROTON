@@ -6,7 +6,7 @@ __version__ = "1.0"
 from contextlib import contextmanager
 from configuration import ProtonConfig
 from psycopg2.pool import SimpleConnectionPool
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, schema
 from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
 import sqlite3
@@ -22,7 +22,8 @@ class ConnectionManager(ConnectionDialects):
 
     __connection_dialects = ConnectionDialects.dialect_store()
     logger = LogUtilities().get_logger(log_file_name='connectionManager_logs',
-                                       log_file_path='{}/trace/connectionManager_logs.log'.format(ProtonConfig.ROOT_DIR))
+                                       log_file_path='{}/trace/connectionManager_logs.log'.format(
+                                           ProtonConfig.ROOT_DIR))
 
     def __init__(self):
         super(ConnectionManager, self).__init__()
@@ -52,8 +53,8 @@ class ConnectionManager(ConnectionDialects):
                                                                                connection_dialect['host'],
                                                                                connection_dialect['password'],
                                                                                connection_dialect['port'])
-        # connection_pool with 50 live connections. Tweak this according to convenience.
-        connection_pool = SimpleConnectionPool(1, 50, dsn=dsn)
+        # connection_pool with 100 live connections. Tweak this according to convenience.
+        connection_pool = SimpleConnectionPool(1, 100, dsn=dsn)
         return connection_pool
 
     @classmethod
@@ -71,6 +72,8 @@ class ConnectionManager(ConnectionDialects):
         Returns Engine required by SQL Alchemy ORM.
         :return:
         """
+        from sqlalchemy_utils import database_exists, create_database
+
         alchemy_connection_strings = {}
         alchemy_engine_store = {}
         with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
@@ -78,14 +81,27 @@ class ConnectionManager(ConnectionDialects):
             alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
 
         for dialect in cls.__connection_dialects:
-            alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}'.format(dialect,
-                                                                            cls.__connection_dialects[dialect]['user'],
-                                                                            cls.__connection_dialects[dialect]['password'],
-                                                                            cls.__connection_dialects[dialect]['host'],
-                                                                            cls.__connection_dialects[dialect]['port'])
+            alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}/{}'.format(dialect,
+                                                                               cls.__connection_dialects[dialect][
+                                                                                   'user'],
+                                                                               cls.__connection_dialects[dialect][
+                                                                                   'password'],
+                                                                               cls.__connection_dialects[dialect][
+                                                                                   'host'],
+                                                                               cls.__connection_dialects[dialect][
+                                                                                   'port'],
+                                                                               cls.__connection_dialects[dialect][
+                                                                                   'database']
+                                                                               )
 
         for connection in alchemy_connection_strings:
             alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection])
+
+            # create database if doesnt exist; as per definition in database.ini
+            if not database_exists(alchemy_engine_store[connection].url):
+                create_database(alchemy_engine_store[connection].url)
+                cls.logger.info('[connection_manager]: Proton has created target database in {} as defined in '
+                                'databaseConfig.ini'.format(connection))
 
         return alchemy_engine_store
 
@@ -108,11 +124,12 @@ class ConnectionManager(ConnectionDialects):
 
         except Exception as e:
             connection_manager.update({'postgresql': None})
-            cls.logger.exception('[connection_manager]: Postgres is either not installed or not configured on port provided'
-                                 'within ini file. PROTON will not include postgres. Stack trace to follow.')
+            cls.logger.exception(
+                '[connection_manager]: Postgres is either not installed or not configured on port provided'
+                'within ini file. PROTON will not include postgres. Stack trace to follow.')
             cls.logger.error(str(e))
 
-        #TODO: Add support for mysql and sqlserver
+        # TODO: Add support for mysql and sqlserver
         connection_manager.update({'mysql': None, 'sqlServer': None})
         return connection_manager
 
@@ -127,6 +144,25 @@ class ConnectionManager(ConnectionDialects):
         else:
             raise Exception('[ConnectionManager]: Connection Store does not contain an entry for postgresql.'
                             'Check/Debug __connection_store in ConnectionManager.')
+
+    @classmethod
+    def pg_schema_generator(cls, engine, schema):
+        try:
+            if not engine.dialect.has_schema(engine, schema):
+                engine.execute(schema.CreateSchema(schema))
+                cls.logger.info('[connection_manager]: Successfully generated schema: {} in respective database of '
+                                'postgresql'.format(schema))
+                return True
+            cls.logger.info('[connection_manager]: Schema: {} already exists in respective database of '
+                            'postgresql'.format(schema))
+            return True
+        except Exception as e:
+            cls.logger.exception(
+                '[connection_manager]: Error generating schema {} in Postgres. Stack trace to follow.'.format(schema))
+            cls.logger.error(str(e))
+
+
+
 
 
 if __name__ == '__main__':

@@ -89,11 +89,12 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
                 raise Fore.LIGHTRED_EX + '[{{ controllerName }}] - Exception while getting model data. ' \
                                          'Details: {}'.format(str(e)) + Style.RESET_ALL
 
-        def proton_default_post(db_flavour, db_name, table_name, input_payload):
+        def proton_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
             try:
-                self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
+                self.transaction['insert'](db_flavour, db_name, schema_name, table_name, input_payload)
                 return json.dumps({
-                    'Message': 'Insert operation to {} table in {} database under {} is successful'.format(table_name,
+                    'Message': 'Insert operation to {}.{} table in {} database under {} is successful'.format(schema_name,
+                                                                                                           table_name,
                                                                                                            db_name,
                                                                                                            db_flavour)})
             except Exception as e:

@@ -1,4 +1,5 @@
 sqlalchemy
+sqlalchemy-utils
 pyodbc
 psycopg2
 pygogo

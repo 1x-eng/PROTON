@@ -87,6 +87,7 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
             # {
             #     'db_flavour': '', # sqlite or postgres
             #     'db_name': '', # target db name, either it should already exist, if not, this will be created
+            #     'schema_name': 'public', # target schema name (in postgres). If not provided, will default to 'public'
             #     'table_name': '', # target table name.
             #     'payload': [{'column-1': 'value', 'column-2': 'value', 'column-3': 'value' },
             #                 {'column-1': 'value', 'column-2': 'value', 'column-3': 'value' }]
@@ -98,7 +99,7 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
             validity = MyUtilities.validate_proton_post_payload(post_payload)
 
             if validity:
-                post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['table_name'], post_payload['payload'])
+                post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['schema_name'], post_payload['table_name'], post_payload['payload'])
                 response = post_response
                 status = falcon.HTTP_201
             else:
@@ -107,6 +108,7 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{contro
                     'Sample Format': {
                                 'db_flavour': 'sqlite or postgres',
                                 'db_name': 'target db name, either it should already exist, if not, this will be created',
+                                'schema_name': 'target schema in specified database.',
                                 'table_name': 'target table name',
                                 'payload': [{'column-1': 'value', 'column-2': 'value', 'column-3': 'value' },
                                             {'column-1': 'value', 'column-2': 'value', 'column-3': 'value' }]

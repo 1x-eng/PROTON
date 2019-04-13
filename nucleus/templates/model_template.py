@@ -116,7 +116,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
-        def perform_insert_operation(db_flavour, db_name, table_name, input_payload):
+        def perform_insert_operation(db_flavour, db_name, schema_name, table_name, input_payload):
             """
             Closure for Insert Operation!
             This is also a proxy for CREATE operation. If table does not exist, SQL Alchemy will create one.
@@ -141,8 +141,14 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                             data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                     if_exists='append')
                         else:
-                            data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                                    if_exists='append', schema=db_name)
+                            #check if schema exists & create one if not.
+                            schema_status = self.pg_schema_generator(self.__alchemy_engine[db_flavour], schema_name)
+                            if schema_status:
+                                data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                        if_exists='append', schema=schema_name)
+                            else:
+                                self.logger.info('[{{modelName]: Schema specified not found. Insert operation could '
+                                                 'not be completed. Check connectionManager logs for stack trace.')
                         transaction.commit()
                     connection.close()
                 except Exception as e:
