@@ -146,19 +146,19 @@ class ConnectionManager(ConnectionDialects):
                             'Check/Debug __connection_store in ConnectionManager.')
 
     @classmethod
-    def pg_schema_generator(cls, engine, schema):
+    def pg_schema_generator(cls, engine_copy, schema_name):
         try:
-            if not engine.dialect.has_schema(engine, schema):
-                engine.execute(schema.CreateSchema(schema))
+            if not engine_copy.dialect.has_schema(engine_copy, schema_name):
+                engine_copy.execute(schema.CreateSchema(schema_name))
                 cls.logger.info('[connection_manager]: Successfully generated schema: {} in respective database of '
-                                'postgresql'.format(schema))
+                                'postgresql'.format(schema_name))
                 return True
             cls.logger.info('[connection_manager]: Schema: {} already exists in respective database of '
-                            'postgresql'.format(schema))
+                            'postgresql'.format(schema_name))
             return True
         except Exception as e:
             cls.logger.exception(
-                '[connection_manager]: Error generating schema {} in Postgres. Stack trace to follow.'.format(schema))
+                '[connection_manager]: Error generating schema {} in Postgres. Stack trace to follow.'.format(schema_name))
             cls.logger.error(str(e))
 
 

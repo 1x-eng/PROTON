@@ -147,7 +147,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                         if_exists='append', schema=schema_name)
                             else:
-                                self.logger.info('[{{modelName]: Schema specified not found. Insert operation could '
+                                self.logger.info('[{{modelName}}]: Schema specified not found. Insert operation could '
                                                  'not be completed. Check connectionManager logs for stack trace.')
                         transaction.commit()
                     connection.close()
