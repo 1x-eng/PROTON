@@ -10,16 +10,20 @@ from sqlalchemy import create_engine, schema
 from sqlalchemy.pool import QueuePool
 from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
+from nucleus.generics.singleton import Singleton
 import sqlite3
 
 
-class ConnectionManager(ConnectionDialects):
+class ConnectionManager(ConnectionDialects, metaclass=Singleton):
     """
     ConnectionManager manages connectivity pool for all databases supported by PROTON.
 
     Based on C3 MRO, ConnectionManager will have access to all parents of ConnectionDialects.
     ConnectionDialects inherit from LogUtilities and ProtonGen. So, those methods can be used in ConnectionManager.
     """
+
+    alchemy_connection_strings = {}
+    alchemy_engine_store = {}
 
     __connection_dialects = ConnectionDialects.dialect_store()
     logger = LogUtilities().get_logger(log_file_name='connectionManager_logs',
@@ -73,54 +77,59 @@ class ConnectionManager(ConnectionDialects):
         Returns Engine required by SQL Alchemy ORM.
         :return:
         """
-        import logging
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]',
-            handlers=[
-                logging.FileHandler('{}/trace/sqlalchemy_engine.log'.format(ProtonConfig.ROOT_DIR))
-            ]
-        )
-        logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
+        if not bool(cls.alchemy_engine_store):
+            import logging
+            logging.basicConfig(
+                level=logging.DEBUG,
+                format='[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]',
+                handlers=[
+                    logging.FileHandler('{}/trace/sqlalchemy_engine.log'.format(ProtonConfig.ROOT_DIR))
+                ]
+            )
+            logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
 
-        cls.logger.info('[connection_manager]: alchemy engine class method is invoked.')
+            cls.logger.info('[connection_manager]: alchemy engine class method is invoked for first time. '
+                            'Alchemy engine will be initialized for all PROTON supported engines.')
 
-        from sqlalchemy_utils import database_exists, create_database
+            from sqlalchemy_utils import database_exists, create_database
 
-        alchemy_connection_strings = {}
-        alchemy_engine_store = {}
-        with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
-            sqlite_dialect = file.read().replace('\n', '')
-            alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
 
-        for dialect in cls.__connection_dialects:
-            alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}/{}'.format(dialect,
-                                                                               cls.__connection_dialects[dialect][
-                                                                                   'user'],
-                                                                               cls.__connection_dialects[dialect][
-                                                                                   'password'],
-                                                                               cls.__connection_dialects[dialect][
-                                                                                   'host'],
-                                                                               cls.__connection_dialects[dialect][
-                                                                                   'port'],
-                                                                               cls.__connection_dialects[dialect][
-                                                                                   'database']
-                                                                               )
+            with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
+                sqlite_dialect = file.read().replace('\n', '')
+                cls.alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
 
-        for connection in alchemy_connection_strings:
-            alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection],
-                                                             pool_size=25, max_overflow=5,
-                                                             pool_timeout=30, pool_recycle=3600,
-                                                             poolclass=QueuePool
-                                                             )
+            for dialect in cls.__connection_dialects:
+                cls.alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}/{}'.format(dialect,
+                                                                                   cls.__connection_dialects[dialect][
+                                                                                       'user'],
+                                                                                   cls.__connection_dialects[dialect][
+                                                                                       'password'],
+                                                                                   cls.__connection_dialects[dialect][
+                                                                                       'host'],
+                                                                                   cls.__connection_dialects[dialect][
+                                                                                       'port'],
+                                                                                   cls.__connection_dialects[dialect][
+                                                                                       'database']
+                                                                                   )
 
-            # create database if doesnt exist; as per definition in database.ini
-            if not database_exists(alchemy_engine_store[connection].url):
-                create_database(alchemy_engine_store[connection].url)
-                cls.logger.info('[connection_manager]: Proton has created target database in {} as defined in '
-                                'databaseConfig.ini'.format(connection))
+            for connection in cls.alchemy_connection_strings:
+                cls.alchemy_engine_store[connection] = create_engine(cls.alchemy_connection_strings[connection],
+                                                                 pool_size=25, max_overflow=5,
+                                                                 pool_timeout=30, pool_recycle=3600,
+                                                                 poolclass=QueuePool
+                                                                 )
 
-        return alchemy_engine_store
+                # create database if doesnt exist; as per definition in database.ini
+                if not database_exists(cls.alchemy_engine_store[connection].url):
+                    create_database(cls.alchemy_engine_store[connection].url)
+                    cls.logger.info('[connection_manager]: Proton has created target database in {} as defined in '
+                                    'databaseConfig.ini'.format(connection))
+
+        else:
+            cls.logger.info('[connection_manager]: alchemy engine class method is invoked subsequently. '
+                            'Alchemy engine previously initialized for all PROTON supported engines is returned.')
+
+        return cls.alchemy_engine_store
 
     @classmethod
     def connection_store(cls):
