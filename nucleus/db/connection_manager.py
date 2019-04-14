@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from configuration import ProtonConfig
 from psycopg2.pool import SimpleConnectionPool
 from sqlalchemy import create_engine, schema
+from sqlalchemy.pool import QueuePool
 from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
 import sqlite3
@@ -72,6 +73,18 @@ class ConnectionManager(ConnectionDialects):
         Returns Engine required by SQL Alchemy ORM.
         :return:
         """
+        import logging
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]',
+            handlers=[
+                logging.FileHandler('{}/trace/sqlalchemy_engine.log'.format(ProtonConfig.ROOT_DIR))
+            ]
+        )
+        logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
+
+        cls.logger.info('[connection_manager]: alchemy engine class method is invoked.')
+
         from sqlalchemy_utils import database_exists, create_database
 
         alchemy_connection_strings = {}
@@ -95,7 +108,11 @@ class ConnectionManager(ConnectionDialects):
                                                                                )
 
         for connection in alchemy_connection_strings:
-            alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection])
+            alchemy_engine_store[connection] = create_engine(alchemy_connection_strings[connection],
+                                                             pool_size=25, max_overflow=5,
+                                                             pool_timeout=30, pool_recycle=3600,
+                                                             poolclass=QueuePool
+                                                             )
 
             # create database if doesnt exist; as per definition in database.ini
             if not database_exists(alchemy_engine_store[connection].url):
