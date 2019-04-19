@@ -181,9 +181,17 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
                         'Stack trace to follow'.format(url))
                     self.logger.exception(str(e))
 
-            concurrent_results = self.concurrency_wrapper('http', get_call_resolver, url_list)
-            return json.dumps(concurrent_results)
+            default_concurrency_response = {'message': 'This is default response for Multi-threaded'
+                                                       ' HTTP operation using PROTON. The following'
+                                                       'result is a combination from multiple'
+                                                       ' GET requests to a FAKE online REST API. '
+                                                       'Do not try to make sense of the response; but,'
+                                                       'you can use this concurrency feature in '
+                                                       'PROTON with minimum effort. Hurrayyy!!!'}
 
+            concurrent_results = self.concurrency_wrapper('http', get_call_resolver, url_list)
+            default_concurrency_response.update(concurrent_results)
+            return json.dumps(default_concurrency_response)
 
         return {
             "default": {'get': proton_default_get, 'post': proton_default_post}, # Supported methods are 'get', 'post'.
