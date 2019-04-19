@@ -1,3 +1,6 @@
+#####################
+# PROTON requirements
+#####################
 sqlalchemy
 sqlalchemy-utils
 pyodbc
@@ -14,3 +17,7 @@ redis
 gunicorn
 colorama
 apispec
+requests
+#########################
+# END PROTON requirements
+#########################

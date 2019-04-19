@@ -47,8 +47,8 @@ class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{control
 
     def __init__(self):
         super(Ictrl_get_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
-        self.logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
-                                      log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='{{ controller.micName }}',
+                                      log_file_path='{}/trace/{{ controller.micName }}.log'.format(self.ROOT_DIR))
 
     def on_get(self, req, resp):
         """

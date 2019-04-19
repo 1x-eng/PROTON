@@ -28,16 +28,17 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to initialize proton stack, execute gunicorn server at desired port and write swagger specs!
 
-## usage <Generate MIC  Stack>: ./protongen.sh -p <micName> -d <targetDbTable> -p <port>
+## usage <Generate MIC  Stack>: ./protongen.sh -p <micName> -d <targetDbTable> -p <port> -t <numberOfThreads>
 ## usage <Execute Proton without instantiating MIC Stack> ./protongen.sh -s
 
-while getopts c:n:p:d:s: option
+while getopts c:n:p:t:d:s: option
 do
  case "${option}"
  in
  c) config=${OPTARG};;
  n) micName=${OPTARG};;
  p) port=${OPTARG};;
+ t) numberOfThreads=${OPTARG};;
  d) targetDbTable=${OPTARG};;
  s) forceStart=${OPTARG};;
  esac
@@ -101,14 +102,30 @@ then
             echo -e "\e[33m micName not provided!, ProtonGen will try to invoke Gunicorn with available routes @ port 3000! \e[0m"
             echo -e "-------------------------------------------------------------------------------------------------------------------"
             pkill gunicorn
-            gunicorn -b localhost:3000 main:app --reload
+            if [[ -z $numberOfThreads ]]
+            then
+                gunicorn -b localhost:3000 main:app --reload
+            else
+                echo -e "-------------------------------------------------------------------------------------------------------------------"
+                echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
+                echo -e "-------------------------------------------------------------------------------------------------------------------"
+                gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+            fi
          else
             echo -e "-------------------------------------------------------------------------------------------------------------------"
             echo -e "\e[33m Starting PROTON with updated Interface Layer on existing iFace Stack! \e[0m"
             echo -e "-------------------------------------------------------------------------------------------------------------------"
             python protongen.py --forceStart y
             pkill gunicorn
-            gunicorn -b localhost:3000 main:app --reload
+            if [[ -z $numberOfThreads ]]
+            then
+                gunicorn -b localhost:3000 main:app --reload
+            else
+                echo -e "-------------------------------------------------------------------------------------------------------------------"
+                echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
+                echo -e "-------------------------------------------------------------------------------------------------------------------"
+                gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+            fi
         fi
     else
         echo -e "-------------------------------------------------------------------------------------------------------------------"
@@ -159,7 +176,15 @@ else
         mkdir -p trace
         python protongen.py --mic_name $micName --port $port
         pkill gunicorn
-        gunicorn -b localhost:$port main:app --reload
+        if [[ -z $numberOfThreads ]]
+        then
+            gunicorn -b localhost:3000 main:app --reload
+        else
+            echo -e "-------------------------------------------------------------------------------------------------------------------"
+            echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
+            echo -e "-------------------------------------------------------------------------------------------------------------------"
+            gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+        fi
 
     else
 

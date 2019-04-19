@@ -27,6 +27,11 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
+from gevent import monkey
+monkey.patch_socket()
+monkey.patch_ssl()
+# ensure monkey patching for gevents to work their charm.
+# remember - monkey patching is a necessary evil here.
 import gevent
 import time
 from gevent import monkey
@@ -48,11 +53,6 @@ class Parallel_Programming(object):
         :return: a greenlet.
         """
 
-        # ensure monkey patching for gevents to work their charm.
-        # remember - monkey patching is a necessary evil here.
-        monkey.patch_socket()
-        monkey.patch_ssl()
-
         return gevent.spawn(associated_function, *args)
 
     def __execute_multiple_threads(self, greenlets_pool, time_since_pool = None):
@@ -66,11 +66,98 @@ class Parallel_Programming(object):
 
         start_time = time.time()
         gevent.joinall(greenlets_pool)
-        greenlets_value_pool = map(lambda g: g.value, greenlets_pool)
         end_time = time.time()
+        results = list(map(lambda g: g.value, greenlets_pool))
 
         return {
             'execution_time': end_time - start_time,
             'execution_time_since_pool_gen': None if time_since_pool is None else end_time - time_since_pool,
-            'results_pool': greenlets_value_pool
+            'thread_pool_results': results
         }
+
+    #########################################################################################################
+    # Multi Threading Wrapper. [PS: Use Multi Threading only on IO heavy ops; Not CPU intense]
+    #########################################################################################################
+    def concurrency_wrapper(self, type, target_function, *args):
+        """
+         Multi-threading functionality available should this MIC stack need it.
+         self.generate_multiple_threads: Method to generate multiple threads and create a thread pool.
+         self.execute_multiple_threads: Method to concurrently execute threads in a threadpool.
+
+        :param type: Valid Options: 'http', 'non-http',
+        :param target_function: Target function that threads should execute (This function should be in scope)
+        :param args: Arguments expected by target function. If type=='http', *args[0] must be a list of URLS.
+        :return: Results respective to type of operation specified.
+        """
+        from configuration import ProtonConfig
+        from nucleus.generics.log_utilities import LogUtilities
+
+        logger = LogUtilities().get_logger(log_file_name='parallel_programming_logs',
+                                           log_file_path='{}/trace/parallel_programming_logs.log'.format(
+                                               ProtonConfig.ROOT_DIR))
+
+        def __http_calls_resolver(target_function, urls, args):
+            """
+
+            :param target_function: Target function that threads should execute (This function should be in scope)
+            :param urls:[List] A list of urls to perform HTTP Operation.
+            :param args:[List] Arguments expected by target function.
+            :return:[List] Thread Pool Results
+            """
+            # TODO: Validate input parameters to contain expected; fail gracefully if not.
+
+            try:
+                # Step 1: Create number of threads required.
+                threads_pool = list(map(lambda url: self.__generate_multiple_threads(target_function, url, args), urls))
+                time_after_pool = time.time()
+                logger.info('[Parallel Programming] - Threads pool created with {} threads to resolve {} '
+                            'method concurrently'.format(len(urls), target_function))
+
+                # Step 2: Execute threads concurrently.
+                thread_pool_results = self.__execute_multiple_threads(threads_pool, time_after_pool)
+                logger.info(
+                    '[Parallel Programming] - {} threads executed concurrently. Operation was completed in '
+                    '{} seconds and took {} seconds since thread pool was '
+                    'spawned.'.format(len(urls), thread_pool_results['execution_time'],
+                                      thread_pool_results['execution_time_since_pool_gen']))
+
+                return thread_pool_results
+
+            except Exception as e:
+                logger.exception(
+                    '[Parallel Programming] - Error completing HTTP call resolver. Stack trace to follow')
+                logger.exception(str(e))
+
+        def __non_http_resolver(target_function, args):
+            """
+
+            :param target_function: Target function that threads should execute (This function should be in scope)
+            :param args:[List] Arguments expected by target function.
+            :return:[List] Thread Pool Results.
+            """
+
+            try:
+                # Step 1: Create number of threads required.
+                threads_pool = list(map(lambda arg: self.__generate_multiple_threads(target_function, arg), args))
+                time_after_pool = time.time()
+                logger.info('[Parallel Programming] - Threads pool created with {} threads to resolve {} '
+                            'method concurrently'.format(len(args), target_function))
+
+                # Step 2: Execute threads concurrently.
+                thread_pool_results = self.__execute_multiple_threads(threads_pool, time_after_pool)
+                logger.info(
+                    '[Parallel Programming] - {} threads executed concurrently. Operation was completed in '
+                    '{} seconds and took {} seconds since thread pool was '
+                    'spawned.'.format(len(args), thread_pool_results['execution_time'],
+                                      thread_pool_results['execution_time_since_pool_gen']))
+
+                return thread_pool_results
+
+            except Exception as e:
+                logger.exception(
+                    '[Parallel Programming] - Error completing Non-HTTP resolver. Stack trace to follow')
+                logger.exception(str(e))
+
+        __map_type = {'http': __http_calls_resolver, 'non-http': __non_http_resolver}
+
+        return __map_type[type](target_function, args)
