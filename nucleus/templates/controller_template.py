@@ -31,20 +31,72 @@ import os
 import json
 import numpy as np
 import pandas as pd
+import requests
+import time
 from colorama import Fore
 from colorama import Style
 from configuration import ProtonConfig
+from nucleus.generics.parallel_programming import Parallel_Programming
 from mic.models.{{ modelName }}.model_{{ modelName }} import Model_{{modelName}}
 
-class Ctrl_{{ controllerName }}(Model_{{ modelName }}):
+class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming):
 
     def __init__(self):
         super( Ctrl_{{ controllerName }}, self ).__init__()
-        self.target_db_table = self.__targetTable()
+        self.controller_processor = self.__processor
         self.logger = self.get_logger(log_file_name='{{ controllerName }}',
                                       log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
-        self.controller_processor = self.__processor
+        self.requests_session = requests.Session()
+        self.requests_session.trust_env = False
+        self.target_db_table = self.__targetTable()
 
+        # Multi-threading available should this MIC stack need it.
+        self.generate_multiple_threads = self.__generate_multiple_threads
+        self.execute_multiple_threads = self.__execute_multiple_threads
+
+    #########################################################################################################
+    # Multi Threading Example Implementation. [PS: Use Multi Threading only on IO heavy ops; Not CPU intense]
+    #########################################################################################################
+    def example_concurrent_get_calls(self):
+
+        url1 = 'https://jsonplaceholder.typicode.com/comments'
+        url2 = 'https://jsonplaceholder.typicode.com/albums'
+        url3 = 'https://jsonplaceholder.typicode.com/users'
+        url4 = 'https://jsonplaceholder.typicode.com/posts'
+
+        url_list = [url1, url2, url3, url4]
+
+        # Define function that a thread must execute.
+        def get_call_resolver(url):
+            try:
+                get_results = self.requests_session.get(url)
+                return get_results.json()
+            except Exception as e:
+                self.logger.exception(
+                    '[{{ controllerName }}] - Error making a requests GET call to {}. Stack trace to '
+                    'follow'.format(url))
+                self.logger.exception(str(e))
+
+        try:
+            # Step 1: Create number of threads required.
+            threads_pool = map(lambda url: self.generate_multiple_threads(get_call_resolver, url), url_list)
+            time_after_pool = time.time()
+            self.logger.info('[{{ controllerName }}] - Threads pool created with {} threads to resolve {} '
+                             'method concurrently'.format(len(url_list), 'get_call_resolver'))
+
+            # Step 2: Execute threads concurrently.
+            thread_pool_results = self.execute_multiple_threads(threads_pool, time_after_pool)
+            self.logger.info('[{{ controllerName }}] - {} threads executed concurrently. Operation was completed in '
+                             '{} seconds and took {} seconds since thread pool was '
+                             'spawned.'.format(len(url_list),thread_pool_results['execution_time'],
+                                               thread_pool_results['execution_time_since_pool_gen']))
+
+            return thread_pool_results
+
+        except Exception as e:
+            self.logger.exception('[{{ controllerName }}] - Error occurred during parallel execution. Stack trace'
+                                  ' to follow.')
+            self.logger.exception(str(e))
 
 
     def __targetTable(self):
