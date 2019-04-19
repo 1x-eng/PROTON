@@ -31,7 +31,6 @@ import os
 import json
 import numpy as np
 import pandas as pd
-import requests
 import time
 from colorama import Fore
 from colorama import Style
@@ -40,14 +39,16 @@ from nucleus.generics.parallel_programming import Parallel_Programming
 from nucleus.generics.contained_requests import ContainedRequests
 from mic.models.{{ modelName }}.model_{{ modelName }} import Model_{{modelName}}
 
-class Ctrl_{{ controllerName }}(Model_{{ modelName }}, ContainedRequests, Parallel_Programming):
+class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, ContainedRequests):
 
     def __init__(self):
         super( Ctrl_{{ controllerName }}, self ).__init__()
+
         self.controller_processor = self.__processor
         self.logger = self.get_logger(log_file_name='{{ controllerName }}',
                                       log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
         self.target_db_table = self.__targetTable()
+
 
     def __targetTable(self):
         target_table_for_mic = ''
@@ -67,6 +68,23 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, ContainedRequests, Parall
         All methods in controller will have access to getters and transaction methods from its respective models.
 
         Here, developer could choose to process data obtained from DB and prepare it(serialize it) for transmission.
+
+        ###########################
+        # Method Definition Index
+        ###########################
+        # Get   : self.getter["get_model_data"](db_flavour, example_sql, binding_params)
+        # Insert: self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
+        # Update: self.transaction['update'](db_flavour, sql, binding_params)
+        # Delete: self.transaction['update'](db_flavour, sql, binding_params)
+        # To learn more, do dir(self.getter) and dir(self.transaction).
+
+        ####################################
+        # Concurrent Method Definition Index
+        ####################################
+        # HTTP Operations    : self.concurrency_wrapper('http', target_function, arguments) # PS: arguments[0] must be
+        # a list of URLS / Endpoints.
+        # Non HTTP Operations: self.concurrency_wrapper('non-http', target_function, arguments)
+        # To learn moer, do dir(self.concurrency_wrapper)
 
         :return: serialized response ready for transmission to Interface.
         """
@@ -96,17 +114,6 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, ContainedRequests, Parall
                 binding_params = {}
 
             try:
-                # to use getter methods, use self.getter; to use transaction methods, use self.transaction.
-                # to learn more, do dir(self.getter) and dir(self.transaction).
-
-                ###########################
-                # Method Definition Index
-                ###########################
-
-                # Insert: self.transaction['insert'](db_flavour, db_name, table_name, input_payload)
-                # Update: self.transaction['update'](db_flavour, sql, binding_params)
-                # Delete: self.transaction['update'](db_flavour, sql, binding_params)
-
                 results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
                 return results
             except Exception as e:
@@ -147,12 +154,20 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, ContainedRequests, Parall
             url_list = [url1, url2, url3, url4]
 
             # Target function for a thread to execute.
-            def get_call_resolver(url):
+            def get_call_resolver(url, *args):
+                """
+
+                :param url: Target URL to perform HTTP GET on.
+                :param args: This is a mandatory param. If the function needs any other args, that will flow in through
+                this tuple.
+                :return: GET resolution.
+                """
                 try:
 
                     # PS: Do not import requests globally for this controller. There is a lot happening in
                     # terms of Greenlets and Inheritance before we get to this method. For all multi-threaded
-                    # ops, use similar format to get best results.
+                    # ops, use similar format (`from nucleus.generics.contained_requests import ContainedRequests`)
+                    # to get best results.
 
                     requests_session = self.session_factory()
 
@@ -172,7 +187,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, ContainedRequests, Parall
 
         return {
             "default": {'get': proton_default_get, 'post': proton_default_post}, # Supported methods are 'get', 'post'.
-            "default_concurrency": {'get': proton_multi_threaded_http_op}
+            "default_http_concurrency": {'get': proton_multi_threaded_http_op}
             # Similar to above, add more processor methods according to developer's convenience.
         }
 

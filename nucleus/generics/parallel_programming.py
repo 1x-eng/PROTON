@@ -34,9 +34,8 @@ monkey.patch_ssl()
 # remember - monkey patching is a necessary evil here.
 import gevent
 import time
-from gevent import monkey
 
-class Parallel_Programming(object):
+class Parallel_Programming:
 
     def __init__(self):
         super(Parallel_Programming, self).__init__()
@@ -96,19 +95,24 @@ class Parallel_Programming(object):
                                            log_file_path='{}/trace/parallel_programming_logs.log'.format(
                                                ProtonConfig.ROOT_DIR))
 
-        def __http_calls_resolver(target_function, urls, args):
+        def __http_calls_resolver(target_function, args):
             """
 
             :param target_function: Target function that threads should execute (This function should be in scope)
-            :param urls:[List] A list of urls to perform HTTP Operation.
-            :param args:[List] Arguments expected by target function.
+            :param args:[List] Arguments expected by target function. For HTTP Calls, args[0] = A list of urls to
+            perform HTTP Operation.
             :return:[List] Thread Pool Results
             """
             # TODO: Validate input parameters to contain expected; fail gracefully if not.
 
             try:
+                _args = list(args)
+                urls = _args[0]
+                _args.pop(0)
+
                 # Step 1: Create number of threads required.
-                threads_pool = list(map(lambda url: self.__generate_multiple_threads(target_function, url, args), urls))
+                threads_pool = list(map(lambda url: self.__generate_multiple_threads(target_function, url, _args),
+                                        urls))
                 time_after_pool = time.time()
                 logger.info('[Parallel Programming] - Threads pool created with {} threads to resolve {} '
                             'method concurrently'.format(len(urls), target_function))
