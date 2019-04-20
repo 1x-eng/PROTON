@@ -36,8 +36,8 @@ class MetaGen(CacheManager):
 
     def __init__(self):
         super(MetaGen, self).__init__()
-        self.logger = self.get_logger(log_file_name='metaGen_logs',
-                                      log_file_path='{}/trace/metaGen_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='meta_gen_logs',
+                                      log_file_path='{}/trace/meta_gen_logs.log'.format(self.ROOT_DIR))
         self.__models_root = '{}/mic/models'.format(self.ROOT_DIR)
         self.__controllers_root = '{}/mic/controllers'.format(self.ROOT_DIR)
         self.__main_executable = '{}/main.py'.format(self.ROOT_DIR)

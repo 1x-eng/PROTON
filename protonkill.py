@@ -44,8 +44,8 @@ class ProtonKill(CacheManager):
     """
     def __init__(self):
         super(ProtonKill, self).__init__()
-        self.logger = self.get_logger(log_file_name='protonKill_logs',
-                                      log_file_path='{}/trace/protonKill_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='proton_kill_logs',
+                                      log_file_path='{}/trace/proton_kill_logs.log'.format(self.ROOT_DIR))
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument('--micNameToKill')
         self.proton_args = self.parser.parse_args()

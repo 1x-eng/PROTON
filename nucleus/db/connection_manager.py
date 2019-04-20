@@ -52,8 +52,8 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
     __pg_connection_pool = None
     __sqlite_connection = {}
 
-    logger = LogUtilities().get_logger(log_file_name='connectionManager_logs',
-                                       log_file_path='{}/trace/connectionManager_logs.log'.format(
+    logger = LogUtilities().get_logger(log_file_name='connection_manager_logs',
+                                       log_file_path='{}/trace/connection_manager_logs.log'.format(
                                            ProtonConfig.ROOT_DIR))
 
     def __init__(self):

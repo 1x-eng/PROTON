@@ -43,8 +43,8 @@ class CacheManager(ProtonConfig, LogUtilities):
         'port': 6379,
         'db': 0
     }
-    logger = LogUtilities().get_logger(log_file_name='cacheManager_logs',
-                                       log_file_path='{}/trace/cacheManager_logs.log'.format(ProtonConfig.ROOT_DIR))
+    logger = LogUtilities().get_logger(log_file_name='cache_manager_logs',
+                                       log_file_path='{}/trace/cache_manager_logs.log'.format(ProtonConfig.ROOT_DIR))
 
 
     @classmethod

@@ -40,8 +40,8 @@ class ProtonGen(MetaGen, ExecGen):
 
     def __init__(self):
         super(ProtonGen, self).__init__()
-        self.logger = self.get_logger(log_file_name='protonGen_logs',
-                                      log_file_path='{}/trace/protonGen_logs.log'.format(self.ROOT_DIR))
+        self.logger = self.get_logger(log_file_name='proton_gen_logs',
+                                      log_file_path='{}/trace/proton_gen_logs.log'.format(self.ROOT_DIR))
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument('--mic_name', help='MIC stands for Model Interface & Controller. Proton spins up'
                                                    'the MIC stack for you; when provided with a name.')

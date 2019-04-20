@@ -46,8 +46,8 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     NOTE: ConnectionDialect is reliant on databaseConfig.ini to establish valid connection. Please ensure
     you don't delete any existing config parameters.
     """
-    logger = LogUtilities().get_logger(log_file_name='connectionDialects_logs',
-                                  log_file_path='{}/trace/connectionDialects_logs.log'.format(ProtonConfig.ROOT_DIR))
+    logger = LogUtilities().get_logger(log_file_name='connection_dialects_logs',
+                                  log_file_path='{}/trace/connection_dialects_logs.log'.format(ProtonConfig.ROOT_DIR))
 
     @classmethod
     def dialect_store(cls):
