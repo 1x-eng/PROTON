@@ -28,7 +28,6 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-
 class IFetch(object):
 
     def __init__(self):
@@ -36,5 +35,4 @@ class IFetch(object):
 
     def extract_controller_methods(self):
         controller_methods = []
-        
         return controller_methods

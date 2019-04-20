@@ -22,13 +22,13 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from jinja2 import Environment, FileSystemLoader
+from nucleus.db.cache_manager import CacheManager
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
-
-from jinja2 import Environment, FileSystemLoader
-from nucleus.db.cache_manager import CacheManager
 
 
 class ExecGen(CacheManager):
@@ -79,7 +79,8 @@ class ExecGen(CacheManager):
                                                               'exposedRESTmethods': method[list(method.keys())[0]]})
 
                         for method_type in method[list(method.keys())[0]]:
-                            method_controller_name = 'Ictrl_{}_{}_{}'.format(method_type, mic_stacks[mic]['micName'], list(method.keys())[0])
+                            method_controller_name = 'Ictrl_{}_{}_{}'.format(method_type, mic_stacks[mic]['micName'],
+                                                                             list(method.keys())[0])
                             iface_controllers.append({'fileName': 'iface_ctrl_' + mic_stacks[mic]['micName'],
                                                       'controllerName': method_controller_name})
                             routes.append({'controllerName': method_controller_name,

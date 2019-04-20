@@ -22,6 +22,17 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import json
+import falcon
+from apispec import APISpec
+from falcon_apispec import FalconPlugin
+from falcon_cors import CORS
+from configuration import ProtonConfig
+from mic.iface.middlewares.iface_watch import Iface_watch
+{% for ifaceController in ifaceControllers %}
+from mic.iface.controllers.{{ ifaceController.fileName }} import {{ ifaceController.controllerName }}
+{% endfor %}
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
@@ -31,17 +42,6 @@ __version__ = "1.0"
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
 
-import json
-import falcon
-from apispec import APISpec
-from falcon_apispec import FalconPlugin
-from falcon_cors import CORS
-from configuration import ProtonConfig
-from mic.iface.middlewares.iface_watch import Iface_watch
-
-{% for ifaceController in ifaceControllers %}
-from mic.iface.controllers.{{ ifaceController.fileName }} import {{ ifaceController.controllerName }}
-{% endfor %}
 
 class DefaultRouteHandler(object):
     """
@@ -60,6 +60,7 @@ class DefaultRouteHandler(object):
         {% endfor %}
         resp.body = json.dumps(response)
         resp.status = falcon.HTTP_200
+
 
 class FastServe(object):
     """
@@ -105,5 +106,5 @@ spec.add_path(resource= rc_{{ route.controllerName }})
 with open('{}/mic/iface/openApi/specs.json'.format(ProtonConfig().ROOT_DIR), 'w+') as sjf:
     sjf.write(json.dumps(spec.to_dict()))
 
-with open('{}/mic/iface/openApi/specs.yaml'.format(ProtonConfig().ROOT_DIR), 'w+') as syf :
+with open('{}/mic/iface/openApi/specs.yaml'.format(ProtonConfig().ROOT_DIR), 'w+') as syf:
     syf.write(spec.to_yaml())

@@ -22,14 +22,15 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+{% for controller in controllers %}
+from mic.controllers.{{ controller.fileName }} import {{ controller.controllerName }}
+{% endfor %}
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
-{% for controller in controllers %}
-from mic.controllers.{{ controller.fileName }} import {{ controller.controllerName }}
-{% endfor %}
 
 class IFetch(object):
 
@@ -45,8 +46,7 @@ class IFetch(object):
                 key: list({{controller.controllerName}}().controller_processor()[key].keys())
             })
 
-        controller_methods.append({'{{ controller.micName }}' :
-            {
+        controller_methods.append({'{{ controller.micName }}': {
                 'fileName': '{{ controller.fileName }}',
                 'controllerName': '{{ controller.controllerName }}',
                 'micName': '{{ controller.micName }}',

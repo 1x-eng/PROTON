@@ -22,11 +22,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 from contextlib import contextmanager
 from configuration import ProtonConfig
 from psycopg2.pool import SimpleConnectionPool
@@ -36,6 +31,11 @@ from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
 from nucleus.generics.singleton import Singleton
 import sqlite3
+
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
 
 
 class ConnectionManager(ConnectionDialects, metaclass=Singleton):

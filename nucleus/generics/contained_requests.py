@@ -27,6 +27,7 @@ __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
+
 class ContainedRequests:
 
     @staticmethod

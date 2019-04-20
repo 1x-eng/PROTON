@@ -22,14 +22,14 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from configparser import ConfigParser
+from configuration import ProtonConfig
+from nucleus.generics.log_utilities import LogUtilities
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
-
-from configparser import ConfigParser
-from configuration import ProtonConfig
-from nucleus.generics.log_utilities import LogUtilities
 
 
 class ConnectionDialects(ProtonConfig, LogUtilities):
@@ -47,7 +47,8 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     you don't delete any existing config parameters.
     """
     logger = LogUtilities().get_logger(log_file_name='connection_dialects_logs',
-                                  log_file_path='{}/trace/connection_dialects_logs.log'.format(ProtonConfig.ROOT_DIR))
+                                       log_file_path='{}/trace/connection_dialects_logs.log'.format(
+                                                                                             ProtonConfig.ROOT_DIR))
 
     @classmethod
     def dialect_store(cls):
@@ -77,7 +78,7 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
                     db_dialect[section][param[0]] = param[1]
             else:
                 cls.logger.exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
-                                 'file.'.format(section))
+                                     'file.'.format(section))
                 raise Exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                 'file.'.format(section))
             return db_dialect

@@ -22,11 +22,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 import json
 import pandas as pd
 from colorama import Fore
@@ -34,6 +29,11 @@ from colorama import Style
 from jinjasql import JinjaSql
 from nucleus.db.connection_manager import ConnectionManager
 from nucleus.generics.utilities import MyUtilities
+
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
 
 
 class Model_{{ modelName }}(ConnectionManager, MyUtilities):
@@ -47,7 +47,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         self.__db_flavour_to_cursor_generator_map = {
             'sqlite': self.sqlite_connection_generator,
             'postgresql': self.pg_cursor_generator,
-            #TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
+            # TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
         }
         self.__j_sql = JinjaSql()
         self.__cursor_engine = self.connection_store()
@@ -109,7 +109,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 except Exception as e:
                     connection.rollback()
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
-                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
                 finally:
                     connection.close()
@@ -124,13 +124,12 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
                 except Exception as e:
                     self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
-                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. ' \
+                    print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
-
 
         return {
             "get_model_data": get_data_for_model,
-            # For other getters, create respective closures and extend this dictionary accordingly as per your convenience.
+            # For other getters, create respective closures and extend this dictionary accordingly to your convenience.
         }
 
     def __transaction(self):
@@ -163,13 +162,13 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     with connection.begin() as transaction:
                         if db_flavour == 'sqlite':
                             data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                                    if_exists='append')
+                                                       if_exists='append')
                         else:
-                            #check if schema exists & create one if not.
+                            # check if schema exists & create one if not.
                             schema_status = self.pg_schema_generator(self.__alchemy_engine[db_flavour], schema_name)
                             if schema_status:
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                                        if_exists='append', schema=schema_name)
+                                                           if_exists='append', schema=schema_name)
                             else:
                                 self.logger.info('[{{modelName}}]: Schema specified not found. Insert operation could '
                                                  'not be completed. Check connectionManager logs for stack trace.')
@@ -184,11 +183,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     if connection:
                         connection.close()
             else:
-                self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
-                      'dictionaries is consistent in terms of `keys`.')
-                print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input list of '
-                      'dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
-
+                self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
+                                      'of dictionaries is consistent in terms of `keys`.')
+                print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
+                      'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
 
         def perform_update_or_delete_operation(sql, binding_params):
             """
@@ -221,11 +219,9 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     cursor.commit()
                     return True
             except Exception as e:
-                self.logger.exception('[{{modelName}} -  Exception during UPDATE operation. Details: {}]'.format(str(e)))
+                self.logger.exception('[{{modelName}} - Exception during UPDATE operation. Details: {}]'.format(str(e)))
                 print(Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
-                                          '{}]'.format(str(e)) + Style.RESET_ALL)
-
-
+                      '{}]'.format(str(e)) + Style.RESET_ALL)
 
         return {
             'insert': perform_insert_operation,

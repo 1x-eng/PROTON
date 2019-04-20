@@ -22,11 +22,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 import falcon
 import json
 from colorama import Fore
@@ -37,13 +32,19 @@ from nucleus.generics.utilities import MyUtilities
 from mic.controllers.{{ controller.fileName }} import {{ controller.controllerName }}
 {% endfor %}
 
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
+
 {% for controller in iCtrlHash %}
 
 {% for methodName in controller.exposedRESTmethods %}
 
 {% if methodName == 'get' %}
 
-class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
+
+class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}}({{controller.controllerName}}, ProtonConfig):
 
     def __init__(self):
         super(Ictrl_get_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
@@ -83,7 +84,7 @@ class Ictrl_get_{{controller.micName}}_{{controller.iControllerName}} ({{control
 {% elif methodName == 'post' %}
 
 
-class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}} ({{controller.controllerName}}, ProtonConfig):
+class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}({{controller.controllerName}}, ProtonConfig):
 
     def __init__(self):
         super(Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()

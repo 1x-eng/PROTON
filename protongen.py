@@ -24,16 +24,16 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 import os
 import argparse
 from colorama import Fore, Style
 from nucleus.execgen import ExecGen
 from nucleus.metagen import MetaGen
+
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
 
 
 class ProtonGen(MetaGen, ExecGen):
@@ -44,7 +44,7 @@ class ProtonGen(MetaGen, ExecGen):
                                       log_file_path='{}/trace/proton_gen_logs.log'.format(self.ROOT_DIR))
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument('--mic_name', help='MIC stands for Model Interface & Controller. Proton spins up'
-                                                   'the MIC stack for you; when provided with a name.')
+                                 'the MIC stack for you; when provided with a name.')
         self.parser.add_argument('--port', help='Port for PROTON to launch the interface onto. Defaults to 3000.')
         self.parser.add_argument('--forceStart', help='Do not create a new MIC Stack; but, executes PROTON stack '
                                                       'by re-generating main with existing iFace!')
@@ -68,20 +68,20 @@ class ProtonGen(MetaGen, ExecGen):
 
         try:
 
-            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name )) as f:
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name)) as f:
                 target_table_for_mic = f.read().replace('\n', '')
 
             self.new_mic(mic_name=mic_name)
             self.generate_executor(port=port)
-            print(Fore.GREEN + 'PROTON initialized for {}. Starting service @ {} & target table for this MIC stack is - '
-                               '{}'.format(mic_name, port, target_table_for_mic) + Style.RESET_ALL)
-            self.logger.info('[ProtonGen] Proton initialized for mic_name - {} @ port {} & target table for this MIC stack is -'
-                             '{}'.format(mic_name, port, target_table_for_mic))
+            print(Fore.GREEN + 'PROTON initialized for {}. Starting service @ {} & target table for this MIC '
+                  'stack is - {}'.format(mic_name, port, target_table_for_mic) + Style.RESET_ALL)
+            self.logger.info('[ProtonGen] Proton initialized for mic_name - {} @ port {} & target table for '
+                             'this MIC stack is -{}'.format(mic_name, port, target_table_for_mic))
         except Exception as e:
             self.logger.exception('[ProtonGen] Error during protonGen initialization for mic_name '
                                   '{}. Details: {}'.format(mic_name, str(e)))
             raise (Fore.LIGHTRED_EX + '[ProtonGen] Error during protonGen initialization for mic_name '
-                                  '{}. Details: {}'.format(mic_name, str(e)) + Style.RESET_ALL)
+                   '{}. Details: {}'.format(mic_name, str(e)) + Style.RESET_ALL)
 
 if __name__ == '__main__':
     pg = ProtonGen()

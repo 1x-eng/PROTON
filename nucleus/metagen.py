@@ -22,14 +22,14 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
+from jinja2 import Environment, FileSystemLoader
+from nucleus.db.cache_manager import CacheManager
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
-
-import os
-from jinja2 import Environment, FileSystemLoader
-from nucleus.db.cache_manager import CacheManager
 
 
 class MetaGen(CacheManager):
@@ -61,7 +61,7 @@ class MetaGen(CacheManager):
         from datetime import datetime
 
         try:
-            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name )) as f:
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name)) as f:
                 target_table_for_mic = f.read().replace('\n', '')
 
             engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
@@ -99,7 +99,7 @@ class MetaGen(CacheManager):
             if not os.path.exists(new_model):
                 os.makedirs(new_model)
                 open(new_model + '/__init__.py', 'w+').close()
-                #open(new_model + '/model_{}.py'.format(mic_name), 'w+').close()
+                # open(new_model + '/model_{}.py'.format(mic_name), 'w+').close()
                 with open(new_model + '/model_{}.py'.format(mic_name), 'w+') as mf:
                     mf.write(self.__models_template.render(modelName=mic_name))
                 # Generate Controllers for newly created model.

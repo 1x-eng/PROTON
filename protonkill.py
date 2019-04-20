@@ -24,16 +24,16 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 import argparse
 import os
 import shutil
 from colorama import Fore, Style
 from nucleus.db.cache_manager import CacheManager
+
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
 
 
 class ProtonKill(CacheManager):

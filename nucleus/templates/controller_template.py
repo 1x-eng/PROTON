@@ -22,11 +22,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
-__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
-__license__ = "BSD 3-Clause License"
-__version__ = "1.0"
-
 import os
 import json
 import numpy as np
@@ -39,6 +34,12 @@ from nucleus.generics.parallel_programming import Parallel_Programming
 from nucleus.generics.contained_requests import ContainedRequests
 from mic.models.{{ modelName }}.model_{{ modelName }} import Model_{{modelName}}
 
+__author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
+__copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
+__license__ = "BSD 3-Clause License"
+__version__ = "1.0"
+
+
 class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, ContainedRequests):
 
     def __init__(self):
@@ -48,7 +49,6 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
         self.logger = self.get_logger(log_file_name='{{ controllerName }}',
                                       log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
         self.target_db_table = self.__targetTable()
-
 
     def __targetTable(self):
         target_table_for_mic = ''
@@ -84,7 +84,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
         # HTTP Operations    : self.concurrency_wrapper('http', target_function, arguments) # PS: arguments[0] must be
         # a list of URLS / Endpoints.
         # Non HTTP Operations: self.concurrency_wrapper('non-http', target_function, arguments)
-        # To learn moer, do dir(self.concurrency_wrapper)
+        # To learn more, do dir(self.concurrency_wrapper)
 
         :return: serialized response ready for transmission to Interface.
         """
@@ -126,10 +126,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
             try:
                 self.transaction['insert'](db_flavour, db_name, schema_name, table_name, input_payload)
                 return json.dumps({
-                    'Message': 'Insert operation to {}.{} table in {} database under {} is successful'.format(schema_name,
-                                                                                                           table_name,
-                                                                                                           db_name,
-                                                                                                           db_flavour)})
+                    'Message': 'Insert operation to {}.{} table in {} database under {} '
+                    'is successful'.format(schema_name, table_name, db_name, db_flavour)})
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
                                       'Details: {}'.format(str(e)))
@@ -194,10 +192,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
             return json.dumps(default_concurrency_response)
 
         return {
-            "default": {'get': proton_default_get, 'post': proton_default_post}, # Supported methods are 'get', 'post'.
+            "default": {'get': proton_default_get, 'post': proton_default_post},  # Supported methods are 'get', 'post'.
             "default_http_concurrency": {'get': proton_multi_threaded_http_op}
             # Similar to above, add more processor methods according to developer's convenience.
         }
-
-
 

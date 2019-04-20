@@ -22,17 +22,18 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
+
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
-import os
 
 class ProtonConfig(object):
 
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     CACHE_LIFESPAN = 86400  # equivalent of 1 day = 86400 s.
-    TARGET_DB = 'sqlite' # Other supported DB include postgresql, mysql, sqlserver.
+    TARGET_DB = 'sqlite'  # Other supported DB include postgresql, mysql, sqlserver.
 
     # If you change TARGET_DB to other provider, ensure databaseConfig.ini is updated accordingly.
