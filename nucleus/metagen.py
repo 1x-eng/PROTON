@@ -67,6 +67,30 @@ class MetaGen(CacheManager):
             engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
             metadata = MetaData(bind=engine)
             if ProtonConfig.TARGET_DB == 'sqlite':
+
+                # Create User & Login registry if not exists.
+                if not engine.dialect.has_table(engine, 'PROTON_user_registry'):
+                    # Create default PROTON user registry.
+                    Table('PROTON_user_registry', metadata,
+                          Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
+                          Column('first_name', String, nullable=False),
+                          Column('last_name', String, nullable=False),
+                          Column('email', String, nullable=False),
+                          Column('creation_date_time', DateTime, nullable=False))
+                    metadata.create_all()
+
+                if not engine.dialect.has_table(engine, 'PROTON_login_registry'):
+                    # Create default PROTON user registry.
+                    Table('PROTON_login_registry', metadata,
+                          Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
+                          Column('user_registry_id', foreign_key='PROTON_user_registry.id', ondelete='CASCADE',
+                                 nullable=False),
+                          Column('user_name', String, nullable=False),
+                          Column('password', String, nullable=False),
+                          Column('last_login_date_time', DateTime, nullable=True))
+                    metadata.create_all()
+
+                # Create default table if not exists.
                 target_table = 'PROTON_default'
                 if not engine.dialect.has_table(engine, target_table):
                     # Create a table with the appropriate columns

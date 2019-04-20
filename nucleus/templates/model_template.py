@@ -183,10 +183,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     if connection:
                         connection.close()
             else:
-                self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
-                                      'of dictionaries is consistent in terms of `keys`.')
-                print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
-                      'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
+                        self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
+                                              'of dictionaries is consistent in terms of `keys`.')
+                        print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
+                              'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
 
         def perform_update_or_delete_operation(sql, binding_params):
             """
