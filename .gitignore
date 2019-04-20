@@ -115,3 +115,6 @@ dmypy.json
 # PROTON
 /proton_vars
 /proton_vars/*
+
+# VS Code
+/.vscode
