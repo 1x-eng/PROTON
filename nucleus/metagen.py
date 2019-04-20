@@ -57,7 +57,7 @@ class MetaGen(CacheManager):
         # Generate default PROTON db in desired db_flavour if it doesnt already exist.
         from configuration import ProtonConfig
         from nucleus.db.connection_manager import ConnectionManager
-        from sqlalchemy import MetaData, Table, Column, Integer, DateTime, String
+        from sqlalchemy import MetaData, Table, Column, Integer, DateTime, String, ForeignKey
         from datetime import datetime
 
         try:
@@ -83,8 +83,8 @@ class MetaGen(CacheManager):
                     # Create default PROTON user registry.
                     Table('PROTON_login_registry', metadata,
                           Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
-                          Column('user_registry_id', foreign_key='PROTON_user_registry.id', ondelete='CASCADE',
-                                 nullable=False),
+                          Column('user_registry_id', Integer, ForeignKey('PROTON_user_registry.id', onupdate="CASCADE",
+                                                                         ondelete="CASCADE"), nullable=False),
                           Column('user_name', String, nullable=False),
                           Column('password', String, nullable=False),
                           Column('last_login_date_time', DateTime, nullable=True))

@@ -41,6 +41,7 @@ class ProtonSignup(ConnectionManager):
 
     def __init__(self):
         super(ProtonSignup, self).__init__()
+        self.__alchemy_engine = self.alchemy_engine()
         self.logger = self.get_logger(log_file_name='iam_signup_logs.log',
                                       log_file_path='{}/trace/iam_signup_logs.log'.format(self.ROOT_DIR))
 
@@ -54,7 +55,7 @@ class ProtonSignup(ConnectionManager):
         :param schema_name: Name of target schema. Default: iam
         :param table_name: Name of target table. Default: PROTON_user_registry
         :param input_payload: Paylod of user details.
-        :return: A boolean.
+        :return: A dictionary containig signup status and message.
         """
 
         def validate_signup_payload(payload):
@@ -67,7 +68,7 @@ class ProtonSignup(ConnectionManager):
                 :return: Boolean
                 """
                 validity_store = []
-                for k,v in payload:
+                for k,v in payload.items():
                     if len(str(v)) > 0:
                         validity_store.append(True)
                     else:
@@ -102,19 +103,38 @@ class ProtonSignup(ConnectionManager):
                 }
 
                 connection = self.__alchemy_engine[db_flavour].connect()
-                metadata = MetaData(self.__alchemy_engine[db_flavour])
+                metadata = MetaData(self.__alchemy_engine[db_flavour], reflect=True)
                 table = metadata.tables[table_name]
 
                 with connection.begin() as transaction:
                     if db_flavour == 'sqlite':
 
                         # Check if user already exists:
-                        query_pre_existance = select([table.id]).where(table.c.email == signup_payload['email'])
-                        pre_existance_details = connection.execcute(query_pre_existance)
-                        print(pre_existance_details)
+                        query_pre_existance = select([table.c.id]).where(table.c.email == signup_payload['email'])
+                        pre_existance_details = (connection.execute(query_pre_existance)).fetchall()
 
-                        # signup_payload.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                        #                       if_exists='append')
+                        if len(pre_existance_details) == 0:
+                            df_signup_payload = pd.DataFrame(signup_payload, index=[0])
+                            df_signup_payload.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                     if_exists='append')
+
+                            query_user_registry_id = select([table.c.id]).where(table.c.email == signup_payload['email'])
+                            user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
+                            login_payload.update({'user_registry_id': user_registry_id})
+
+                            df_login_payload = pd.DataFrame(login_payload, index=[0])
+                            df_login_payload.to_sql('PROTON_login_registry', self.__alchemy_engine[db_flavour],
+                                                    index=False, if_exists='append')
+                            return {
+                                'status': True,
+                                'message': 'Signup is successful! Please try login.'
+                            }
+                        else:
+                            return {
+                                'status': False,
+                                'message': 'User with email {} already exist. Please try '
+                                           'login.'.format(signup_payload['email'])
+                            }
 
                     else:
                         # check if schema exists & create one if not.
@@ -144,13 +164,15 @@ class IctrlProtonSignup(ProtonSignup):
         super(IctrlProtonSignup, self).__init__()
 
     def on_get(self, req, resp):
-        status = falcon.HTTP_SERVICE_UNAVAILABLE
+
+        resp.status = falcon.HTTP_SERVICE_UNAVAILABLE
 
     def on_post(self, req, resp):
         post_payload = json.loads(req.stream.read())
-        self.signup(post_payload['db_flavour'], post_payload['signup_payload'])
-        response = json.dumps({'test': True})
-        status = falcon.HTTP_201
+        results = self.signup(post_payload['db_flavour'], post_payload['signup_payload'])
+
+        resp.body = json.dumps(results)
+        resp.status = falcon.HTTP_201
 
 
 

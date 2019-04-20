@@ -66,6 +66,7 @@ class DefaultRouteHandler(object):
             'message': 'PROTON is successfully initialized!',
             'availableRoutes': []
         }
+        response['availableRoutes'].append('/signup')
         {%for route in routes %}
         response['availableRoutes'].append('/{{ route.routeName }}')
         {% endfor %}

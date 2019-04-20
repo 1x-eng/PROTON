@@ -64,6 +64,7 @@ class DefaultRouteHandler(object):
             'message': 'PROTON is successfully initialized!',
             'availableRoutes': []
         }
+        response['availableRoutes'].append('/signup')
         
         resp.body = json.dumps(response)
         resp.status = falcon.HTTP_200
