@@ -34,7 +34,6 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import MetaData
 from sqlalchemy import select
 from sqlalchemy import Table
-from sqlalchemy.engine.reflection import Inspector
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -122,9 +121,9 @@ class ProtonSignup(ConnectionManager):
                         if len(pre_existance_details) == 0:
                             # check is user with similar user_name already exist.
                             login_table = metadata.tables['PROTON_login_registry']
-                            query_login_registry = select([login_table.id]).where(login_table.c.user_name ==
-                                                                                  login_payload['user_name'])
-                            login_registry_id = (connection.execute(query_login_registry)).fetchall()[0]
+                            query_login_registry = select([login_table.c.id]).where(login_table.c.user_name ==
+                                                                                    login_payload['user_name'])
+                            login_registry_id = (connection.execute(query_login_registry)).fetchall()
 
                             if len(login_registry_id) == 0:
                                 df_signup_payload = pd.DataFrame(signup_payload, index=[0])
@@ -139,6 +138,7 @@ class ProtonSignup(ConnectionManager):
                                 df_login_payload = pd.DataFrame(login_payload, index=[0])
                                 df_login_payload.to_sql('PROTON_login_registry', self.__alchemy_engine[db_flavour],
                                                         index=False, if_exists='append')
+                                transaction.commit()
                                 return {
                                     'status': True,
                                     'message': 'Signup is successful! Please try login.'
@@ -164,19 +164,29 @@ class ProtonSignup(ConnectionManager):
                         if schema_status:
 
                             metadata = MetaData(self.__alchemy_engine[db_flavour], reflect=True, schema=schema_name)
-                            inspector = Inspector.from_engine(self.__alchemy_engine[db_flavour])
-
+                            metadata.reflect(self.__alchemy_engine[db_flavour])
                             df_signup_payload = pd.DataFrame(signup_payload, index=[0])
 
-                            if 'PROTON_user_registry' in inspector.get_table_names():
+                            user_registry_existence_flag = False
+                            login_registry_existence_flag = False
 
+                            for table in metadata.tables.values():
+                                if table.name == 'PROTON_user_registry':
+                                    user_registry_existence_flag = True
+                                elif table.name == 'PROTON_login_registry':
+                                    login_registry_existence_flag = True
+                                else:
+                                    pass
+
+                            if user_registry_existence_flag:
                                 user_registry_table = Table('PROTON_user_registry', metadata)
                                 query_user_registry_id = select([user_registry_table.c.id]).where(
                                     user_registry_table.c.email == signup_payload['email'])
-                                user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
-                                if len(user_registry_id == 0):
-                                    df_signup_payload.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
-                                                             if_exists='append', schema=schema_name)
+                                user_registry_id = (connection.execute(query_user_registry_id)).fetchall()
+
+                                if len(user_registry_id) == 0:
+                                    df_signup_payload.to_sql(table_name, self.__alchemy_engine[db_flavour],
+                                                             index=False, if_exists='append', schema=schema_name)
                                     user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
                                     login_payload.update({'user_registry_id': user_registry_id})
                                 else:
@@ -187,7 +197,6 @@ class ProtonSignup(ConnectionManager):
                                     }
 
                             else:
-
                                 Table('PROTON_user_registry', metadata,
                                       Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                                       Column('first_name', String, nullable=False),
@@ -196,15 +205,16 @@ class ProtonSignup(ConnectionManager):
                                       Column('creation_date_time', DateTime, nullable=False))
                                 metadata.create_all()
 
+                                df_signup_payload.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
+                                                         if_exists='append', schema=schema_name)
+
                                 user_registry_table = Table('PROTON_user_registry', metadata)
                                 query_user_registry_id = select([user_registry_table.c.id]).where(
                                     user_registry_table.c.email == signup_payload['email'])
                                 user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
                                 login_payload.update({'user_registry_id': user_registry_id})
 
-                            if 'PROTON_login_registry' in inspector.get_table_names():
-                                pass
-                            else:
+                            if not login_registry_existence_flag:
                                 Table('PROTON_login_registry', metadata,
                                       Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                                       Column('user_registry_id', Integer,
@@ -218,7 +228,7 @@ class ProtonSignup(ConnectionManager):
                             login_registry_table = Table('PROTON_login_registry', metadata)
                             query_login_registry = select([login_registry_table.c.id]).where(
                                 login_registry_table.c.user_name == login_payload['user_name'])
-                            login_registry_id = (connection.execute(query_login_registry)).fetchall()[0]
+                            login_registry_id = (connection.execute(query_login_registry)).fetchall()
 
                             if len(login_registry_id) == 0:
                                 df_login_payload = pd.DataFrame(login_payload, index=[0])
@@ -228,15 +238,17 @@ class ProtonSignup(ConnectionManager):
                                 # Another user with similar user_name exists. Invalidate signup and ask user to use
                                 # another user name
                                 user_registry_table = Table('PROTON_user_registry', metadata)
-                                user_registry_table.delete().where(user_registry_table.c.user_name ==
-                                                                   signup_payload['email'])
-
+                                delete_instance = user_registry_table.delete().where(user_registry_table.c.email ==
+                                                                                     signup_payload['email'])
+                                delete_instance.execute()
+                                transaction.commit()
                                 return {
                                     'status': False,
                                     'message': 'Username {} already exist. Please try '
                                                'with another unique username.'.format(login_payload['user_name'])
                                 }
 
+                            transaction.commit()
                             return {
                                 'status': True,
                                 'message': 'Signup is successful! Please try login.'
@@ -246,17 +258,26 @@ class ProtonSignup(ConnectionManager):
                             self.logger.info('[Signup Controller]: Schema specified not found. Insert operation could '
                                              'not be completed. Check connectionManager logs for stack trace.')
 
-                    transaction.commit()
-                connection.close()
-                return True
+                            return {
+                                'status': False,
+                                'message': 'Signup is unsuccessful due to incomplete database.'
+                            }
 
             except Exception as e:
                 self.logger.exception('[Signup Controller]: SignUP payload is incomplete.')
                 print(Fore.LIGHTRED_EX + '[Signup Controller]: To perform successful INSERT operation, ensure the input'
                                          ' payload/signup payload is complete.' + Style.RESET_ALL)
-                return False
-        return False
-
+                return {
+                    'status': False,
+                    'message': 'Signup is unsuccessful due to server side error.'
+                }
+            finally:
+                if connection:
+                    connection.close()
+        return {
+            'status': False,
+            'message': 'Signup is unsuccessful. Input payload / Signup payload is incomplete.'
+        }
 
 class IctrlProtonSignup(ProtonSignup):
 
