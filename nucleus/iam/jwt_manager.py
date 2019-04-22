@@ -22,7 +22,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
-import json
 import jwt
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
@@ -44,9 +43,13 @@ class JWTManager:
         """
         # In proton remote deployment, this must be k8s secret.
         from configuration import ProtonConfig
+        from nucleus.iam.password_manager import PasswordManager
+        pm = PasswordManager()
 
         with open('{}/nucleus/iam/secrets/PROTON_JWT_SECRET.txt'.format(ProtonConfig.ROOT_DIR), 'r') as proton_secret:
             app_secret = proton_secret.read().replace('\n', '')
+            encoded_app_secret = pm.hash_password(app_secret)
+        
         token = jwt.encode({'encode_value': encode_value, 'exp': datetime.datetime.utcnow() +
-                                                                 datetime.timedelta(minutes=30)}, app_secret)
+                                                                 datetime.timedelta(minutes=30)}, encoded_app_secret)
         return token.decode('UTF-8')
