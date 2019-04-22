@@ -19,6 +19,7 @@ gunicorn
 colorama
 apispec
 requests
+PyJWT
 #########################
 # END PROTON requirements
 #########################

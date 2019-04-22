@@ -25,6 +25,7 @@ import falcon
 import json
 from datetime import datetime
 from nucleus.db.connection_manager import ConnectionManager
+from nucleus.iam.jwt_manager import JWTManager
 from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import MetaData
 from sqlalchemy import select
@@ -36,7 +37,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class ProtonLogin(ConnectionManager, PasswordManager):
+class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
 
     def __init__(self):
         super(ProtonLogin, self).__init__()
@@ -125,10 +126,11 @@ class ProtonLogin(ConnectionManager, PasswordManager):
                             else:
                                 self.logger.info('[ProtonLogin]:[SQLite] Valid login. Proton login successful for '
                                                  '{}'.format(login_payload['user_name']))
+                                token = self.generate_token(login_payload['user_name'])
                                 return {
                                     'status': True,
                                     'message': 'Successful Login',
-                                    'token': None  # TODO: generate JWT Token here.
+                                    'token': token
                                 }
                     elif db_flavour == 'postgresql':
                         schema_status = self.__alchemy_engine[db_flavour].dialect.has_schema(
@@ -171,10 +173,11 @@ class ProtonLogin(ConnectionManager, PasswordManager):
                                     self.logger.info(
                                         '[ProtonLogin]:[Postgresql] Valid login. Proton login successful for '
                                         '{}'.format(login_payload['user_name']))
+                                    token = self.generate_token(login_payload['user_name'])
                                     return {
                                         'status': True,
                                         'message': 'Successful Login',
-                                        'token': None  # TODO: generate JWT Token here.
+                                        'token': token
                                     }
                         else:
                             self.logger.info('[ProtonLogin]:[Postgresql] {} schema does not exist. Proton denies login '
