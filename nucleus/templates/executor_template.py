@@ -30,6 +30,7 @@ from falcon_cors import CORS
 from falcon_auth import FalconAuthMiddleware, BasicAuthBackend
 from configuration import ProtonConfig
 from mic.iface.middlewares.iface_watch import Iface_watch
+from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
 {% for ifaceController in ifaceControllers %}
 from mic.iface.controllers.{{ ifaceController.fileName }} import {{ ifaceController.controllerName }}
@@ -66,6 +67,7 @@ class DefaultRouteHandler(object):
             'message': 'PROTON is successfully initialized!',
             'availableRoutes': []
         }
+        response['availableRoutes'].append('/login')
         response['availableRoutes'].append('/signup')
         {%for route in routes %}
         response['availableRoutes'].append('/{{ route.routeName }}')
@@ -91,6 +93,7 @@ app = falcon.API(middleware=[auth_middleware, cors.middleware, Iface_watch()])
 
 app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())
+app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
 
 {% for route in routes %}
