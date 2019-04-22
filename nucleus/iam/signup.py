@@ -28,6 +28,7 @@ from colorama import Fore
 from colorama import Style
 from datetime import datetime
 from nucleus.db.connection_manager import ConnectionManager
+from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import Column
 from sqlalchemy import DateTime, Integer, String
 from sqlalchemy import ForeignKey
@@ -41,7 +42,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class ProtonSignup(ConnectionManager):
+class ProtonSignup(ConnectionManager, PasswordManager):
 
     def __init__(self):
         super(ProtonSignup, self).__init__()
@@ -103,7 +104,7 @@ class ProtonSignup(ConnectionManager):
 
                 login_payload = {
                     'user_name': input_payload['user_name'],
-                    'password': input_payload['password']
+                    'password': self.hash_password(input_payload['password'])
                 }
 
                 connection = self.__alchemy_engine[db_flavour].connect()

@@ -25,10 +25,10 @@ import falcon
 import json
 from datetime import datetime
 from nucleus.db.connection_manager import ConnectionManager
+from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import MetaData
 from sqlalchemy import select
 from sqlalchemy import Table
-from sqlalchemy.sql import exists
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -36,7 +36,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class ProtonLogin(ConnectionManager):
+class ProtonLogin(ConnectionManager, PasswordManager):
 
     def __init__(self):
         super(ProtonLogin, self).__init__()
@@ -109,11 +109,12 @@ class ProtonLogin(ConnectionManager):
                             }
                         else:
                             # Check if password matches.
-                            query_password_match = select([table.c.id]).where(
-                                table.c.password == login_payload['password'])
-                            password_results = (connection.execute(query_password_match)).fetchall()
+                            query_stored_password = select([table.c.password]).where(
+                                table.c.user_name == login_payload['user_name'])
+                            stored_password = (connection.execute(query_stored_password)).fetchall()[0][0]
+                            password_match = self.verify_password(stored_password, login_payload['password'])
 
-                            if len(password_results) == 0:
+                            if not password_match:
                                 self.logger.info('[ProtonLogin]:[SQLite] Invalid password. Proton denies login for '
                                                  '{}'.format(login_payload['user_name']))
                                 return {
@@ -152,11 +153,12 @@ class ProtonLogin(ConnectionManager):
                                 }
                             else:
                                 # Check if password matches.
-                                query_password_match = select([login_registry_table.c.id]).where(
-                                    login_registry_table.c.password == login_payload['password'])
-                                password_match_results = (connection.execute(query_password_match)).fetchall()
+                                query_stored_password = select([login_registry_table.c.password]).where(
+                                    login_registry_table.c.user_name == login_payload['user_name'])
+                                stored_password = (connection.execute(query_stored_password)).fetchall()[0][0]
+                                password_match = self.verify_password(stored_password, login_payload['password'])
 
-                                if len(password_match_results) == 0:
+                                if not password_match:
                                     self.logger.info(
                                         '[ProtonLogin]:[Postgresql] Invalid password. Proton denies login for '
                                         '{}'.format(login_payload['user_name']))
