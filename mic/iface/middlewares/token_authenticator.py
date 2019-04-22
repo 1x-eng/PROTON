@@ -22,30 +22,29 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import falcon
-from nucleus.db.connection_manager import ConnectionManager
+from configuration import ProtonConfig
+from nucleus.iam.jwt_manager import JWTManager
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
-# Step 1: Create a method to action login
-# Step 2: Create a method to create JWT on successful login
-# Step 3: Create a decorator for protecting routes.
 
-class Signup
-
-class Login(ConnectionManager):
+class TokenAuthenticator(ProtonConfig, JWTManager):
 
     def __init__(self):
-        super(Login, self).__init()
+        super(TokenAuthenticator, self).__init__()
+        self.logger = self.get_logger(log_file_name='token_authenticator',
+                                      log_file_path='{}/trace/token_authenticator.log'.format(self.ROOT_DIR))
 
-        logger = self.get_logger(log_file_name='login_logs',
-                                 log_file_path='{}/trace/login_logs.log'.format(self.ROOT_DIR))
+    def process_request(self, req, resp):
+        """
 
-
-    def on_get(self, req, resp):
-
+        :param req:
+        :param resp:
+        :return:
+        """
+        # TODO: Validate JWT Token and on success, bind to req object.
 
     

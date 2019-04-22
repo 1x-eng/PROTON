@@ -27,7 +27,7 @@ import falcon
 from apispec import APISpec
 from falcon_apispec import FalconPlugin
 from falcon_cors import CORS
-from falcon_auth import FalconAuthMiddleware, BasicAuthBackend
+from falcon_auth import FalconAuthMiddleware, BasicAuthBackend, JWTAuthBackend
 from configuration import ProtonConfig
 from mic.iface.middlewares.iface_watch import Iface_watch
 from nucleus.iam.login import IctrlProtonLogin
@@ -48,7 +48,8 @@ def user_loader(username, password):
     print('username: {}, password: {}'.format(username, password))
     return {'username': username}
 
-auth_backend = BasicAuthBackend(user_loader)
+#basic_auth_backend = BasicAuthBackend(user_loader)
+jwt_auth_backend = JWTAuthBackend(user_loader, )
 auth_middleware = FalconAuthMiddleware(auth_backend,
                                        exempt_routes=['/exempt'], exempt_methods=['HEAD'])
 

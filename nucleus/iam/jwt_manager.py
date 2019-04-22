@@ -23,6 +23,7 @@
 
 import datetime
 import jwt
+from functools import wraps
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -32,24 +33,58 @@ __version__ = "1.0"
 
 class JWTManager:
 
-    def __init__(self):
-        super(JWTManager, self).__init__()
+    from configuration import ProtonConfig
+    from nucleus.iam.password_manager import PasswordManager
+    pm = PasswordManager()
 
-    def generate_token(self, encode_value):
+    # In proton remote deployment, this must be k8s secret.
+    with open('{}/nucleus/iam/secrets/PROTON_JWT_SECRET.txt'.format(ProtonConfig.ROOT_DIR), 'r') as proton_secret:
+        app_secret = proton_secret.read().replace('\n', '')
+        encoded_app_secret = pm.hash_password(app_secret)
+
+    @classmethod
+    def generate_token(cls, encode_value):
         """
         Generate JWT Token which PROTON auth middleware will use to authenticate all protected routes.
         :param encode_value: value that must be considered for JWT encode
         :return: JWT Token
         """
-        # In proton remote deployment, this must be k8s secret.
-        from configuration import ProtonConfig
-        from nucleus.iam.password_manager import PasswordManager
-        pm = PasswordManager()
 
-        with open('{}/nucleus/iam/secrets/PROTON_JWT_SECRET.txt'.format(ProtonConfig.ROOT_DIR), 'r') as proton_secret:
-            app_secret = proton_secret.read().replace('\n', '')
-            encoded_app_secret = pm.hash_password(app_secret)
-        
         token = jwt.encode({'encode_value': encode_value, 'exp': datetime.datetime.utcnow() +
-                                                                 datetime.timedelta(minutes=30)}, encoded_app_secret)
+                                                                 datetime.timedelta(minutes=30)
+                            }, cls.encoded_app_secret)
         return token.decode('UTF-8')
+
+    @classmethod
+    def authenticate(cls, jwt_token):
+        """
+        Validates if JWT Token still stands True.
+        :param jwt_token: JWT Token issued by generate_token method
+        :return: A dict containing status and payload on success
+        """
+
+        if jwt_token:
+            try:
+                payload = jwt.decode(jwt_token, cls.encoded_app_secret)
+            except (jwt.DecodeError, jwt.ExpiredSignatureError):
+                return {
+                    'status': False,
+                    'message': 'Token invalid.',
+                    'encode_value': None
+                }
+            return {
+                'status': True,
+                'message': 'Token valid',
+                'encode_value': payload['encode_value']
+            }
+
+
+    # def token_required(self, f):
+    #     """
+    #     Decorator to mandate JWT Token in request headers.
+    #     :param f: target function that needs to be decorated.
+    #     :return: decorated function.
+    #     """
+    #     @wraps(f)
+    #     def decorated(*args, **kwargs):
+
