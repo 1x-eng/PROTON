@@ -23,7 +23,6 @@
 
 import datetime
 import jwt
-from functools import wraps
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -34,8 +33,13 @@ __version__ = "1.0"
 class JWTManager:
 
     from configuration import ProtonConfig
+    from nucleus.generics.log_utilities import LogUtilities
     from nucleus.iam.password_manager import PasswordManager
+    lg = LogUtilities()
     pm = PasswordManager()
+
+    logger = lg.get_logger(log_file_name='token_authenticator',
+                           log_file_path='{}/trace/token_authenticator.log'.format(ProtonConfig.ROOT_DIR))
 
     # In proton remote deployment, this must be k8s secret.
     with open('{}/nucleus/iam/secrets/PROTON_JWT_SECRET.txt'.format(ProtonConfig.ROOT_DIR), 'r') as proton_secret:
@@ -52,7 +56,7 @@ class JWTManager:
 
         token = jwt.encode({'encode_value': encode_value, 'exp': datetime.datetime.utcnow() +
                                                                  datetime.timedelta(minutes=30)
-                            }, cls.encoded_app_secret)
+                            }, cls.app_secret)  # hashing with encoded, secret, decode fails
         return token.decode('UTF-8')
 
     @classmethod
@@ -65,26 +69,18 @@ class JWTManager:
 
         if jwt_token:
             try:
-                payload = jwt.decode(jwt_token, cls.encoded_app_secret)
-            except (jwt.DecodeError, jwt.ExpiredSignatureError):
+                payload = jwt.decode(jwt_token, cls.app_secret)
+            except (jwt.DecodeError, jwt.ExpiredSignatureError) as e:
+                cls.logger.exception('[JWT Manager]: Authentication failed due to : {}'.format(str(e)))
                 return {
                     'status': False,
-                    'message': 'Token invalid.',
+                    'message': 'Token invalid {}'.format(str(e)),
                     'encode_value': None
                 }
+            cls.logger.info('[JWT Manager]: Authentication succeded.')
             return {
                 'status': True,
                 'message': 'Token valid',
                 'encode_value': payload['encode_value']
             }
-
-
-    # def token_required(self, f):
-    #     """
-    #     Decorator to mandate JWT Token in request headers.
-    #     :param f: target function that needs to be decorated.
-    #     :return: decorated function.
-    #     """
-    #     @wraps(f)
-    #     def decorated(*args, **kwargs):
 

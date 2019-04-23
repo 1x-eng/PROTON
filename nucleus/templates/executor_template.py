@@ -27,8 +27,8 @@ import falcon
 from apispec import APISpec
 from falcon_apispec import FalconPlugin
 from falcon_cors import CORS
-from falcon_auth import FalconAuthMiddleware, BasicAuthBackend
 from configuration import ProtonConfig
+from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from mic.iface.middlewares.iface_watch import Iface_watch
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
@@ -44,15 +44,6 @@ __version__ = "1.0"
 """
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
-
-
-def user_loader(username, password):
-    print('username: {}, password: {}'.format(username, password))
-    return {'username': username}
-
-auth_backend = BasicAuthBackend(user_loader)
-auth_middleware = FalconAuthMiddleware(auth_backend,
-                                       exempt_routes=['/exempt'], exempt_methods=['HEAD'])
 
 
 class DefaultRouteHandler(object):
@@ -89,7 +80,7 @@ class FastServe(object):
 
 
 cors = CORS(allow_all_origins=['http://localhost:{{ port }}'])
-app = falcon.API(middleware=[auth_middleware, cors.middleware, Iface_watch()])
+app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch()])
 
 app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())

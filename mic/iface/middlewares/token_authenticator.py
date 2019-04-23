@@ -24,6 +24,8 @@
 
 from configuration import ProtonConfig
 from nucleus.iam.jwt_manager import JWTManager
+from nucleus.generics.log_utilities import LogUtilities
+import falcon
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -31,7 +33,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class TokenAuthenticator(ProtonConfig, JWTManager):
+class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
 
     def __init__(self):
         super(TokenAuthenticator, self).__init__()
@@ -46,5 +48,26 @@ class TokenAuthenticator(ProtonConfig, JWTManager):
         :return:
         """
         # TODO: Validate JWT Token and on success, bind to req object.
+        if (req.path in ['/',
+                         '/fast-serve',
+                         '/signup',
+                         '/login']):
+            pass
+        else:
+            challenges = ['Token type="Fernet"']
+            token = req.get_header('Authorization')
+            if token is None:
+                self.logger.exception('[Token Authenticator]: Request to {}[{}] is missing '
+                                      'authentication token.'.format(req.path, req.uri))
+                raise falcon.HTTPUnauthorized('Auth token required.', 'Please provide an auth token via Authorization '
+                                                                      'header; as part of the request.', challenges)
+            else:
+                if not self.authenticate(token)['status']:
+                    self.logger.exception('[Token Authenticator]: Request to {}[{}] has failed '
+                                          'authentication. Token - [] is expired/invalid'.format(req.path, req.uri,
+                                                                                                 token))
+                    raise falcon.HTTPUnauthorized('Authentication required.', 'Token is invalid. Either expired or '
+                                                                              'invalid.', challenges)
+                else:
+                    self.logger.info('[Token Authenticator]: Request to {}[{}] is valid.'.format(req.path, req.uri))
 
-    
