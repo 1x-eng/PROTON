@@ -13,7 +13,6 @@ pandas
 falcon
 falcon_cors
 falcon-apispec
-falcon-auth
 redis
 gunicorn
 colorama
