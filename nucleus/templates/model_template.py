@@ -49,7 +49,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             'postgresql': self.pg_cursor_generator,
             # TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
         }
-        self.__j_sql = JinjaSql()
+        self.__j_sql = JinjaSql(param_style='named')
         self.__cursor_engine = self.connection_store()
         self.__alchemy_engine = self.alchemy_engine()
 
@@ -80,12 +80,16 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
             :param sql: Template:
 
+                {% raw %}
+
                 SELECT employeeName, employeeAddress
                 FROM employee
                 WHERE employeeId = {{ employeeId }}
                 {% if projectId %}
                 AND projectId = {{ projectId }}
                 {% endif %}
+
+                {% endraw %}
 
             :param binding_params: Template:
 
@@ -193,12 +197,16 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
             :param sql: Template:
 
+                {% raw %}
+
                 UPDATE tableName
                 SET column_1 = {{column_1_value}}, column_2 = {{column_2_value}}
                 WHERE column_3 = {{ column_3_value }}
                 {% if projectId %}
                 AND projectId = {{ projectId }}
                 {% endif %}
+
+                {% endraw %}
 
 
             :param binding_params: Template:

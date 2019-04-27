@@ -89,7 +89,42 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
         :return: serialized response ready for transmission to Interface.
         """
 
-        def proton_default_get(db_flavour):
+        def proton_default_get(db_flavour, *args):
+            """
+
+            ####################################
+            # How to write SQL?
+            ####################################
+
+            {% raw %}
+
+                    SELECT
+                    employeeName, employeeAddress
+                    FROM
+                    employee
+                    WHERE
+                    employeeId = {{employeeId}}
+                    { % if projectId %}
+                    AND
+                    projectId = {{projectId}}
+                    { % endif %}
+
+            {% endraw %}
+
+            data = {
+                    "employeeId": 123,
+                    "projectId": u"proton"
+                }
+
+
+            results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
+
+            :param db_flavour: Target database.
+            :param args: All other arguments packed into a tuple.
+            :return: serialized response.
+            """
+
+            req_params_dict = args[0]  # Any/All query params passed to this route is packaged into this dictionary.
 
             if ProtonConfig.TARGET_DB == 'sqlite':
                 target_table = 'PROTON_default'
