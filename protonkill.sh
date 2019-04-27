@@ -55,6 +55,13 @@ do
  esac
 done
 
+# Generate PROTON JWT Secret if it doesn't already exist.
+if [[ ! -e nucleus/iam/secrets/PROTON_JWT_SECRET.txt ]]; then
+    mkdir -p nucleus/iam/secrets
+    touch nucleus/iam/secrets/PROTON_JWT_SECRET.txt
+    echo "PROTON_JWT_SECRET" >> nucleus/iam/secrets/PROTON_JWT_SECRET.txt
+fi
+
 if [[ -z "$micNameToKill" ]]
     then
     echo -e "----------------------------------------------------------------------------------------------------------"
