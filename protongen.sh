@@ -60,6 +60,10 @@ echo -e "\e[36m
 
 \e[0m"
 
+# Parse .env and get binding params.
+eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+eval "$(grep ^PROTON_TARGET_PORT= .env)"
+
 # Generate PROTON JWT Secret if it doesn't already exist.
 if [[ ! -e nucleus/iam/secrets/PROTON_JWT_SECRET.txt ]]; then
     mkdir -p nucleus/iam/secrets
@@ -111,12 +115,12 @@ then
             pkill gunicorn
             if [[ -z $numberOfThreads ]]
             then
-                gunicorn -b localhost:3000 main:app --reload
+                gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --reload
             else
                 echo -e "-------------------------------------------------------------------------------------------------------------------"
                 echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
                 echo -e "-------------------------------------------------------------------------------------------------------------------"
-                gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+                gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --threads $numberOfThreads --reload
             fi
          else
             echo -e "-------------------------------------------------------------------------------------------------------------------"
@@ -126,12 +130,12 @@ then
             pkill gunicorn
             if [[ -z $numberOfThreads ]]
             then
-                gunicorn -b localhost:3000 main:app --reload
+                gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --reload
             else
                 echo -e "-------------------------------------------------------------------------------------------------------------------"
                 echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
                 echo -e "-------------------------------------------------------------------------------------------------------------------"
-                gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+                gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --threads $numberOfThreads --reload
             fi
         fi
     else
@@ -185,12 +189,12 @@ else
         pkill gunicorn
         if [[ -z $numberOfThreads ]]
         then
-            gunicorn -b localhost:3000 main:app --reload
+            gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --reload
         else
             echo -e "-------------------------------------------------------------------------------------------------------------------"
             echo -e "\e[33m PROTON starting with $numberOfThreads worker threads. \e[0m"
             echo -e "-------------------------------------------------------------------------------------------------------------------"
-            gunicorn -b localhost:3000 main:app --threads $numberOfThreads --reload
+            gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --threads $numberOfThreads --reload
         fi
 
     else

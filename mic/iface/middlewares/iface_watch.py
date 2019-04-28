@@ -45,7 +45,7 @@ class Iface_watch(CacheManager):
                                       log_file_path='{}/trace/interface_logs.log'.format(self.ROOT_DIR))
         self.timer = {"start": 0, "end": 0}
         self.cache_instance = None
-        self.cache_exists = False
+        self.cache_existence = False
 
     def process_request(self, req, resp):
         """
@@ -62,9 +62,9 @@ class Iface_watch(CacheManager):
             # Check if response can be served from cache.
             # Instantiate Cache
             self.cache_instance = self.cache_processor()['init_cache']()
-            self.cache_existance = self.cache_processor()['ping_cache'](self.cache_instance)
+            self.cache_existence = self.cache_processor()['ping_cache'](self.cache_instance)
 
-            if self.cache_existance:
+            if self.cache_existence:
 
                 try:
                     if req.method != 'POST':
@@ -125,7 +125,12 @@ class Iface_watch(CacheManager):
         if (req.path in ['/', '/fast-serve']):
             pass
         else:
-            if self.cache_existance:
+            # Check if response can be served from cache.
+            # Instantiate Cache
+            self.cache_instance = self.cache_processor()['init_cache']()
+            self.cache_existence = self.cache_processor()['ping_cache'](self.cache_instance)
+
+            if self.cache_existence:
                 try:
                     if req.method != 'POST':
                         route_path_contents = req.path.split('_')[1:]
