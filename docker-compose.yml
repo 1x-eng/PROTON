@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_DB=${PG_TARGET_DB}
     volumes:
-      - ./../proton-db/postgres:/var/lib/postgresql/data
+      - ${PROTON_POSTGRES_VOLUME_MOUNT}:/var/lib/postgresql/data
     ports:
       - 5432:5432
   redis:
@@ -17,7 +17,7 @@ services:
     restart: always
     image: redis
     volumes:
-      - ./../proton-db/redis:/data
+      - ${PROTON_REDIS_VOLUME_MOUNT}:/data
     ports:
       - 6379:6379
   proton:
