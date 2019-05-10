@@ -28,10 +28,11 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to initialize proton stack, execute gunicorn server at desired port and write swagger specs!
 
-## usage <Generate MIC  Stack>: ./protongen.sh -p <micName> -d <targetDbTable> -p <port> -t <numberOfThreads>
-## usage <Execute Proton without instantiating MIC Stack> ./protongen.sh -s
+## usage <Generate MIC  Stack>: ./proton.sh -p <micName> -d <targetDbTable> -p <port> -t <numberOfThreads>
+## usage <Execute Proton without instantiating MIC Stack> ./proton.sh -s
+## usage <Kill a MIC stack with Proton> ./proton.sh -k <targetMicName>
 
-while getopts c:n:p:t:d:s: option
+while getopts c:n:p:t:d:s:k: option
 do
  case "${option}"
  in
@@ -41,6 +42,7 @@ do
  t) numberOfThreads=${OPTARG};;
  d) targetDbTable=${OPTARG};;
  s) forceStart=${OPTARG};;
+ k) micNameToKill=${OPTARG};;
  esac
 done
 
@@ -101,7 +103,58 @@ else
     fi
 fi
 
+if [[ -z "$micNameToKill" ]]
+    then
+    :
+else
 
+    echo -e "\e[31m
+
+    ===============================================================
+    =       ===       =====    ====        ====    ====  =======  =
+    =  ====  ==  ====  ===  ==  ======  ======  ==  ===   ======  =
+    =  ====  ==  ====  ==  ====  =====  =====  ====  ==    =====  =
+    =  ====  ==  ===   ==  ====  =====  =====  ====  ==  ==  ===  =
+    =       ===      ====  ====  =====  =====  ====  ==  ===  ==  =
+    =  ========  ====  ==  ====  =====  =====  ====  ==  ====  =  =
+    =  ========  ====  ==  ====  =====  =====  ====  ==  =====    =
+    =  ========  ====  ===  ==  ======  ======  ==  ===  ======   =
+    =  ========  ====  ====    =======  =======    ====  =======  =
+    ===============================================================
+
+    \e[0m"
+
+    echo -e "----------------------------------------------------------------------------------------------------------"
+    echo -e "\e[33m Killing PROTON stack for micName: \e[0m"$micNameToKill
+    python protonkill.py --micNameToKill $micNameToKill
+    rm -r ./proton_vars/target_table_for_$micNameToKill.txt
+    echo -e "\e[33m Restarting Gunicorn with remaining PROTON stack \e[0m"
+    pkill gunicorn
+
+    echo -e "----------------------------------------------------------------------------------------------------------"
+    echo -e "\e[33m PROTON restarting @ port $PROTON_TARGET_PORT! \e[0m"
+    echo -e "----------------------------------------------------------------------------------------------------------"
+
+    echo -e "\e[36m
+
+    ===============================================================
+    =       ===       =====    ====        ====    ====  =======  =
+    =  ====  ==  ====  ===  ==  ======  ======  ==  ===   ======  =
+    =  ====  ==  ====  ==  ====  =====  =====  ====  ==    =====  =
+    =  ====  ==  ===   ==  ====  =====  =====  ====  ==  ==  ===  =
+    =       ===      ====  ====  =====  =====  ====  ==  ===  ==  =
+    =  ========  ====  ==  ====  =====  =====  ====  ==  ====  =  =
+    =  ========  ====  ==  ====  =====  =====  ====  ==  =====    =
+    =  ========  ====  ===  ==  ======  ======  ==  ===  ======   =
+    =  ========  ====  ====    =======  =======    ====  =======  =
+    ===============================================================
+
+    \e[0m"
+    python protongen.py --forceStart y
+    pkill gunicorn
+    gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --reload
+
+fi
 
 if [[ -z "$micName" ]]
 then
@@ -140,7 +193,7 @@ then
         fi
     else
         echo -e "-------------------------------------------------------------------------------------------------------------------"
-        echo -e "\e[33m PROTON is not configured. Please configure using protongen.sh -c PATH and then try starting PROTON. \e[0m"
+        echo -e "\e[33m PROTON is not configured. Please configure using proton.sh -c PATH and then try starting PROTON. \e[0m"
         echo -e "-------------------------------------------------------------------------------------------------------------------"
     fi
 
@@ -200,7 +253,7 @@ else
     else
 
         echo -e "-------------------------------------------------------------------------------------------------------------------"
-        echo -e "\e[33m PROTON is not configured. Please configure using protongen.sh -c PATH and then try creating MIC stack. \e[0m"
+        echo -e "\e[33m PROTON is not configured. Please configure using proton.sh -c PATH and then try creating MIC stack. \e[0m"
         echo -e "-------------------------------------------------------------------------------------------------------------------"
 
     fi

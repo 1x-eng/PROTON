@@ -117,6 +117,7 @@ dmypy.json
 /proton_vars/*
 nucleus/iam/secrets/*
 .env
+/proton-db
 
 # VS Code
 /.vscode

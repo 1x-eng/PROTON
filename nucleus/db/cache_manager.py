@@ -38,7 +38,7 @@ class CacheManager(ProtonConfig, LogUtilities):
     by PROTON. All redis activities are controlled within CacheManager.
     """
     __redisConfig = {
-        'host': 'localhost',
+        'host': 'redis',
         'port': 6379,
         'db': 0
     }

@@ -11,7 +11,15 @@ services:
     volumes:
       - ./../proton-db/postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - 5432:5432
+  redis:
+    container_name: proton_redis
+    restart: always
+    image: redis
+    volumes:
+      - ./../proton-db/redis:/data
+    ports:
+      - 6379:6379
   proton:
     container_name: proton
     restart: always
@@ -22,4 +30,5 @@ services:
       - .:/home/PROTON
     depends_on:
       - pg
-    entrypoint: ["./protongen.sh"]
+      - redis
+    entrypoint: ["./proton.sh"]
