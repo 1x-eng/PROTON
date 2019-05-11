@@ -119,7 +119,6 @@ databaseConfig.ini
 nucleus/iam/secrets/*
 .env
 /proton-db
-/screenshots/*
 
 # VS Code
 /.vscode

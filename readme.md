@@ -7,6 +7,13 @@ PROTON is a high-level Python framework that facilitates rapid server-side devel
 PROTON aims at easing server-side development for all Python enthusiasts. Essentially, by running a shell command, developer will auto generate necessary Model, Controller and APIs! All of this with connectivity to Transactional Databases (PROTON supports Postgresql, MySQL & SQL Server),caching (Redis middleware), Auto generated OpenAPI specs & descriptive logging! One command, to get a production ready server-side stack!
 
 # Getting Started
+- Install docker on your development machine. 
+    - Linux - https://docs.docker.com/install/linux/docker-ce/ubuntu/
+    - Mac - https://docs.docker.com/docker-for-mac/install/
+    - Windows - https://docs.docker.com/docker-for-windows/install/
+- Clone PROTON to your desired location `git clone https://github.com/PruthviKumarBK/PROTON.git`
+- Change directory to PROTON `cd ~/PROTON/`
+
 - Install postgres on your local machine. `sudo apt-get install postgresql`
 - Edit connection parameters for PROTON to achieve db connectivity @ `databaseConfig.ini`
 - Clone PROTON using `git clone https://github.com/PruthviKumarBK/PROTON.git`

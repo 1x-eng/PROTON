@@ -62,6 +62,9 @@ echo -e "\e[36m
 
 \e[0m"
 
+# Validate existance of key environment variables.
+sh ./init-proton.sh
+
 # Parse .env and get binding params.
 eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
 eval "$(grep ^PROTON_TARGET_PORT= .env)"
