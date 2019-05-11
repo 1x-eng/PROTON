@@ -26,7 +26,7 @@
 
 ## @Author: Pruthvi Kumar
 ## @Email: pruthvikumar.123@gmail.com
-## @Desc: Script to initialize proton stack, execute gunicorn server at desired port and write swagger specs!
+## @Desc: Script to check and set all vitals required by proton platform.!
 
 echo -e "--------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m Validating PROTON vitals... \e[0m"
