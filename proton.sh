@@ -66,6 +66,23 @@ echo -e "\e[36m
 eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
 eval "$(grep ^PROTON_TARGET_PORT= .env)"
 
+# Interpolate values from .env to databaseConfig.ini
+eval "$(grep ^PG_TARGET_DB= .env)"
+eval "$(grep ^PG_USERNAME= .env)"
+eval "$(grep ^PG_PASSWORD= .env)"
+eval "$(grep ^PG_TARGET_PORT= .env)"
+
+cat << EOF > ./databaseConfig.ini
+# PS: DO NOT MAKE ANY CHANGES HERE. THIS FILE IS DYNAMICALLY GENERATED.
+# PS: CHANGING CONFIG VALUE HERE MANUALLY SHALL FAIL BUILD PROCESS.
+[postgresql]
+host=pg
+database=$PG_TARGET_DB
+user=$PG_USERNAME
+password=$PG_PASSWORD
+port=$PG_TARGET_PORT
+EOF
+
 # Generate PROTON JWT Secret if it doesn't already exist.
 if [[ ! -e nucleus/iam/secrets/PROTON_JWT_SECRET.txt ]]; then
     mkdir -p nucleus/iam/secrets

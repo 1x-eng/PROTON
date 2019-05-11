@@ -5,13 +5,13 @@ services:
     restart: always
     image: postgres
     environment:
-      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_USER=${PG_USERNAME}
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_DB=${PG_TARGET_DB}
     volumes:
       - ${PROTON_POSTGRES_VOLUME_MOUNT}:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - ${PG_TARGET_PORT}:${PG_TARGET_PORT}
   redis:
     container_name: proton_redis
     restart: always
@@ -19,13 +19,13 @@ services:
     volumes:
       - ${PROTON_REDIS_VOLUME_MOUNT}:/data
     ports:
-      - 6379:6379
+      - ${REDIS_TARGET_PORT}:${REDIS_TARGET_PORT}
   proton:
     container_name: proton
     restart: always
     image: proton_stretch
     ports:
-      - 3000:3000
+      - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
     volumes:
       - .:/home/PROTON
     depends_on:
