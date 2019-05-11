@@ -28,9 +28,9 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to check and set all vitals required by proton platform.!
 
-echo -e "--------------------------------------------------------------------------------------------------------------"
+echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m Validating PROTON vitals... \e[0m"
-echo -e "--------------------------------------------------------------------------------------------------------------"
+echo -e "-------------------------------------------------------------------------------------------------------------------"
 
 if [[ -f .env ]]; then
     # check if env contains all required variables.
@@ -105,6 +105,7 @@ Please enter the absolute location where PROTON's redis can mount onto: " PROTON
     fi
 
 else
+
     touch .env
 
     PG_TARGET_DB=proton
@@ -141,7 +142,6 @@ PROTON_REDIS_VOLUME_MOUNT is the location that PROTON's redis container will mou
 Please enter the absolute location where PROTON's redis can mount onto: " PROTON_REDIS_VOLUME_MOUNT
         done
 
-
 fi
 
     cat << EOF > .env
@@ -158,7 +158,7 @@ PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 EOF
 
-echo -e "--------------------------------------------------------------------------------------------------------------"
+echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"
-echo -e "--------------------------------------------------------------------------------------------------------------"
+echo -e "-------------------------------------------------------------------------------------------------------------------"
 

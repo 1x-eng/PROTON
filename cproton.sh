@@ -28,27 +28,31 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to initiate containerised proton. Hence the name cproton.
 
-while getopts s: option
+while getopts U:D: option
 do
  case "${option}"
  in
- s) start=${OPTARG};;
+ U) up=${OPTARG};;
+ D) down=${OPTARG};;
  esac
 done
+
 
 if [[ -x "$(command -v docker)" ]]; then
     if [[ "$(docker images -q proton_stretch:latest 2> /dev/null)" == "" ]]; then
         docker build -t proton_stretch:latest .
     fi
 
-    if [[ -z "$start" ]]; then
+    if [[ -z "$up" && -z "$down" ]]; then
         if [[ -z "$(docker-compose ps -q proton)" ]]; then
             docker-compose down && docker-compose up --force-recreate
         else
           docker-compose run proton "$@"
         fi
-    else
+    elif [[ -z "$down" ]]; then
         docker-compose down && docker-compose up --force-recreate
+    else
+        docker-compose down
     fi
 
 else
@@ -56,3 +60,5 @@ else
     echo -e "\e[33m Cproton relies on docker. Please install Docker and try again. \e[0m"
     echo -e "--------------------------------------------------------------------------------------------------------------"
 fi
+
+trap "echo cancel ack" SIGINT
