@@ -39,7 +39,7 @@ do
 done
 
 
-if [[ -x "$(command -v docker)" ]]; then
+if [[ -x "$(command -v docker)" && -x "$(command -v docker-compose)" ]]; then
     if [[ "$(docker images -q proton_stretch:latest 2> /dev/null)" == "" ]]; then
         docker build -t proton_stretch:latest .
     fi
@@ -93,6 +93,6 @@ if [[ -x "$(command -v docker)" ]]; then
 
 else
     echo -e "--------------------------------------------------------------------------------------------------------------"
-    echo -e "\e[33m Cproton relies on docker. Please install Docker and try again. \e[0m"
+    echo -e "\e[33m Cproton relies on docker & docker-compose. Please install Docker & docker-compose and try again. \e[0m"
     echo -e "--------------------------------------------------------------------------------------------------------------"
 fi
