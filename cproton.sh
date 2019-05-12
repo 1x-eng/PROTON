@@ -28,12 +28,13 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to initiate containerised proton. Hence the name cproton.
 
-while getopts U:D: option
+while getopts U:D:: option
 do
  case "${option}"
  in
  U) up=${OPTARG};;
  D) down=${OPTARG};;
+ *) echo "Arguments is/are not cproton specific. cproton shall forward these to PROTON." ;;
  esac
 done
 
@@ -45,14 +46,49 @@ if [[ -x "$(command -v docker)" ]]; then
 
     if [[ -z "$up" && -z "$down" ]]; then
         if [[ -z "$(docker-compose ps -q proton)" ]]; then
-            docker-compose down && docker-compose up --force-recreate
+            echo "FATAL: PROTON container do not seem to be running. cproton cannot orchestrate this command - proton $@"
+            echo "PS: Platform needs to be started using cproton.sh -U yes before issuing any other PROTON specific commands"
+            echo "PS: cproton will now start the platform in a pragmatic way."
+            docker-compose down && docker-compose up --force-recreate -d
+
+            eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+            eval "$(grep ^PROTON_TARGET_PORT= .env)"
+
+            echo "PROTON started and available @ http://${PROTON_BIND_ADDRESS}:${PROTON_TARGET_PORT}"
         else
-          docker-compose run proton "$@"
+            docker-compose stop proton | grep "No such service" && docker stop proton
+            docker-compose rm -f proton | grep "No stopped containers" && docker rm -f proton && docker image prune -f
+            docker-compose run -d --name proton --service-ports --rm proton "$@"
+
+            eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+            eval "$(grep ^PROTON_TARGET_PORT= .env)"
+
+            echo "PROTON updated and available @ http://${PROTON_BIND_ADDRESS}:${PROTON_TARGET_PORT}"
         fi
     elif [[ -z "$down" ]]; then
-        docker-compose down && docker-compose up --force-recreate
+        case "$up" in
+            [yY][eE][sS]|[yY])
+
+            docker-compose down && docker-compose up --force-recreate -d
+            eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+            eval "$(grep ^PROTON_TARGET_PORT= .env)"
+
+            echo "PROTON initiated and available @ http://${PROTON_BIND_ADDRESS}:${PROTON_TARGET_PORT}"
+            ;;
+            *)
+            echo "To bring up PROTON platform, valid command is: ./cproton.sh -U yes"
+            ;;
+        esac
     else
-        docker-compose down
+        case "$down" in
+            [yY][eE][sS]|[yY])
+
+            docker-compose down
+            echo "PROTON platform is gracefully shut down."
+            ;;
+            *)
+            echo "To shut down PROTON platform, valid command is: ./cproton.sh -D yes"
+        esac
     fi
 
 else
@@ -60,5 +96,3 @@ else
     echo -e "\e[33m Cproton relies on docker. Please install Docker and try again. \e[0m"
     echo -e "--------------------------------------------------------------------------------------------------------------"
 fi
-
-trap "echo cancel ack" SIGINT
