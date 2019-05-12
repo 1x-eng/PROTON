@@ -24,7 +24,7 @@ managed caching <small>(PROTON ships with redis)</small>, descriptive logging an
 - Wait for the platform to bootstrap; once **done**, visit `http://localhost:3000`. 
 - Congratulations. you've got your server-side setup!
 
-![PROTON init platform instructions](https://gfycat.com/OldfashionedBonyGreatargus)
+![PROTON init platform instructions](https://gfycat.com/GlisteningScornfulCreature)
 
 # Example
 
