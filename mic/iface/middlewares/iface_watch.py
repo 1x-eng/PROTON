@@ -67,7 +67,7 @@ class Iface_watch(CacheManager):
             if self.cache_existence:
 
                 try:
-                    if req.method != 'POST':
+                    if req.method != 'POST' and req.context['cache_ready'] is True:
                         print(Fore.MAGENTA + 'PROTON stack has the instantiated Cache! We are on STEROIDS '
                               'now!!' + Style.RESET_ALL)
                         route_path_contents = req.path.split('_')[1:]
@@ -132,7 +132,7 @@ class Iface_watch(CacheManager):
 
             if self.cache_existence:
                 try:
-                    if req.method != 'POST':
+                    if req.method != 'POST' and req.context['cache_ready'] is True:
                         route_path_contents = req.path.split('_')[1:]
                         cache_key = '_'.join(route_path_contents)
 

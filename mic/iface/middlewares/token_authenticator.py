@@ -54,6 +54,7 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                          '/login']):
             pass
         else:
+            setattr(req.context, 'cache_ready', False)
             challenges = ['Token type="Fernet"']
             token = req.get_header('Authorization')
             if token is None:
@@ -69,5 +70,6 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                     raise falcon.HTTPUnauthorized('Authentication required.', 'Token is invalid. Either expired or '
                                                                               'invalid.', challenges)
                 else:
+                    setattr(req.context, 'cache_ready', True)
                     self.logger.info('[Token Authenticator]: Request to {}[{}] is valid.'.format(req.path, req.uri))
 
