@@ -2,9 +2,16 @@
 # PROTON
 **The MIC stack genesis!**
 
-PROTON is a high-level Python framework that facilitates rapid server-side development with clean & pragmatic design. Thanks for checking it out!
+PROTON is a high-level Python framework that facilitates rapid server-side development with clean & pragmatic design. 
+Thanks for checking it out!
 
-PROTON aims at easing server-side development for all Python enthusiasts. Essentially, by running a shell command, developer will auto generate necessary Model, Controller and APIs! All of this with connectivity to Transactional Databases (PROTON supports Postgresql, MySQL & SQL Server),caching (Redis middleware), Auto generated OpenAPI specs & descriptive logging! One command, to get a production ready server-side stack!
+- PROTON aims at easing server-side development for all Python enthusiasts. 
+- With PROTON, as a developer you issue **one command**; 
+one command, to spin up auto generated code with pragmatic separation of Model, Controller and Interface 
+<small>(Hence the name, MIC stack)</small>! 
+- One command to setup a production ready server side stack with managed DB connections <small>(PROTON ships with postgresql)</small>, 
+managed caching <small>(PROTON ships with redis)</small>, descriptive logging and auto-generated openAPI specs.
+- All of this, is **containerised**!
 
 # Getting Started
 - Install docker on your development machine. 
@@ -13,15 +20,9 @@ PROTON aims at easing server-side development for all Python enthusiasts. Essent
     - Windows - https://docs.docker.com/docker-for-windows/install/
 - Clone PROTON to your desired location `git clone https://github.com/PruthviKumarBK/PROTON.git`
 - Change directory to PROTON `cd ~/PROTON/`
-
-- Install postgres on your local machine. `sudo apt-get install postgresql`
-- Edit connection parameters for PROTON to achieve db connectivity @ `databaseConfig.ini`
-- Clone PROTON using `git clone https://github.com/PruthviKumarBK/PROTON.git`
-- Create a virtual environment. (If using anaconda, `conda create -n <env name> python=3`)
-- `cd PROTON`
-- `pip install -r requirements.txt`
-- PROTON relies on Redis for caching. Install redis using `sudo apt-get install redis-server`
-- That's it! You are ready to create your first MIC (Model, Interface, Controller) stack!
+- `./cproton.sh -U yes` PROTON will ask your input for few key environment variables.
+- Wait for the platform to bootstrap; once **done**, visit `http://localhost:3000`. 
+- Congratulations. you've got your server-side setup!
 
 # Example
 
