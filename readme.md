@@ -1,4 +1,4 @@
-![PROTON Logo](https://github.com/PruthviKumarBK/PROTON/blob/master/screenshots/PROTON-logo.png)
+![PROTON Logo](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON-logo.png)
 # PROTON
 **The MIC stack genesis!**
 
@@ -23,6 +23,8 @@ managed caching <small>(PROTON ships with redis)</small>, descriptive logging an
 - `./cproton.sh -U yes` PROTON will ask your input for few key environment variables.
 - Wait for the platform to bootstrap; once **done**, visit `http://localhost:3000`. 
 - Congratulations. you've got your server-side setup!
+
+![PROTON init platform instructions](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON-platform-init.gif)
 
 # Example
 
