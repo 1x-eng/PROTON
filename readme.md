@@ -79,12 +79,12 @@ Now that you are interested, see how you get PROTON to work for you:
 ![PROTON_new_mic](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic.gif)
 
     - what you see above is an API endpoint auto-generated for the MIC name you provided.
-    - a `get` route, `post` route and `concurrency` route. Each showcasing functionality that same functionality respectively.
+    - a `get` route, `post` route and `concurrency` route. Each demonstrating that same functionality as in their names, respectively.
     - <i>GET call:</i> 
     - ![PROTON_get_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic_get_call.gif)
     - <i>POST call:</i>
     - ![PROTON_post_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_postgres.gif)
-    - And, like before, if you wanted to traget sqlite, just change `db_flavour` of your POST `JSON` payload to 'sqlite'.
+    - And, if you wanted to target sqlite, just change `db_flavour` of your POST `JSON` payload to 'sqlite'.
     - ![PROTON_sqlite_post](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_sqlite.png)
     - <i>GET call involving Concurrency / Multi-threading</i>
     - ![PROTON_multi_threading](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_concurrency_route.gif)
