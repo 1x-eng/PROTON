@@ -44,8 +44,42 @@ Authentication! Reckon that is pretty cool!
 - And, if you did not already expect, PROTON ships with login validation. Of course!
 ![PROTON_postgres_login_validation_invalid_username](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_username.png)
 ![PROTON_postgres_login_validation_invalid_password](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_password.png)
-# Example
 
+# The MIC stack - What, why & how?
+
+We all know about classic MVC don't we. What happens when we substitute the 'V' <view> in 'MVC' with an 'I' 
+<Application Program **Interface**> ? - We get a **MIC** stack! PROTON is a platform that facilitates rapid API 
+development (the MIC stack) backed by auto-generated code and good object-oriented programming principles. 
+
+Why do we need this despite many zillion frameworks?
+
+- Do you enjoy writing; rather, re-writing same boiler plate code everytime you wanted to generate a new API using 
+the framework of your choice?
+- Do you enjoy managing database connectivity and dealing with connectivity issues everytime you touch codebase?
+- Do you enjoy learning from an expert that your server side needs performance tuning and miss cache?
+- Do you enjoy not having an organized logging mechanism in your server-side code?
+- Do you enjoy not having authentication mandated for your server-side codebase?
+- Do you enjoy being stressed about converting your codebase to be container ready?
+- Do you enjoy being paranoid about steep learning curve associated with Kubernetes?
+
+I've been coding for a living since the last 10 years and for each question above, ** I answer NO even in my dreams**.
+Do you agree? Did you want a framework that rather managed all these for you so you could worry only about building 
+interesting software rather worry about these classic elements?
+
+I hear screaming **YES**!
+
+PROTON is your answer! One command, all your above problems sorted and managed for you! 
+With PROTON, you're a step closer to be that **unicorn** or **10x** developer or whatever else you call that!
+
+Working on a quick prototype to impress or thinking of production deployments - do check out PROTON.
+
+Now that you are interested, see how you get PROTON to work for you:
+
+- Generate new API (you can do all CRUD ops on that API) by issuing one command `./cproton.sh -n myNewApi`
+![PROTON_new_mic](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic.gif)
+
+    - what you see above is an API endpoint auto-generated for the MIC name you provided.
+    - a `get` route, `post` route and `concurrency` route. Each showcasing functionality that same functionality respectively. 
 Generate a new MIC stack named **testMic** :
 `
  ./protongen.sh -n testMic -p 3000
