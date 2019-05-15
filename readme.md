@@ -79,7 +79,18 @@ Now that you are interested, see how you get PROTON to work for you:
 ![PROTON_new_mic](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic.gif)
 
     - what you see above is an API endpoint auto-generated for the MIC name you provided.
-    - a `get` route, `post` route and `concurrency` route. Each showcasing functionality that same functionality respectively. 
+    - a `get` route, `post` route and `concurrency` route. Each showcasing functionality that same functionality respectively.
+    - <i>GET call:</i> 
+    - ![PROTON_get_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic_get_call.gif)
+    - <i>POST call:</i>
+    - ![PROTON_post_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_postgres.gif)
+    - And, like before, if you wanted to traget sqlite, just change `db_flavour` of your POST `JSON` payload to 'sqlite'.
+    - ![PROTON_sqlite_post](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_sqlite.png)
+    - <i>GET call involving Concurrency / Multi-threading</i>
+    - ![PROTON_multi_threading](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_concurrency_route.gif)
+        - Notice how first call took about 1 second (if not for multi-threading, this takes about 5 seconds) and subsequent
+        calls took only 25~35ms. This is because of cache supporting all subsequent calls.
+  
 Generate a new MIC stack named **testMic** :
 `
  ./protongen.sh -n testMic -p 3000
