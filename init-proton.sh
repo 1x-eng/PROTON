@@ -41,6 +41,7 @@ if [[ -f .env ]]; then
     eval "$(grep ^REDIS_TARGET_PORT= .env)"
     eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
     eval "$(grep ^PROTON_TARGET_PORT= .env)"
+    eval "$(grep ^PROTON_SQLITE_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_POSTGRES_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_REDIS_VOLUME_MOUNT= .env)"
 
@@ -82,6 +83,16 @@ Please enter password for PROTON's postgres: " PG_PASSWORD
 
     if [[ -z "$PROTON_TARGET_PORT" ]]; then
         PROTON_TARGET_PORT=3000
+    fi
+
+    if [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]; then
+        while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
+        do
+            read -p "PROTON is missing key environment var - PROTON_SQLITE_VOLUME_MOUNT. \
+By default, PROTON ships with support for sqlite. \
+PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
+Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
+        done
     fi
 
     if [[ -z "$PROTON_POSTGRES_VOLUME_MOUNT" ]]; then
@@ -128,6 +139,13 @@ PG_PASSWORD is the password that PROTON's postgres will use for login purposes.\
 Please enter password for PROTON's postgres: " PG_PASSWORD
         done
 
+    while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
+        do
+            read -p "By default, PROTON ships with support for sqlite. \
+PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
+Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
+        done
+
     while [[ -z "$PROTON_POSTGRES_VOLUME_MOUNT" ]]
         do
             read -p "By default, PROTON ships with support for postgres. \
@@ -154,9 +172,17 @@ PG_TARGET_PORT=$PG_TARGET_PORT
 REDIS_TARGET_PORT=$REDIS_TARGET_PORT
 PROTON_BIND_ADDRESS=$PROTON_BIND_ADDRESS
 PROTON_TARGET_PORT=$PROTON_TARGET_PORT
+PROTON_SQLITE_VOLUME_MOUNT=$PROTON_SQLITE_VOLUME_MOUNT
 PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 EOF
+
+# configuring mount path for SQLITE
+# TODO: This needs refactor to read from env directly instead of file.
+mkdir -p ./proton_vars
+rm -f ./proton_vars/proton_sqlite_config.txt
+touch ./proton_vars/proton_sqlite_config.txt
+echo $PROTON_SQLITE_VOLUME_MOUNT >> ./proton_vars/proton_sqlite_config.txt
 
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"
