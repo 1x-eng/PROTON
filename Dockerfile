@@ -35,6 +35,7 @@ RUN useradd -G proton_user_group default_proton_user
 
 RUN mkdir -p /home/PROTON
 RUN mkdir -p /home/PROTON/proton-db
+RUN mkdir -p /home/PROTON/trace
 WORKDIR /home/PROTON
 COPY . /home/PROTON
 
