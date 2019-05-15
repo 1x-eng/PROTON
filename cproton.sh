@@ -44,6 +44,9 @@ if [[ -x "$(command -v docker)" && -x "$(command -v docker-compose)" ]]; then
         docker build -t proton_stretch:latest .
     fi
 
+    # Validate existance of key environment variables.
+    ./init-proton.sh
+
     if [[ -z "$up" && -z "$down" ]]; then
         if [[ -z "$(docker-compose ps -q proton)" ]]; then
             echo "FATAL: PROTON container do not seem to be running. cproton cannot orchestrate this command - proton $@"
