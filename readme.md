@@ -90,7 +90,39 @@ Now that you are interested, see how you get PROTON to work for you:
     - ![PROTON_multi_threading](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_concurrency_route.gif)
         - Notice how first call took about 1 second (if not for multi-threading, this takes about 5 seconds) and subsequent
         calls took only 25~35ms. This is because of cache supporting all subsequent calls.
-  
+
+- Your next question should be, how to generate new API's to my heart's content?
+- Find `controller` for your respective MIC where you want new method and just define a new function encapsulating your 
+business logic
+ ![PROTON_new_custom_method](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_method_code.png)
+    - Look into lines 230-270. This is where you define your new methods.
+    - Line 275 is where you include your new method. 
+    - Did you notice how the query parameter is passed into your SQL? That is **SQL Injection Safe** by the way!
+- Done coding? You have now tell PROTON to include your method and generate API route. Do that by issuing this 
+command: `./cproton.sh -s yes`
+ ![PROTON_cproton_update](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_cproton_update_command.png)
+- Time to check your shiny new route!
+ ![PROTON_new_method_route](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_method_api.png) 
+ ![PROTON_new_method_api_response](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_method_api_response.png)
+    - Notice how the route considers `id` as a query parameter and results comply to this query parameter.
+    - Results from this route also automatically get the best of PROTON in terms of cache support, logging etc.,
+
+- Did you want to safe destroy a MIC and leave everything else untouched? Use PROTON's safe destruction mechanism
+ ![PROTON_safe_destruction](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_safe_destroy_mic.png)
+ ![PROTON_post_safe_destroy](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_safe_destroy.png)
+    - Notice how `login` and `signup` routes remain unaffected. Similarly, if there were other MIC stacks and you destroyed one of them, 
+    all others remain as is; unaffected.
+    - Always destroy using PROTON's safe destruction mechanism. If otherwise, you will disturb the platform in its 
+    sensitive nerves which brings the house down. Also, by using safe destruction, all associated code attached to that 
+    respective MIC and cache entries will be pragmatically cleaned.
+
+- Stuck on a problem? Want to debug?
+    - Did you want to view logs collectively? Go to `./PROTON/trace` directory.
+    ![PROTON_logs](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_logs.png)
+    - Note that you can also view real time logs on the container level by issuing this command - `docker logs -f proton`
+
+- Also, PROTON ships with ability to automagically generate OpenAPI specs!
+
 Generate a new MIC stack named **testMic** :
 `
  ./protongen.sh -n testMic -p 3000
