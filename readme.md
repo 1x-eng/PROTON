@@ -10,8 +10,10 @@ Thanks for checking it out!
 one command, to spin up auto generated code with pragmatic separation of Model, Controller and Interface 
 <small>(Hence the name, MIC stack)</small>! 
 - One command to setup a production ready server side stack with managed DB connections <small>(PROTON ships with postgresql)</small>, 
-managed caching <small>(PROTON ships with redis)</small>, descriptive logging and auto-generated openAPI specs.
-- All of this, is **containerised**!
+managed caching <small>(PROTON ships with redis)</small>, managed JWT authenticated routes, descriptive logging and 
+auto-generated openAPI specs.
+- PROTON also ships with `signup` and `login` routes to on-board & login users onto platform.
+- All of this, **containerised**!
 
 # Getting Started
 - Install docker on your development machine. 
@@ -26,6 +28,22 @@ managed caching <small>(PROTON ships with redis)</small>, descriptive logging an
 
 ![PROTON init platform instructions](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON-platform-init.gif)
 
+# Features
+- PROTON comes with out-of-box support for `Signup` and `Login`. 
+- Use `/signup` route to sign up users to platform.
+![PROTON_postgres_signup](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_signup.gif)
+- Did you want to use `sqlite` instead of postgres for a quick POC? No worries, just change the `db_flavour` in POST payload to 
+'sqlite' and you're taken care of!
+- PROTON also ships with support for edge conditions on these `signup` and `login` routes. For example - What happens if 
+someone tries to signup with same email / username?
+![PROTON_postgres_signup_validation](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_signup_validation.png)
+- Use '/login' route to login after successful signup. 
+![PROTON_postgres_login](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_login.gif)
+- Did you observe the `token` post successful login? That one command to setup the platform has prepared JWT Token 
+Authentication! Reckon that is pretty cool!
+- And, if you did not already expect, PROTON ships with login validation. Of course!
+![PROTON_postgres_login_validation_invalid_username](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_username.png)
+![PROTON_postgres_login_validation_invalid_password](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_password.png)
 # Example
 
 Generate a new MIC stack named **testMic** :
