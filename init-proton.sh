@@ -86,13 +86,14 @@ Please enter password for PROTON's postgres: " PG_PASSWORD
     fi
 
     if [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]; then
-        while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
-        do
-            read -p "PROTON is missing key environment var - PROTON_SQLITE_VOLUME_MOUNT. \
-By default, PROTON ships with support for sqlite. \
-PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
-Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
-        done
+#        while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
+#        do
+#            read -p "PROTON is missing key environment var - PROTON_SQLITE_VOLUME_MOUNT. \
+#By default, PROTON ships with support for sqlite. \
+#PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
+#Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
+#        done
+        PROTON_SQLITE_VOLUME_MOUNT='/home/PROTON/proton-db/proton-sqlite.db'
     fi
 
     if [[ -z "$PROTON_POSTGRES_VOLUME_MOUNT" ]]; then
@@ -124,6 +125,7 @@ else
     REDIS_TARGET_PORT=6379
     PROTON_BIND_ADDRESS=0.0.0.0
     PROTON_TARGET_PORT=3000
+    PROTON_SQLITE_VOLUME_MOUNT='/home/PROTON/proton-db/proton-sqlite.db'
 
     while [[ -z "$PG_USERNAME" ]]
         do
@@ -139,12 +141,12 @@ PG_PASSWORD is the password that PROTON's postgres will use for login purposes.\
 Please enter password for PROTON's postgres: " PG_PASSWORD
         done
 
-    while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
-        do
-            read -p "By default, PROTON ships with support for sqlite. \
-PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
-Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
-        done
+#    while [[ -z "$PROTON_SQLITE_VOLUME_MOUNT" ]]
+#        do
+#            read -p "By default, PROTON ships with support for sqlite. \
+#PROTON_SQLITE_VOLUME_MOUNT is the location that PROTON's sqlite file will mount onto.\
+#Please enter the absolute location where PROTON's sqlite can mount onto: " PROTON_SQLITE_VOLUME_MOUNT
+#        done
 
     while [[ -z "$PROTON_POSTGRES_VOLUME_MOUNT" ]]
         do
