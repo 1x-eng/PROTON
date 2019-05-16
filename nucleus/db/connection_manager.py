@@ -31,6 +31,7 @@ from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
 from nucleus.generics.singleton import Singleton
 import sqlite3
+import os
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -139,6 +140,8 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
             with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
                 sqlite_dialect = file.read().replace('\n', '')
                 cls.__alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
+                # Create a database if not exists - for sqlite
+                os.makedirs(os.path.dirname(sqlite_dialect), exist_ok=True)
 
             for dialect in cls.__connection_dialects:
                 cls.__alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}/{}'.format(dialect,

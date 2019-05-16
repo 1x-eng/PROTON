@@ -184,7 +184,7 @@ EOF
 mkdir -p ./proton_vars
 rm -f ./proton_vars/proton_sqlite_config.txt
 touch ./proton_vars/proton_sqlite_config.txt
-echo $PROTON_SQLITE_VOLUME_MOUNT >> ./proton_vars/proton_sqlite_config.txt
+echo "$PROTON_SQLITE_VOLUME_MOUNT/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"
