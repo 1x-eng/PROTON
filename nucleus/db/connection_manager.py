@@ -141,7 +141,7 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
                 sqlite_dialect = file.read().replace('\n', '')
                 cls.__alchemy_connection_strings['sqlite'] = '{}:///{}'.format('sqlite', sqlite_dialect)
                 # Create a database if not exists - for sqlite
-                os.makedirs(os.path.dirname(sqlite_dialect), exist_ok=True)
+                # os.makedirs(os.path.dirname(sqlite_dialect), exist_ok=True)
 
             for dialect in cls.__connection_dialects:
                 cls.__alchemy_connection_strings[dialect] = '{}://{}:{}@{}:{}/{}'.format(dialect,
