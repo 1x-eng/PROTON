@@ -52,12 +52,12 @@ class ProtonGen(MetaGen, ExecGen):
         self.proton_args = self.parser.parse_args()
 
         try:
+            if self.proton_args.bootstrap is not None:
+                self.bootstrap_sqlite()
+
             if self.proton_args.mic_name is None:
 
-                if self.proton_args.bootstrap is not None:
-                    self.bootstrap_sqlite()
-
-                elif self.proton_args.forceStart is not None:
+                if self.proton_args.forceStart is not None:
                     self.bootstrap_sqlite()
                     self.generate_executor(port=3000)
                     print(Fore.GREEN + 'PROTON initialized with existing iFace stack! Starting service '
