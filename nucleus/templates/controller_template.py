@@ -154,8 +154,6 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while getting model data. '
                                       'Details: {}'.format(str(e)))
-                raise Exception('[{{ controllerName }}] - Exception while getting model data. ' \
-                                         'Details: {}'.format(str(e)))
 
         def proton_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
             try:
@@ -166,8 +164,6 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
             except Exception as e:
                 self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
                                       'Details: {}'.format(str(e)))
-                raise Exception('[{{ controllerName }}] - Exception while inserting data. ' \
-                                         'Details: {}'.format(str(e)))
 
         def proton_multi_threaded_http_op(*args):
             """
