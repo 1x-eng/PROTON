@@ -178,12 +178,11 @@ PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 EOF
 
-# configuring mount path for SQLITE
-# TODO: This needs refactor to read from env directly instead of file.
+# configuring SQLITE mount path for the PROTON container.
 mkdir -p ./proton_vars
 rm -f ./proton_vars/proton_sqlite_config.txt
 touch ./proton_vars/proton_sqlite_config.txt
-echo "$PROTON_SQLITE_VOLUME_MOUNT/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"
