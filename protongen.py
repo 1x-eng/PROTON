@@ -60,9 +60,8 @@ class ProtonGen(MetaGen, ExecGen):
                                        '@ 3000' + Style.RESET_ALL)
                     self.logger.info('PROTON initialized with existing iFace stack! Starting service @ 3000')
                 else:
-                    raise Exception(Fore.LIGHTRED_EX + '[PROTON-GEN] - There is no name provided for Proton to '
-                                                       'initiate. Please provide a valid mic_name using --mic_name '
-                                                       'argument' + Style.RESET_ALL)
+                    raise Exception('[PROTON-GEN] - There is no name provided for Proton to initiate. Please provide '
+                                    'a valid mic_name using --mic_name argument')
             else:
                 if self.proton_args.port is None:
                     self.proton_args.port = 8000
