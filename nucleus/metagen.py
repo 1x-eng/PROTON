@@ -162,8 +162,3 @@ class MetaGen(CacheManager):
             self.logger.exception('[MetaGen]: Exception during instantiating MIC stack for {}. '
                                   'Details: {}'.format(mic_name, str(e)))
 
-
-if __name__ == '__main__':
-    mg = MetaGen()
-    mg.new_mic('test_5')
-

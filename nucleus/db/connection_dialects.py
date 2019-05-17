@@ -85,8 +85,3 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
 
         list(map(lambda sdb: get_parsed_parameters(db, sdb), supported_databases))
         return db
-
-
-if __name__ == '__main__':
-    cdl = ConnectionDialects()
-    print(cdl.dialect_store())
