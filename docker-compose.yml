@@ -28,6 +28,7 @@ services:
       - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
     volumes:
       - .:/home/PROTON
+      - ${PROTON_SQLITE_VOLUME_MOUNT}:/home/PROTON/proton-db
     depends_on:
       - pg
       - redis

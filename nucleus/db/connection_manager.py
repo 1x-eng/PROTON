@@ -31,6 +31,7 @@ from nucleus.db.connection_dialects import ConnectionDialects
 from nucleus.generics.log_utilities import LogUtilities
 from nucleus.generics.singleton import Singleton
 import sqlite3
+import os
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
