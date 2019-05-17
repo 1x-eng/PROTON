@@ -74,7 +74,7 @@ class ProtonKill(CacheManager):
             iface_controller_path = '{}/mic/iface/controllers/iface_ctrl_{}.py'.format(self.ROOT_DIR, mic_name)
             model_existance = os.path.isdir(model_path)
 
-            if (model_existance):
+            if model_existance:
                 shutil.rmtree(model_path, ignore_errors=True)
                 os.remove(controller_path)
                 os.remove(iface_controller_path)
@@ -85,5 +85,10 @@ class ProtonKill(CacheManager):
             self.logger.exception('PROTON MIC destruction for mic_name {} is unsuccessful. '
                                   'Details: {}'.format(mic_name, str(e)))
             raise (Fore.LIGHTRED_EX + '[PROTON MIC Kill] - Details: {}'.format(str(e)) + Style.RESET_ALL)
+
+
+if __name__ == '__main__':
+    ProtonKill()
+
 
 
