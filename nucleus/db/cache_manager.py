@@ -66,7 +66,6 @@ class CacheManager(ProtonConfig, LogUtilities):
                 return redis_instance
             except Exception as e:
                 cls.logger.exception('Exception while instantiating cache. Details: {}'.format(str(e)))
-                raise str(e)
 
         def set_to_cache(redis_instance, key, value):
             """
@@ -81,7 +80,6 @@ class CacheManager(ProtonConfig, LogUtilities):
                 cls.logger.info('Cache set for key: {}'.format(key))
             except Exception as e:
                 cls.logger.exception('Exception while setting value to cache. Details: {}'.format(str(e)))
-                raise str(e)
 
         def get_from_cache(redis_instance, key):
             """
@@ -96,7 +94,6 @@ class CacheManager(ProtonConfig, LogUtilities):
                 return data_from_cache
             except Exception as e:
                 cls.logger.exception('Data from cache for key: {} is unsuccessful. Details: {}'.format(key, str(e)))
-                raise str(e)
 
         def ping_cache(redis_instance):
             """

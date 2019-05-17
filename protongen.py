@@ -60,14 +60,15 @@ class ProtonGen(MetaGen, ExecGen):
                                        '@ 3000' + Style.RESET_ALL)
                     self.logger.info('PROTON initialized with existing iFace stack! Starting service @ 3000')
                 else:
-                    raise (Fore.LIGHTRED_EX + '[PROTON-GEN] - There is no name provided for Proton to initiate. '
-                                              'Please provide a valid mic_name using --mic_name argument' + Style.RESET_ALL)
+                    raise Exception(Fore.LIGHTRED_EX + '[PROTON-GEN] - There is no name provided for Proton to '
+                                                       'initiate. Please provide a valid mic_name using --mic_name '
+                                                       'argument' + Style.RESET_ALL)
             else:
                 if self.proton_args.port is None:
                     self.proton_args.port = 8000
                 self.__creator(self.proton_args.mic_name, self.proton_args.port)
-                raise ('[ProtonGen] Error during protonGen initialization for mic_name '
-                       '{}.'.format(self.proton_args.mic_name))
+                raise Exception('[ProtonGen] Error during protonGen initialization for '
+                                'mic_name {}.'.format(self.proton_args.mic_name))
 
         except Exception as e:
             self.logger.exception('[ProtonGen] Error during protonGen initialization. Stacktrace to follow')
@@ -89,8 +90,6 @@ class ProtonGen(MetaGen, ExecGen):
         except Exception as e:
             self.logger.exception('[ProtonGen] Error during protonGen initialization for mic_name '
                                   '{}. Details: {}'.format(mic_name, str(e)))
-            raise (Fore.LIGHTRED_EX + '[ProtonGen] Error during protonGen initialization for mic_name '
-                   '{}. Details: {}'.format(mic_name, str(e)) + Style.RESET_ALL)
 
 
 if __name__ == '__main__':
