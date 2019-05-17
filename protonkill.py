@@ -87,7 +87,3 @@ class ProtonKill(CacheManager):
             raise (Fore.LIGHTRED_EX + '[PROTON MIC Kill] - Details: {}'.format(str(e)) + Style.RESET_ALL)
 
 
-if __name__ == '__main__':
-    pk = ProtonKill()
-
-

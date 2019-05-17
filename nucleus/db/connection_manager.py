@@ -235,8 +235,3 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
         else:
             raise Exception('[ConnectionManager]: Connection Store does not contain an entry for postgresql.'
                             'Check/Debug __connection_store in ConnectionManager.')
-
-
-if __name__ == '__main__':
-    cm = ConnectionManager()
-    print(cm.alchemy_engine())

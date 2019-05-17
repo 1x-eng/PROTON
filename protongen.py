@@ -89,7 +89,4 @@ class ProtonGen(MetaGen, ExecGen):
             raise (Fore.LIGHTRED_EX + '[ProtonGen] Error during protonGen initialization for mic_name '
                    '{}. Details: {}'.format(mic_name, str(e)) + Style.RESET_ALL)
 
-if __name__ == '__main__':
-    pg = ProtonGen()
-
 
