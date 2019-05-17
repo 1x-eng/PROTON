@@ -48,9 +48,14 @@ class ProtonGen(MetaGen, ExecGen):
         self.parser.add_argument('--port', help='Port for PROTON to launch the interface onto. Defaults to 3000.')
         self.parser.add_argument('--forceStart', help='Do not create a new MIC Stack; but, executes PROTON stack '
                                                       'by re-generating main with existing iFace!')
+        self.parser.add_argument('--bootstrap', help='Bootstrap pre-requisites before PROTON kick-starts.')
         self.proton_args = self.parser.parse_args()
 
         if self.proton_args.mic_name is None:
+
+            if self.proton_args.bootstrap is not None:
+                self.bootstrap_sqlite()
+
             if self.proton_args.forceStart is not None:
                 self.bootstrap_sqlite()
                 self.generate_executor(port=3000)
