@@ -186,7 +186,7 @@ then
             echo -e "\e[33m micName not provided!, ProtonGen will try to invoke Gunicorn with available routes @ port 3000! \e[0m"
             echo -e "-------------------------------------------------------------------------------------------------------------------"
             pkill gunicorn
-            python protongen.py --bootstrap y
+            python protongen.py
             if [[ -z $numberOfThreads ]]
             then
                 gunicorn -b $PROTON_BIND_ADDRESS:$PROTON_TARGET_PORT main:app --reload
