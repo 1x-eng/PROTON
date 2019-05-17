@@ -51,24 +51,31 @@ class ProtonGen(MetaGen, ExecGen):
         self.parser.add_argument('--bootstrap', help='Bootstrap pre-requisites before PROTON kick-starts.')
         self.proton_args = self.parser.parse_args()
 
-        if self.proton_args.mic_name is None:
+        try:
+            if self.proton_args.mic_name is None:
 
-            if self.proton_args.bootstrap is not None:
-                self.bootstrap_sqlite()
+                if self.proton_args.bootstrap is not None:
+                    self.bootstrap_sqlite()
 
-            if self.proton_args.forceStart is not None:
-                self.bootstrap_sqlite()
-                self.generate_executor(port=3000)
-                print(Fore.GREEN + 'PROTON initialized with existing iFace stack! Starting service '
-                                   '@ 3000' + Style.RESET_ALL)
-                self.logger.info('PROTON initialized with existing iFace stack! Starting service @ 3000')
+                elif self.proton_args.forceStart is not None:
+                    self.bootstrap_sqlite()
+                    self.generate_executor(port=3000)
+                    print(Fore.GREEN + 'PROTON initialized with existing iFace stack! Starting service '
+                                       '@ 3000' + Style.RESET_ALL)
+                    self.logger.info('PROTON initialized with existing iFace stack! Starting service @ 3000')
+                else:
+                    raise (Fore.LIGHTRED_EX + '[PROTON-GEN] - There is no name provided for Proton to initiate. '
+                                              'Please provide a valid mic_name using --mic_name argument' + Style.RESET_ALL)
             else:
-                raise (Fore.LIGHTRED_EX + '[PROTON-GEN] - There is no name provided for Proton to initiate. '
-                                          'Please provide a valid mic_name using --mic_name argument' + Style.RESET_ALL)
-        else:
-            if self.proton_args.port is None:
-                self.proton_args.port = 8000
-            self.__creator(self.proton_args.mic_name, self.proton_args.port)
+                if self.proton_args.port is None:
+                    self.proton_args.port = 8000
+                self.__creator(self.proton_args.mic_name, self.proton_args.port)
+                raise ('[ProtonGen] Error during protonGen initialization for mic_name '
+                       '{}.'.format(self.proton_args.mic_name))
+
+        except Exception as e:
+            self.logger.exception('[ProtonGen] Error during protonGen initialization. Stacktrace to follow')
+            self.logger.exception(str(e))
 
     def __creator(self, mic_name, port):
 
@@ -90,3 +97,5 @@ class ProtonGen(MetaGen, ExecGen):
                    '{}. Details: {}'.format(mic_name, str(e)) + Style.RESET_ALL)
 
 
+if __name__ == '__main__':
+    ProtonGen()
