@@ -59,13 +59,11 @@ class MetaGen(CacheManager):
 
         try:
             if ProtonConfig.TARGET_DB == 'sqlite':
-                print('SQLITE bootstrap starting...')
                 engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
                 metadata = MetaData(bind=engine)
                 # Create User & Login registry if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_user_registry'):
                     # Create default PROTON user registry.
-                    print('Creating PROTON_user_registry')
                     Table('PROTON_user_registry', metadata,
                           Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                           Column('first_name', String, nullable=False),
@@ -76,7 +74,6 @@ class MetaGen(CacheManager):
 
                 if not engine.dialect.has_table(engine, 'PROTON_login_registry'):
                     # Create default PROTON user registry.
-                    print('Creating PROTON_login_registry')
                     Table('PROTON_login_registry', metadata,
                           Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                           Column('user_registry_id', Integer, ForeignKey('PROTON_user_registry.id', onupdate="CASCADE",
@@ -89,7 +86,6 @@ class MetaGen(CacheManager):
                 # Create default table if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_default'):
                     # Create a table with the appropriate columns
-                    print('Creating PROTON_default')
                     Table('PROTON_default', metadata,
                           Column('id', Integer, primary_key=True, nullable=False, autoincrement=True),
                           Column('Creation_Date_Time', DateTime),
@@ -98,7 +94,6 @@ class MetaGen(CacheManager):
                           Column('Target_Database', String),
                           Column('Target_Table', String)),
                     metadata.create_all()
-                    print('SQLite bootstrapped successfully.')
                 return True
             return False
         except Exception as e:
