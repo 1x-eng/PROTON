@@ -124,7 +124,6 @@ else
     REDIS_TARGET_PORT=6379
     PROTON_BIND_ADDRESS=0.0.0.0
     PROTON_TARGET_PORT=3000
-    PROTON_SQLITE_VOLUME_MOUNT='/home/PROTON/proton-db/proton-sqlite.db'
 
     while [[ -z "$PG_USERNAME" ]]
         do
