@@ -84,7 +84,6 @@ class ProtonKill(CacheManager):
         except Exception as e:
             self.logger.exception('PROTON MIC destruction for mic_name {} is unsuccessful. '
                                   'Details: {}'.format(mic_name, str(e)))
-            raise (Fore.LIGHTRED_EX + '[PROTON MIC Kill] - Details: {}'.format(str(e)) + Style.RESET_ALL)
 
 
 if __name__ == '__main__':

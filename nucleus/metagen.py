@@ -61,6 +61,7 @@ class MetaGen(CacheManager):
             if ProtonConfig.TARGET_DB == 'sqlite':
                 engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
                 metadata = MetaData(bind=engine)
+                self.logger.info('Bootstrapping key tables for PROTONs SQLITE')
                 # Create User & Login registry if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_user_registry'):
                     # Create default PROTON user registry.
@@ -71,6 +72,7 @@ class MetaGen(CacheManager):
                           Column('email', String, nullable=False),
                           Column('creation_date_time', DateTime, nullable=False))
                     metadata.create_all()
+                    self.logger.info('PROTON_user_registry created.')
 
                 if not engine.dialect.has_table(engine, 'PROTON_login_registry'):
                     # Create default PROTON user registry.
@@ -82,6 +84,7 @@ class MetaGen(CacheManager):
                           Column('password', String, nullable=False),
                           Column('last_login_date_time', DateTime, nullable=True))
                     metadata.create_all()
+                    self.logger.info('PROTON_login_registry created.')
 
                 # Create default table if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_default'):
@@ -92,8 +95,10 @@ class MetaGen(CacheManager):
                           Column('Deletion_Date_Time', DateTime, nullable=True),
                           Column('Target_MIC_Stack', String),
                           Column('Target_Database', String),
-                          Column('Target_Table', String)),
+                          Column('Target_Table', String))
                     metadata.create_all()
+                    self.logger.info('PROTON_default created.')
+                self.logger.info('SQLite is bootstrapped and ready to serve PROTON.')
                 return True
             return False
         except Exception as e:
