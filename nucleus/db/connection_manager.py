@@ -53,9 +53,9 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
     __pg_connection_pool = None
     __sqlite_connection = {}
 
-    logger = LogUtilities().get_logger(log_file_name='connection_manager_logs',
-                                       log_file_path='{}/trace/connection_manager_logs.log'.format(
-                                           ProtonConfig.ROOT_DIR))
+    connection_manager_logger = LogUtilities().get_logger(log_file_name='connection_manager_logs',
+                                                          log_file_path='{}/trace/connection_manager_logs.log'.format(
+                                                              ProtonConfig.ROOT_DIR))
 
     def __init__(self):
         super(ConnectionManager, self).__init__()
@@ -68,15 +68,17 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
                 with open('{}/proton_vars/proton_sqlite_config.txt'.format(ProtonConfig.ROOT_DIR)) as file:
                     dialect = file.read().replace('\n', '')
                     cls.__sqlite_connection = sqlite3.connect(dialect)
-                    cls.logger.info('[connection_manager]: SQLITE connection generator invoked for the first time. '
-                                    'Connection successfully generated and maintained at class level.')
+                    cls.connection_manager_logger.info(
+                        '[connection_manager]: SQLITE connection generator invoked for the first time. '
+                        'Connection successfully generated and maintained at class level.')
             except Exception as e:
-                cls.logger.exception(
+                cls.connection_manager_logger.exception(
                     '[connection_manager]: SQLite connection could not be established. Stack trace to follow.')
-                cls.logger.error(str(e))
+                cls.connection_manager_logger.error(str(e))
         else:
-            cls.logger.info('[connection_manager]: SQLITE connection manager is called subsequently. '
-                            'Connection previously generated will be reused.')
+            cls.connection_manager_logger.info(
+                '[connection_manager]: SQLITE connection manager is called subsequently. '
+                'Connection previously generated will be reused.')
         return cls.__sqlite_connection
 
     @classmethod
@@ -95,14 +97,17 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
                                                                                        connection_dialect['port'])
                 # connection_pool with 25 live connections. Tweak this according to convenience.
                 cls.__pg_connection_pool = SimpleConnectionPool(1, 25, dsn=dsn)
-                cls.logger.info('[connection_manager]: PG Pool class method is invoked for first time. '
-                                'PG Pool will be initialized for Postgres engine of PROTON.')
+                cls.connection_manager_logger.info(
+                    '[connection_manager]: PG Pool class method is invoked for first time. '
+                    'PG Pool will be initialized for Postgres engine of PROTON.')
             except Exception as e:
-                cls.logger.info('[connection_manager]: Error creating a PG Pool. Stack trace to follow.')
-                cls.logger.exception(str(e))
+                cls.connection_manager_logger.info(
+                    '[connection_manager]: Error creating a PG Pool. Stack trace to follow.')
+                cls.connection_manager_logger.exception(str(e))
         else:
-            cls.logger.info('[connection_manager]: Request for PG Pool method is invoked subsequently. '
-                            'PG Pool previously initialized for all PROTON supported engines is returned.')
+            cls.connection_manager_logger.info(
+                '[connection_manager]: Request for PG Pool method is invoked subsequently. '
+                'PG Pool previously initialized for all PROTON supported engines is returned.')
 
         return cls.__pg_connection_pool
 
@@ -132,8 +137,9 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
             )
             logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
 
-            cls.logger.info('[connection_manager]: Alchemy engine class method is invoked for first time. '
-                            'Alchemy engine will be initialized for all PROTON supported engines.')
+            cls.connection_manager_logger.info(
+                '[connection_manager]: Alchemy engine class method is invoked for first time. '
+                'Alchemy engine will be initialized for all PROTON supported engines.')
 
             from sqlalchemy_utils import database_exists, create_database
 
@@ -170,12 +176,14 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
                 # create database if doesnt exist; as per definition in database.ini
                 if not database_exists(cls.__alchemy_engine_store[connection].url):
                     create_database(cls.__alchemy_engine_store[connection].url)
-                    cls.logger.info('[connection_manager]: Proton has created target database in {} as defined in '
-                                    'databaseConfig.ini'.format(connection))
+                    cls.connection_manager_logger.info(
+                        '[connection_manager]: Proton has created target database in {} as defined in '
+                        'databaseConfig.ini'.format(connection))
 
         else:
-            cls.logger.info('[connection_manager]: Alchemy engine class method is invoked subsequently. '
-                            'Alchemy engine previously initialized for all PROTON supported engines is returned.')
+            cls.connection_manager_logger.info(
+                '[connection_manager]: Alchemy engine class method is invoked subsequently. '
+                'Alchemy engine previously initialized for all PROTON supported engines is returned.')
 
         return cls.__alchemy_engine_store
 
@@ -190,7 +198,8 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
 
         try:
             pg_connection_pool = cls.__pg_pool()
-            cls.logger.info('[connection_manager]: Postgres operational. PROTON will successfully include PG!')
+            cls.connection_manager_logger.info(
+                '[connection_manager]: Postgres operational. PROTON will successfully include PG!')
             connection_manager.update({'postgresql': {
                 'getCursor': cls.__pg_cursor,
                 'pool': pg_connection_pool
@@ -198,10 +207,10 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
 
         except Exception as e:
             connection_manager.update({'postgresql': None})
-            cls.logger.exception(
+            cls.connection_manager_logger.exception(
                 '[connection_manager]: Postgres is either not installed or not configured on port provided'
                 'within ini file. PROTON will not include postgres. Stack trace to follow.')
-            cls.logger.error(str(e))
+            cls.connection_manager_logger.error(str(e))
 
         # TODO: Add support for mysql and sqlserver
         connection_manager.update({'mysql': None, 'sqlServer': None})
@@ -212,17 +221,19 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
         try:
             if not engine_copy.dialect.has_schema(engine_copy, schema_name):
                 engine_copy.execute(schema.CreateSchema(schema_name))
-                cls.logger.info('[connection_manager]: Successfully generated schema: {} in respective database of '
-                                'postgresql'.format(schema_name))
+                cls.connection_manager_logger.info(
+                    '[connection_manager]: Successfully generated schema: {} in respective database of '
+                    'postgresql'.format(schema_name))
                 return True
-            cls.logger.info('[connection_manager]: Schema: {} already exists in respective database of '
-                            'postgresql'.format(schema_name))
+            cls.connection_manager_logger.info(
+                '[connection_manager]: Schema: {} already exists in respective database of '
+                'postgresql'.format(schema_name))
             return True
         except Exception as e:
-            cls.logger.exception(
+            cls.connection_manager_logger.exception(
                 '[connection_manager]: Error generating schema {} in Postgres. Stack trace to follow.'.format(
                     schema_name))
-            cls.logger.error(str(e))
+            cls.connection_manager_logger.error(str(e))
 
     @staticmethod
     def __pg_cursor_generator(connection_store):

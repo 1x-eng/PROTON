@@ -46,8 +46,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
         super( Ctrl_{{ controllerName }}, self ).__init__()
 
         self.controller_processor = self.__processor
-        self.logger = self.get_logger(log_file_name='{{ controllerName }}',
-                                      log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
+        self.ctrl_{{ controllerName }}_logger = self.get_logger(log_file_name='{{ controllerName }}',
+                                                                log_file_path='{}/trace/{{ controllerName }}.log'.format(self.ROOT_DIR))
         self.target_db_table = self.__targetTable()
 
     def __targetTable(self):
@@ -58,8 +58,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
 
             return target_table_for_mic
         except Exception as e:
-            self.logger.exception('[{{ controllerName }}] - Exception while getting target table for {{ modelName }}. '
-                                  'Details: {}'.format(str(e)))
+            self.ctrl_{{ controllerName }}_logger.exception('[{{ controllerName }}] - Exception while getting target table for {{ modelName }}. '
+                                                            'Details: {}'.format(str(e)))
         finally:
             return target_table_for_mic
 
@@ -152,8 +152,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
                 results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
                 return results
             except Exception as e:
-                self.logger.exception('[{{ controllerName }}] - Exception while getting model data. '
-                                      'Details: {}'.format(str(e)))
+                self.ctrl_{{ controllerName }}_logger.exception('[{{ controllerName }}] - Exception while getting model data. '
+                                                                'Details: {}'.format(str(e)))
 
         def proton_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
             try:
@@ -162,8 +162,8 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
                     'Message': 'Insert operation to {}.{} table in {} database under {} '
                     'is successful'.format(schema_name, table_name, db_name, db_flavour)})
             except Exception as e:
-                self.logger.exception('[{{ controllerName }}] - Exception while inserting data. '
-                                      'Details: {}'.format(str(e)))
+                self.ctrl_{{ controllerName }}_logger.exception('[{{ controllerName }}] - Exception while inserting data. '
+                                                                'Details: {}'.format(str(e)))
 
         def proton_multi_threaded_http_op(*args):
             """
@@ -205,10 +205,10 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
                     return get_results.json()
 
                 except Exception as e:
-                    self.logger.exception(
+                    self.ctrl_{{ controllerName }}_logger.exception(
                         '[{{ controllerName }}] - Error making a requests GET call to {}. '
                         'Stack trace to follow'.format(url))
-                    self.logger.exception(str(e))
+                    self.ctrl_{{ controllerName }}_logger.exception(str(e))
 
             default_concurrency_response = {'message': 'This is default response for Multi-threaded'
                                                        ' HTTP operation using PROTON. The following'

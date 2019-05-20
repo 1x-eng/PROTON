@@ -53,8 +53,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         self.__cursor_engine = self.connection_store()
         self.__alchemy_engine = self.alchemy_engine()
 
-        self.logger = self.get_logger(log_file_name='{{ modelName }}',
-                                      log_file_path='{}/trace/{{ modelName }}.log'.format(self.ROOT_DIR))
+        self.model_{{ modelName }}_logger = self.get_logger(log_file_name='{{ modelName }}',
+                                                            log_file_path='{}/trace/{{ modelName }}.log'.format(self.ROOT_DIR))
 
         self.getter = self.__getter()
         self.transaction = self.__transaction()
@@ -112,7 +112,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     return results_df.to_json(orient='records')
                 except Exception as e:
                     connection.rollback()
-                    self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
                 finally:
@@ -127,7 +127,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                         return json.dumps(results)
 
                 except Exception as e:
-                    self.logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
 
@@ -174,12 +174,12 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                            if_exists='append', schema=schema_name)
                             else:
-                                self.logger.info('[{{modelName}}]: Schema specified not found. Insert operation could '
+                                self.model_{{ modelName }}_logger.info('[{{modelName}}]: Schema specified not found. Insert operation could '
                                                  'not be completed. Check connectionManager logs for stack trace.')
                         transaction.commit()
                     connection.close()
                 except Exception as e:
-                    self.logger.exception('[{{modelName}}]: {}'.format(str(e)))
+                    self.model_{{ modelName }}_logger.exception('[{{modelName}}]: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
                     if connection:
                         connection.close()
@@ -187,7 +187,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     if connection:
                         connection.close()
             else:
-                        self.logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
+                        self.model_{{ modelName }}_logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
                                               'of dictionaries is consistent in terms of `keys`.')
                         print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
                               'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
@@ -227,7 +227,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     cursor.commit()
                     return True
             except Exception as e:
-                self.logger.exception('[{{modelName}} - Exception during UPDATE operation. Details: {}]'.format(str(e)))
+                self.model_{{ modelName }}_logger.exception('[{{modelName}} - Exception during UPDATE operation. Details: {}]'.format(str(e)))
                 print(Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
                       '{}]'.format(str(e)) + Style.RESET_ALL)
 

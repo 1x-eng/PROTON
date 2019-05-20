@@ -37,8 +37,8 @@ class IextractorGen(LogUtilities, ProtonConfig):
 
     def __init__(self):
         super(IextractorGen, self).__init__()
-        self.logger = self.get_logger(log_file_name='iextractor_logs',
-                                      log_file_path='{}/trace/iextractor_logs.log'.format(self.ROOT_DIR))
+        self.iextractorgen_logger = self.get_logger(log_file_name='iextractor_logs',
+                                                    log_file_path='{}/trace/iextractor_logs.log'.format(self.ROOT_DIR))
         self.__iface_store_root = '{}/nucleus/istore'.format(self.ROOT_DIR)
         self.__jinja_env = Environment(loader=FileSystemLoader('{}/nucleus/templates/'.format(self.ROOT_DIR)))
         self.__iface_extractor_template = self.__jinja_env.get_template('iface_method_extractor_template.py')
@@ -55,7 +55,8 @@ class IextractorGen(LogUtilities, ProtonConfig):
                     file_name_contents = (filename.split('.py')[0].split('_'))
                     desired_name = '_'.join(file_name_contents[1:])
                     file_name = filename.split('.py')[0]
-                    self.logger.info('i_extractor updated i_method_fetch.py with mic_name {}'.format(desired_name))
+                    self.iextractorgen_logger.info(
+                        'i_extractor updated i_method_fetch.py with mic_name {}'.format(desired_name))
                     controllers.append({'micName': desired_name, 'fileName': file_name,
                                         'controllerName': 'Ctrl_{}'.format(desired_name)})
 
