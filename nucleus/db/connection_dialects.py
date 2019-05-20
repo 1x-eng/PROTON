@@ -46,9 +46,9 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
     NOTE: ConnectionDialect is reliant on databaseConfig.ini to establish valid connection. Please ensure
     you don't delete any existing config parameters.
     """
-    logger = LogUtilities().get_logger(log_file_name='connection_dialects_logs',
-                                       log_file_path='{}/trace/connection_dialects_logs.log'.format(
-                                                                                             ProtonConfig.ROOT_DIR))
+    connection_dialects_logger = LogUtilities().get_logger(log_file_name='connection_dialects_logs',
+                                                           log_file_path='{}/trace/connection_dialects_logs.log'.format(
+                                                               ProtonConfig.ROOT_DIR))
 
     @classmethod
     def dialect_store(cls):
@@ -77,8 +77,9 @@ class ConnectionDialects(ProtonConfig, LogUtilities):
                 for param in params:
                     db_dialect[section][param[0]] = param[1]
             else:
-                cls.logger.exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
-                                     'file.'.format(section))
+                cls.connection_dialects_logger.exception(
+                    '[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
+                    'file.'.format(section))
                 raise Exception('[ConnectionDialects]: Section {} is not found in "databaseConfig.ini" '
                                 'file.'.format(section))
             return db_dialect

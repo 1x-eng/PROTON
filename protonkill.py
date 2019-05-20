@@ -42,10 +42,11 @@ class ProtonKill(CacheManager):
     re-generating or altering created dependency for deleted mic from main.py. This will have to be accounted for in
     execgen.py
     """
+
     def __init__(self):
         super(ProtonKill, self).__init__()
-        self.logger = self.get_logger(log_file_name='proton_kill_logs',
-                                      log_file_path='{}/trace/proton_kill_logs.log'.format(self.ROOT_DIR))
+        self.protonkill_logger = self.get_logger(log_file_name='proton_kill_logs',
+                                                 log_file_path='{}/trace/proton_kill_logs.log'.format(self.ROOT_DIR))
         self.parser = argparse.ArgumentParser()
         self.parser.add_argument('--micNameToKill')
         self.proton_args = self.parser.parse_args()
@@ -67,7 +68,8 @@ class ProtonKill(CacheManager):
             for method in iface_methods_in_proton_stack:
                 self.cache_processor()['delete_from_cache'](cache_instance, 'c_{}_{}'.format(mic_name, method))
                 self.cache_processor()['delete_from_cache'](cache_instance, 'c_setTime_{}_{}'.format(mic_name, method))
-                self.logger.info('Cache entry for mic stack of "{}" is deleted successfully!'.format(mic_name))
+                self.protonkill_logger.info(
+                    'Cache entry for mic stack of "{}" is deleted successfully!'.format(mic_name))
 
             model_path = '{}/mic/models/{}'.format(self.ROOT_DIR, mic_name)
             controller_path = '{}/mic/controllers/controller_{}.py'.format(self.ROOT_DIR, mic_name)
@@ -78,16 +80,13 @@ class ProtonKill(CacheManager):
                 shutil.rmtree(model_path, ignore_errors=True)
                 os.remove(controller_path)
                 os.remove(iface_controller_path)
-                self.logger.info('PROTON MIC for {} is killed successfully!'.format(mic_name))
+                self.protonkill_logger.info('PROTON MIC for {} is killed successfully!'.format(mic_name))
                 print(Fore.YELLOW + 'PROTON MIC for {} is killed successfully!'.format(mic_name) + Style.RESET_ALL)
 
         except Exception as e:
-            self.logger.exception('PROTON MIC destruction for mic_name {} is unsuccessful. '
-                                  'Details: {}'.format(mic_name, str(e)))
+            self.protonkill_logger.exception('PROTON MIC destruction for mic_name {} is unsuccessful. '
+                                             'Details: {}'.format(mic_name, str(e)))
 
 
 if __name__ == '__main__':
     ProtonKill()
-
-
-

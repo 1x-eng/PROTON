@@ -36,8 +36,8 @@ class MetaGen(CacheManager):
 
     def __init__(self):
         super(MetaGen, self).__init__()
-        self.logger = self.get_logger(log_file_name='meta_gen_logs',
-                                      log_file_path='{}/trace/meta_gen_logs.log'.format(self.ROOT_DIR))
+        self.metagen_logger = self.get_logger(log_file_name='meta_gen_logs',
+                                              log_file_path='{}/trace/meta_gen_logs.log'.format(self.ROOT_DIR))
         self.__models_root = '{}/mic/models'.format(self.ROOT_DIR)
         self.__controllers_root = '{}/mic/controllers'.format(self.ROOT_DIR)
         self.__main_executable = '{}/main.py'.format(self.ROOT_DIR)
@@ -61,7 +61,7 @@ class MetaGen(CacheManager):
             if ProtonConfig.TARGET_DB == 'sqlite':
                 engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
                 metadata = MetaData(bind=engine)
-                self.logger.info('Bootstrapping key tables for PROTONs SQLITE')
+                self.metagen_logger.info('Bootstrapping key tables for PROTONs SQLITE')
                 # Create User & Login registry if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_user_registry'):
                     # Create default PROTON user registry.
@@ -72,7 +72,7 @@ class MetaGen(CacheManager):
                           Column('email', String, nullable=False),
                           Column('creation_date_time', DateTime, nullable=False))
                     metadata.create_all()
-                    self.logger.info('PROTON_user_registry created.')
+                    self.metagen_logger.info('PROTON_user_registry created.')
 
                 if not engine.dialect.has_table(engine, 'PROTON_login_registry'):
                     # Create default PROTON user registry.
@@ -84,7 +84,7 @@ class MetaGen(CacheManager):
                           Column('password', String, nullable=False),
                           Column('last_login_date_time', DateTime, nullable=True))
                     metadata.create_all()
-                    self.logger.info('PROTON_login_registry created.')
+                    self.metagen_logger.info('PROTON_login_registry created.')
 
                 # Create default table if not exists.
                 if not engine.dialect.has_table(engine, 'PROTON_default'):
@@ -97,14 +97,15 @@ class MetaGen(CacheManager):
                           Column('Target_Database', String),
                           Column('Target_Table', String))
                     metadata.create_all()
-                    self.logger.info('PROTON_default created.')
-                self.logger.info('SQLite is bootstrapped and ready to serve PROTON.')
+                    self.metagen_logger.info('PROTON_default created.')
+                self.metagen_logger.info('SQLite is bootstrapped and ready to serve PROTON.')
                 return True
             return False
         except Exception as e:
-            self.logger.exception('[Metagen]: Could not successfully create PROTON default db & PROTON default table. '
-                                  'Stack trace to follow.')
-            self.logger.exception(str(e))
+            self.metagen_logger.exception(
+                '[Metagen]: Could not successfully create PROTON default db & PROTON default table. '
+                'Stack trace to follow.')
+            self.metagen_logger.exception(str(e))
             return False
 
     def __meta_generator(self, mic_name):
@@ -121,7 +122,7 @@ class MetaGen(CacheManager):
         from datetime import datetime
 
         try:
-            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR,  mic_name)) as f:
+            with open('{}/proton_vars/target_table_for_{}.txt'.format(self.ROOT_DIR, mic_name)) as f:
                 target_table_for_mic = f.read().replace('\n', '')
 
             engine = ConnectionManager.alchemy_engine()[ProtonConfig.TARGET_DB]
@@ -140,10 +141,11 @@ class MetaGen(CacheManager):
                 else:
                     raise Exception('SQLite is missing key tables required for PROTON to function.')
         except Exception as e:
-            self.logger.exception('[Metagen]: Could not successfully create PROTON default db & PROTON default table OR'
-                                  ' insert new row in PROTON default db for MIC stack - {}. Stack trace to '
-                                  'follow.'.format(mic_name))
-            self.logger.exception(str(e))
+            self.metagen_logger.exception(
+                '[Metagen]: Could not successfully create PROTON default db & PROTON default table OR'
+                ' insert new row in PROTON default db for MIC stack - {}. Stack trace to '
+                'follow.'.format(mic_name))
+            self.metagen_logger.exception(str(e))
 
         # Create MIC Stack
         new_model = self.__models_root + '/{}'.format(mic_name)
@@ -158,12 +160,11 @@ class MetaGen(CacheManager):
                 with open(self.__controllers_root + '/controller_{}.py'.format(mic_name), 'w+') as cf:
                     cf.write(self.__controllers_template.render(modelName=mic_name, controllerName=mic_name))
 
-                return('Meta Structure of models & controllers for {} successfully created!'.format(mic_name))
+                return ('Meta Structure of models & controllers for {} successfully created!'.format(mic_name))
             else:
                 raise Exception('[MetaGen]: File/Folder named {} already exists in path {}. MetaGen will require '
                                 'unique names for it to generate MIC structure.'.format(mic_name, new_model))
 
         except Exception as e:
-            self.logger.exception('[MetaGen]: Exception during instantiating MIC stack for {}. '
-                                  'Details: {}'.format(mic_name, str(e)))
-
+            self.metagen_logger.exception('[MetaGen]: Exception during instantiating MIC stack for {}. '
+                                          'Details: {}'.format(mic_name, str(e)))

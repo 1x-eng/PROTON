@@ -42,8 +42,8 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
     def __init__(self):
         super(ProtonLogin, self).__init__()
         self.__alchemy_engine = self.alchemy_engine()
-        self.logger = self.get_logger(log_file_name='iam_login_logs.log',
-                                      log_file_path='{}/trace/iam_login_logs.log'.format(self.ROOT_DIR))
+        self.iam_login_logger = self.get_logger(log_file_name='iam_login_logs.log',
+                                                log_file_path='{}/trace/iam_login_logs.log'.format(self.ROOT_DIR))
 
     def login(self, db_flavour, login_payload, db_name='proton', schema_name='iam', table_name='PROTON_login_registry'):
         """
@@ -101,8 +101,9 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                         existence_results = (connection.execute(query_existence)).fetchall()
 
                         if len(existence_results) == 0:
-                            self.logger.info('[ProtonLogin]:[SQLite] Invalid user_name. Proton denies login for '
-                                             '{}'.format(login_payload['user_name']))
+                            self.iam_login_logger.info(
+                                '[ProtonLogin]:[SQLite] Invalid user_name. Proton denies login for '
+                                '{}'.format(login_payload['user_name']))
                             return {
                                 'status': False,
                                 'message': 'Invalid user_name. Please try again with valid credentials.',
@@ -116,16 +117,18 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                             password_match = self.verify_password(stored_password, login_payload['password'])
 
                             if not password_match:
-                                self.logger.info('[ProtonLogin]:[SQLite] Invalid password. Proton denies login for '
-                                                 '{}'.format(login_payload['user_name']))
+                                self.iam_login_logger.info(
+                                    '[ProtonLogin]:[SQLite] Invalid password. Proton denies login for '
+                                    '{}'.format(login_payload['user_name']))
                                 return {
                                     'status': False,
                                     'message': 'Invalid password. Please try again with valid credentials',
                                     'token': None
                                 }
                             else:
-                                self.logger.info('[ProtonLogin]:[SQLite] Valid login. Proton login successful for '
-                                                 '{}'.format(login_payload['user_name']))
+                                self.iam_login_logger.info(
+                                    '[ProtonLogin]:[SQLite] Valid login. Proton login successful for '
+                                    '{}'.format(login_payload['user_name']))
                                 token = self.generate_token(login_payload['user_name'])
                                 return {
                                     'status': True,
@@ -146,8 +149,9 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                             existence_results = (connection.execute(query_existence)).fetchall()
 
                             if len(existence_results) == 0:
-                                self.logger.info('[ProtonLogin]:[Postgresql] Invalid user_name. Proton denies login '
-                                                 'for {}'.format(login_payload['user_name']))
+                                self.iam_login_logger.info(
+                                    '[ProtonLogin]:[Postgresql] Invalid user_name. Proton denies login '
+                                    'for {}'.format(login_payload['user_name']))
                                 return {
                                     'status': False,
                                     'message': 'Invalid user_name. Please try again with valid credentials.',
@@ -161,7 +165,7 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                 password_match = self.verify_password(stored_password, login_payload['password'])
 
                                 if not password_match:
-                                    self.logger.info(
+                                    self.iam_login_logger.info(
                                         '[ProtonLogin]:[Postgresql] Invalid password. Proton denies login for '
                                         '{}'.format(login_payload['user_name']))
                                     return {
@@ -170,7 +174,7 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                         'token': None
                                     }
                                 else:
-                                    self.logger.info(
+                                    self.iam_login_logger.info(
                                         '[ProtonLogin]:[Postgresql] Valid login. Proton login successful for '
                                         '{}'.format(login_payload['user_name']))
                                     token = self.generate_token(login_payload['user_name'])
@@ -180,15 +184,16 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                         'token': token
                                     }
                         else:
-                            self.logger.info('[ProtonLogin]:[Postgresql] {} schema does not exist. Proton denies login '
-                                             'for {}'.format(schema_name, login_payload['user_name']))
+                            self.iam_login_logger.info(
+                                '[ProtonLogin]:[Postgresql] {} schema does not exist. Proton denies login '
+                                'for {}'.format(schema_name, login_payload['user_name']))
                             return {
                                 'status': False,
                                 'message': 'Login not possible due to server side error. Please try again in sometime.',
                                 'token': None
                             }
                     else:
-                        self.logger.info(
+                        self.iam_login_logger.info(
                             '[ProtonLogin]: New Login is unsuccessful due to unsupported db_flavour. Proton '
                             'was asked for {} to login; by, {}'.format(db_flavour,
                                                                        login_payload['user_name']))
@@ -202,8 +207,8 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                 connection.close()
 
             except Exception as e:
-                self.logger.info('[ProtonLogin]: Exception while loggin in User. Stack trace to follow')
-                self.logger.exception(str(e))
+                self.iam_login_logger.info('[ProtonLogin]: Exception while loggin in User. Stack trace to follow')
+                self.iam_login_logger.exception(str(e))
 
             finally:
                 if connection:

@@ -38,7 +38,7 @@ class ExecGen(CacheManager):
 
     def __init__(self):
         super(ExecGen, self).__init__()
-        self.logger = self.get_logger(log_file_name='execGen_logs',
+        self.execgen_logger = self.get_logger(log_file_name='execGen_logs',
                                       log_file_path='{}/trace/execGen_logs.log'.format(self.ROOT_DIR))
         self.__jinja_env = Environment(loader=FileSystemLoader('{}/nucleus/templates/'.format(self.ROOT_DIR)))
         self.__iface_controllers_root = '{}/mic/iface/controllers'.format(self.ROOT_DIR)
@@ -96,5 +96,5 @@ class ExecGen(CacheManager):
                 mf.write(self.__executor_template.render(ifaceControllers=iface_controllers, routes=routes, port=port))
 
         except Exception as e:
-            self.logger.exception('[ExecGen] - Exception while generating MAIN for {} MIC stack. '
-                                  'Details: {}'.format(self.ROOT_DIR, str(e)))
+            self.execgen_logger.exception('[ExecGen] - Exception while generating MAIN for {} MIC stack. '
+                                          'Details: {}'.format(self.ROOT_DIR, str(e)))

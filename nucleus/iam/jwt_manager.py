@@ -31,15 +31,15 @@ __version__ = "1.0"
 
 
 class JWTManager:
-
     from configuration import ProtonConfig
     from nucleus.generics.log_utilities import LogUtilities
     from nucleus.iam.password_manager import PasswordManager
     lg = LogUtilities()
     pm = PasswordManager()
 
-    logger = lg.get_logger(log_file_name='token_authenticator',
-                           log_file_path='{}/trace/token_authenticator.log'.format(ProtonConfig.ROOT_DIR))
+    token_authenticator_logger = lg.get_logger(log_file_name='token_authenticator',
+                                               log_file_path='{}/trace/token_authenticator.log'.format(
+                                                   ProtonConfig.ROOT_DIR))
 
     # In proton remote deployment, this must be k8s secret.
     with open('{}/nucleus/iam/secrets/PROTON_JWT_SECRET.txt'.format(ProtonConfig.ROOT_DIR), 'r') as proton_secret:
@@ -71,16 +71,16 @@ class JWTManager:
             try:
                 payload = jwt.decode(jwt_token, cls.app_secret)
             except (jwt.DecodeError, jwt.ExpiredSignatureError) as e:
-                cls.logger.exception('[JWT Manager]: Authentication failed due to : {}'.format(str(e)))
+                cls.token_authenticator_logger.exception(
+                    '[JWT Manager]: Authentication failed due to : {}'.format(str(e)))
                 return {
                     'status': False,
                     'message': 'Token invalid {}'.format(str(e)),
                     'encode_value': None
                 }
-            cls.logger.info('[JWT Manager]: Authentication succeded.')
+            cls.token_authenticator_logger.info('[JWT Manager]: Authentication succeded.')
             return {
                 'status': True,
                 'message': 'Token valid',
                 'encode_value': payload['encode_value']
             }
-

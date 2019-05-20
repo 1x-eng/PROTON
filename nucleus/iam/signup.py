@@ -47,9 +47,8 @@ class ProtonSignup(ConnectionManager, PasswordManager):
     def __init__(self):
         super(ProtonSignup, self).__init__()
         self.__alchemy_engine = self.alchemy_engine()
-        self.logger = self.get_logger(log_file_name='iam_signup_logs.log',
-                                      log_file_path='{}/trace/iam_signup_logs.log'.format(self.ROOT_DIR))
-
+        self.iam_signup_logger = self.get_logger(log_file_name='iam_signup_logs.log',
+                                                 log_file_path='{}/trace/iam_signup_logs.log'.format(self.ROOT_DIR))
 
     def signup(self, db_flavour, input_payload, db_name='proton', schema_name='iam', table_name='PROTON_user_registry'):
         """
@@ -73,7 +72,7 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                 :return: Boolean
                 """
                 validity_store = []
-                for k,v in payload.items():
+                for k, v in payload.items():
                     if len(str(v)) > 0:
                         validity_store.append(True)
                     else:
@@ -140,17 +139,19 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                 df_login_payload.to_sql('PROTON_login_registry', self.__alchemy_engine[db_flavour],
                                                         index=False, if_exists='append')
                                 transaction.commit()
-                                self.logger.info('[ProtonSignup]: New signup of {} successfully completed in '
-                                                 'Sqlite.'.format(login_payload['user_name']))
+                                self.iam_signup_logger.info(
+                                    '[ProtonSignup]: New signup of {} successfully completed in '
+                                    'Sqlite.'.format(login_payload['user_name']))
                                 return {
                                     'status': True,
                                     'message': 'Signup is successful! Please try login.'
                                 }
                             else:
-                                self.logger.info('[ProtonSignup]: New signup from {} for {} username with Sqlite '
-                                                 'rolled back due to pre-existing '
-                                                 'user_name.'.format(signup_payload['email'],
-                                                                     login_payload['user_name']))
+                                self.iam_signup_logger.info(
+                                    '[ProtonSignup]: New signup from {} for {} username with Sqlite '
+                                    'rolled back due to pre-existing '
+                                    'user_name.'.format(signup_payload['email'],
+                                                        login_payload['user_name']))
                                 return {
                                     'status': False,
                                     'message': 'Username {} already exist. Please try '
@@ -158,9 +159,10 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                 }
 
                         else:
-                            self.logger.info('[ProtonSignup]: New signup from {} for {} user_name with Sqlite not '
-                                             'allowed due to pre-existing email.'.format(signup_payload['email'],
-                                                                                         login_payload['user_name']))
+                            self.iam_signup_logger.info(
+                                '[ProtonSignup]: New signup from {} for {} user_name with Sqlite not '
+                                'allowed due to pre-existing email.'.format(signup_payload['email'],
+                                                                            login_payload['user_name']))
                             return {
                                 'status': False,
                                 'message': 'User with email {} already exist. Please try '
@@ -200,7 +202,7 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                     user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
                                     login_payload.update({'user_registry_id': user_registry_id})
                                 else:
-                                    self.logger.info(
+                                    self.iam_signup_logger.info(
                                         '[ProtonSignup]: New signup with Postgresql from {} for {} user_name not '
                                         'allowed due to pre-existing email.'.format(signup_payload['email'],
                                                                                     login_payload['user_name']))
@@ -256,9 +258,10 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                                                                      signup_payload['email'])
                                 delete_instance.execute()
                                 transaction.commit()
-                                self.logger.info('[ProtonSignup]: New signup with Postgresql from {} rolled back due '
-                                                 'to pre-existing user_name of {}'.format(signup_payload['email'],
-                                                                                          login_payload['user_name']))
+                                self.iam_signup_logger.info(
+                                    '[ProtonSignup]: New signup with Postgresql from {} rolled back due '
+                                    'to pre-existing user_name of {}'.format(signup_payload['email'],
+                                                                             login_payload['user_name']))
                                 return {
                                     'status': False,
                                     'message': 'Username {} already exist. Please try '
@@ -266,32 +269,35 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                 }
 
                             transaction.commit()
-                            self.logger.info('[ProtonSignup]: New signup successfully completed in Postgresql for '
-                                             '{}'.format(login_payload['user_name']))
+                            self.iam_signup_logger.info(
+                                '[ProtonSignup]: New signup successfully completed in Postgresql for '
+                                '{}'.format(login_payload['user_name']))
                             return {
                                 'status': True,
                                 'message': 'Signup is successful! Please try login.'
                             }
 
                         else:
-                            self.logger.info('[Signup Controller]: Schema specified not found. Insert operation could '
-                                             'not be completed. Check connectionManager logs for stack trace.')
+                            self.iam_signup_logger.info(
+                                '[Signup Controller]: Schema specified not found. Insert operation could '
+                                'not be completed. Check connectionManager logs for stack trace.')
 
                             return {
                                 'status': False,
                                 'message': 'Signup is unsuccessful due to incomplete database.'
                             }
                     else:
-                        self.logger.info('[Signup Controller]: Unsupported DB in signup payload. Db flavour = {}, '
-                                         'user_name={}, email = {}'.format(db_flavour, login_payload['user_name'],
-                                                                           signup_payload['email']))
+                        self.iam_signup_logger.info(
+                            '[Signup Controller]: Unsupported DB in signup payload. Db flavour = {}, '
+                            'user_name={}, email = {}'.format(db_flavour, login_payload['user_name'],
+                                                              signup_payload['email']))
                         return {
                             'status': False,
                             'message': 'PROTON only supports SQLite and Postgresql atm. Do you have valid db_flavour '
                                        'in your payload?'
                         }
             except Exception as e:
-                self.logger.exception('[Signup Controller]: SignUP payload is incomplete.')
+                self.iam_signup_logger.exception('[Signup Controller]: SignUP payload is incomplete.')
                 print(Fore.LIGHTRED_EX + '[Signup Controller]: To perform successful INSERT operation, ensure the input'
                                          ' payload/signup payload is complete.' + Style.RESET_ALL)
                 return {
@@ -301,11 +307,13 @@ class ProtonSignup(ConnectionManager, PasswordManager):
             finally:
                 if connection:
                     connection.close()
-        self.logger.info('[ProtonSignup]: New signup is unsuccessful due to incomplete input/signup payload.')
+        self.iam_signup_logger.info(
+            '[ProtonSignup]: New signup is unsuccessful due to incomplete input/signup payload.')
         return {
             'status': False,
             'message': 'Signup is unsuccessful. Input payload / Signup payload is incomplete.'
         }
+
 
 class IctrlProtonSignup(ProtonSignup):
 
@@ -328,9 +336,3 @@ class IctrlProtonSignup(ProtonSignup):
                 'message': "POST request must contain 'db_flavour' and 'signup_payload'."
             })
             resp.status = falcon.HTTP_403
-
-
-
-
-
-
