@@ -51,7 +51,8 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
         if (req.path in ['/',
                          '/fast-serve',
                          '/signup',
-                         '/login']):
+                         '/login',
+                         '/metrics']):
             pass
         else:
             setattr(req.context, 'cache_ready', False)

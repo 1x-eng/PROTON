@@ -88,7 +88,7 @@ app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())
 app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
-app.add_route('/prom-metrics', prometheus)
+app.add_route('/metrics', prometheus)
 
 {% for route in routes %}
 rc_{{ route.controllerName }} =  {{ route.controllerName }}()
