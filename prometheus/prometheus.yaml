@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 3s
+  external_labels:
+      monitor: 'proton'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'proton_prometheus'
+    static_configs:
+      - targets: ['proton:3000']
