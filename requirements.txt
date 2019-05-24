@@ -39,7 +39,7 @@ SQLAlchemy
 SQLAlchemy-Utils
 urllib3
 wrapt
-prometheus_client>=0.3.1
+falcon-prometheus
 #########################
 # END PROTON requirements
 #########################

@@ -79,16 +79,15 @@ class FastServe(object):
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
 
-
-prometheus = PrometheusMiddleware()
+prom = PrometheusMiddleware()
 cors = CORS(allow_all_origins=['http://localhost:{{ port }}'])
-app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prometheus])
+app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prom])
 
 app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())
 app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
-app.add_route('/metrics', prometheus)
+app.add_route('/metrics', prom)
 
 {% for route in routes %}
 rc_{{ route.controllerName }} =  {{ route.controllerName }}()

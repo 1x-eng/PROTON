@@ -28,7 +28,7 @@ from apispec import APISpec
 from configuration import ProtonConfig
 from falcon_apispec import FalconPlugin
 from falcon_cors import CORS
-from mic.iface.middlewares.prom_watch import PromWatch
+from falcon_prometheus import PrometheusMiddleware
 from mic.iface.middlewares.iface_watch import Iface_watch
 from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
@@ -75,15 +75,15 @@ class FastServe(object):
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
 
-
+prom = PrometheusMiddleware()
 cors = CORS(allow_all_origins=['http://localhost:3000'])
-app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), PromWatch()])
+app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prom])
 
 app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())
 app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
-app.add_route('/metrics', PromWatch())
+app.add_route('/metrics', prom)
 
 
 

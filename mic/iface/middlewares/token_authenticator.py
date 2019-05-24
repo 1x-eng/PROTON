@@ -54,8 +54,6 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                          '/signup',
                          '/login',
                          '/metrics']):
-            if req.path == '/metrics':
-                setattr(req.context, 'start_time', time.time())
             pass
         else:
             setattr(req.context, 'cache_ready', False)
