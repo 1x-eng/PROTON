@@ -51,9 +51,6 @@ class PromWatch(object):
             ['method', 'path', 'status'],
             registry=self.registry)
 
-    def process_request(self, req, resp):
-        setattr(req.context, 'start_time', time.time())
-
     def process_response(self, req, resp, resource, req_succeeded):
         resp_time = time.time() - req.context['start_time']
         self.requests.labels(method=req.method, path=req.path, status=resp.status).inc()
