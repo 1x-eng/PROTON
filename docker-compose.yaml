@@ -1,0 +1,76 @@
+version: "3.4"
+services:
+  pg:
+    container_name: proton_postgres
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=${PG_USERNAME}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_TARGET_DB}
+    volumes:
+      - ${PROTON_POSTGRES_VOLUME_MOUNT}:/var/lib/postgresql/data
+    ports:
+      - ${PG_TARGET_PORT}:${PG_TARGET_PORT}
+  redis:
+    container_name: proton_redis
+    restart: always
+    image: redis
+    volumes:
+      - ${PROTON_REDIS_VOLUME_MOUNT}:/data
+    ports:
+      - ${REDIS_TARGET_PORT}:${REDIS_TARGET_PORT}
+  proton:
+    container_name: proton
+    restart: always
+    image: proton_stretch
+    ports:
+      - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
+    expose:
+      - ${PROTON_TARGET_PORT}
+    volumes:
+      - .:/home/PROTON
+      - ${PROTON_SQLITE_VOLUME_MOUNT}:/home/PROTON/proton-db
+    depends_on:
+      - pg
+      - redis
+    entrypoint: ["./proton.sh"]
+  prometheus:
+    image: prom/prometheus
+    container_name: proton_prometheus
+    volumes:
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    command: '--config.file=/etc/prometheus/prometheus.yaml'
+    ports:
+      - 9090:9090
+    expose:
+      - 9090
+    depends_on:
+      - proton
+  cadvisor:
+    image: google/cadvisor
+    container_name: proton_cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk:/dev/disk/:ro
+    ports:
+      - 8080:8080
+    depends_on:
+      - prometheus
+  grafana:
+    image: grafana/grafana
+    container_name: proton_grafana
+    ports:
+      - 3001:3000
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/datasources/all.yaml:/etc/grafana/provisioning/datasources/all.yaml
+      - ./grafana/provisioning/dashboards/all.yaml:/etc/grafana/provisioning/dashboards/all.yaml
+      - ./grafana/dashboards/proton-stats.json:/etc/grafana/dashboards/proton-stats.json
+      - ./grafana/dashboards/container-stats.json:/etc/grafana/dashboards/container-stats.json
+    depends_on:
+      - prometheus
+      - cadvisor

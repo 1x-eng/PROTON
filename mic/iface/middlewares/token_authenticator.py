@@ -26,6 +26,7 @@ from configuration import ProtonConfig
 from nucleus.iam.jwt_manager import JWTManager
 from nucleus.generics.log_utilities import LogUtilities
 import falcon
+import time
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -51,7 +52,10 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
         if (req.path in ['/',
                          '/fast-serve',
                          '/signup',
-                         '/login']):
+                         '/login',
+                         '/metrics',
+                         '/proton-prom',
+                         '/proton-grafana']):
             pass
         else:
             setattr(req.context, 'cache_ready', False)

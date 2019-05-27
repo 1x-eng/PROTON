@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 3s
+  evaluation_interval: 3s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+        labels:
+          alias: 'prometheus'
+  - job_name: 'proton'
+    static_configs:
+      - targets: ['proton:3000']
+        labels:
+          alias: 'proton'
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          alias: 'cadvisor'
