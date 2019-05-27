@@ -29,8 +29,8 @@ from configuration import ProtonConfig
 from falcon_apispec import FalconPlugin
 from falcon_cors import CORS
 from falcon_prometheus import PrometheusMiddleware
-from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from mic.iface.middlewares.iface_watch import Iface_watch
+from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
 {% for ifaceController in ifaceControllers %}

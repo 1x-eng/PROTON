@@ -26,6 +26,8 @@ services:
     image: proton_stretch
     ports:
       - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
+    expose:
+      - ${PROTON_TARGET_PORT}
     volumes:
       - .:/home/PROTON
       - ${PROTON_SQLITE_VOLUME_MOUNT}:/home/PROTON/proton-db
@@ -37,10 +39,12 @@ services:
     image: prom/prometheus
     container_name: proton_prometheus
     volumes:
-      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - "./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml"
     ports:
       - "9090:9090"
-    links:
+    expose:
+      - 9090
+    depends_on:
       - proton
   grafana:
     image: grafana/grafana
@@ -48,7 +52,7 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
-    links:
+      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
+      - "./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml"
+    depends_on:
       - prometheus
