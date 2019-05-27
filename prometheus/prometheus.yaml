@@ -13,3 +13,8 @@ scrape_configs:
       - targets: ['proton:3000']
         labels:
           alias: 'proton'
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          alias: 'cadvisor'

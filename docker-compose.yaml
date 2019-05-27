@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 services:
   pg:
     container_name: proton_postgres
@@ -39,20 +39,38 @@ services:
     image: prom/prometheus
     container_name: proton_prometheus
     volumes:
-      - "./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml"
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+    command: '--config.file=/etc/prometheus/prometheus.yaml'
     ports:
-      - "9090:9090"
+      - 9090:9090
     expose:
       - 9090
     depends_on:
       - proton
+  cadvisor:
+    image: google/cadvisor
+    container_name: proton_cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk:/dev/disk/:ro
+    ports:
+      - 8080:8080
+    depends_on:
+      - prometheus
   grafana:
     image: grafana/grafana
     container_name: proton_grafana
     ports:
-      - "3001:3000"
+      - 3001:3000
     volumes:
-      - "./grafana/grafana.ini:/etc/grafana/grafana.ini"
-      - "./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml"
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/datasources/all.yaml:/etc/grafana/provisioning/datasources/all.yaml
+      - ./grafana/provisioning/dashboards/all.yaml:/etc/grafana/provisioning/dashboards/all.yaml
+      - ./grafana/dashboards/proton-stats.json:/etc/grafana/dashboards/proton-stats.json
+      - ./grafana/dashboards/container-stats.json:/etc/grafana/dashboards/container-stats.json
     depends_on:
       - prometheus
+      - cadvisor
