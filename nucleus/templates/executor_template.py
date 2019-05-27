@@ -61,6 +61,8 @@ class DefaultRouteHandler(object):
         }
         response['availableRoutes'].append('/login')
         response['availableRoutes'].append('/signup')
+        response['availableRoutes'].append('/proton-prom')
+        response['availableRoutes'].append('/proton-grafana')
         {%for route in routes %}
         response['availableRoutes'].append('/{{ route.routeName }}')
         {% endfor %}
@@ -79,6 +81,32 @@ class FastServe(object):
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
 
+class RedirectToProm(object):
+    """
+    This is a 301 re-direction to Prometheus UI
+    """
+
+    def __init__(self):
+        super(RedirectToProm, self).__init__()
+
+    def on_get(self, req, resp):
+        resp.status = falcon.HTTP_301
+        resp.set_header('Location', 'http://localhost:9090')
+
+
+class RedirectToGrafana(object):
+    """
+    This is a 301 re-direction to Grafana UI
+    """
+
+    def __init__(self):
+        super(RedirectToGrafana, self).__init__()
+
+    def on_get(self, req, resp):
+        resp.status = falcon.HTTP_301
+        resp.set_header('Location', 'http://localhost:3001')
+
+
 prom = PrometheusMiddleware()
 cors = CORS(allow_all_origins=['http://localhost:{{ port }}'])
 app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prom])
@@ -88,6 +116,8 @@ app.add_route('/fast-serve', FastServe())
 app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
 app.add_route('/metrics', prom)
+app.add_route('/proton-prom', RedirectToProm())
+app.add_route('/proton-grafana', RedirectToGrafana())
 
 {% for route in routes %}
 rc_{{ route.controllerName }} =  {{ route.controllerName }}()

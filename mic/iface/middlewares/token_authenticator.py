@@ -53,7 +53,9 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                          '/fast-serve',
                          '/signup',
                          '/login',
-                         '/metrics']):
+                         '/metrics',
+                         '/proton-prom',
+                         '/proton-grafana']):
             pass
         else:
             setattr(req.context, 'cache_ready', False)

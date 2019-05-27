@@ -56,7 +56,7 @@ class Iface_watch(CacheManager):
         self.timer["start"] = time.time()
         self.logger.info('[Iface_watch] | Requested Route: {}'.format(req.path))
 
-        if (req.path in ['/', '/fast-serve', '/metrics']):
+        if (req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']):
             pass
         else:
             # Check if response can be served from cache.
@@ -122,7 +122,7 @@ class Iface_watch(CacheManager):
         self.logger.info('[Iface_watch] | Response status: {} | '
                          'Response time: {} seconds'.format(req_succeded, time.time() - self.timer["start"]))
 
-        if (req.path in ['/', '/fast-serve', '/metrics']):
+        if (req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']):
             pass
         else:
             # Check if response can be served from cache.
