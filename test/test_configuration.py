@@ -35,6 +35,6 @@ __version__ = "1.0"
 class TestProtonConfig(TestCase):
 
     def test_proton_config(self):
-        self.assertEqual(ProtonConfig.ROOT_DIR, os.path.dirname(os.path.abspath('.')))
+        self.assertEqual(ProtonConfig.ROOT_DIR, os.path.dirname(os.path.abspath('./PROTON')))
         self.assertEqual(ProtonConfig.CACHE_LIFESPAN, 86400)
         self.assertEqual(ProtonConfig.TARGET_DB, 'sqlite')
