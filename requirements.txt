@@ -32,6 +32,7 @@ python-dateutil
 python-mimeparse
 pytz
 PyYAML
+pytest
 redis
 requests
 six
