@@ -1,5 +1,7 @@
 ![PROTON Logo](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON-logo.png)
-# PROTON
+# PROTON 
+![PROTON_build](https://travis-ci.org/PruthviKumarBK/PROTON.svg?branch=master)
+
 **The MIC stack genesis!**
 
 PROTON is a high-level Python framework that facilitates rapid server-side development with clean & pragmatic design. 
