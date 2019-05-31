@@ -61,7 +61,7 @@ favourite browser and login with default credentials:
     - `Proton Monitor` as the name suggests, delivers insights by monitoring PROTON stack.
     ![PROTON_Grafana_Monitor](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_monitor.png)
     - `Proton Stack - Holistic Monitor` is another beautiful; at the same time very insightful dashboard that delivers
-    insights around all containers that support PROTON.
+    insights around all containers that constitute PROTON.
     ![PROTON_Grafana_Cadvisor](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_container_monitor.png)
 
 # The MIC stack - What, why & how?
