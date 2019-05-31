@@ -233,6 +233,7 @@ class IctrlProtonLogin(ProtonLogin):
 
         except Exception as e:
             resp.body = json.dumps({
-                'message': "POST request must contain 'db_flavour' and 'login_payload'."
+                'message': "POST request must contain 'db_flavour'[PROTON supports `sqlite` or `postgresql`] and "
+                           "'login_payload'."
             })
             resp.status = falcon.HTTP_403

@@ -333,6 +333,7 @@ class IctrlProtonSignup(ProtonSignup):
             resp.status = falcon.HTTP_201
         except Exception as e:
             resp.body = json.dumps({
-                'message': "POST request must contain 'db_flavour' and 'signup_payload'."
+                'message': "POST request must contain 'db_flavour'[PROTON supports `sqlite` or `postgresql`] "
+                           "and 'signup_payload'"
             })
             resp.status = falcon.HTTP_403
