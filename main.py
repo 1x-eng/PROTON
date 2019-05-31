@@ -28,8 +28,8 @@ from apispec import APISpec
 from configuration import ProtonConfig
 from falcon_apispec import FalconPlugin
 from falcon_cors import CORS
-from falcon_prometheus import PrometheusMiddleware
 from mic.iface.middlewares.iface_watch import Iface_watch
+from mic.iface.middlewares.proton_prometheus import ProtonPrometheus
 from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
@@ -61,7 +61,7 @@ class DefaultRouteHandler(object):
         response['availableRoutes'].append('/signup')
         response['availableRoutes'].append('/proton-prom')
         response['availableRoutes'].append('/proton-grafana')
-
+        
         resp.body = json.dumps(response)
         resp.status = falcon.HTTP_200
 
@@ -76,7 +76,6 @@ class FastServe(object):
 
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
-
 
 class RedirectToProm(object):
     """
@@ -104,7 +103,7 @@ class RedirectToGrafana(object):
         resp.set_header('Location', 'http://localhost:3001')
 
 
-prom = PrometheusMiddleware()
+prom = ProtonPrometheus()
 cors = CORS(allow_all_origins=['http://localhost:3000'])
 app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prom])
 
