@@ -85,7 +85,7 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                 return False
             required_keys = ['first_name', 'last_name', 'email', 'creation_date_time',
                              'user_name', 'password']
-            payload.update({'creation_date_time': datetime.now()})
+            payload.update({'creation_date_time': datetime.utcnow()})
 
             actual_keys = list(payload.keys())
             if set(required_keys) == set(actual_keys):

@@ -134,7 +134,7 @@ class MetaGen(CacheManager):
                     # Add row to default DB
                     proton_default = Table('PROTON_default', metadata, autoload=True)
                     ins = proton_default.insert()
-                    ins.execute({"Creation_Date_Time": datetime.now(),
+                    ins.execute({"Creation_Date_Time": datetime.utcnow(),
                                  "Target_MIC_Stack": mic_name,
                                  "Target_Database": ProtonConfig.TARGET_DB,
                                  "Target_Table": target_table_for_mic})
