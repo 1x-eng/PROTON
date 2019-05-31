@@ -10,8 +10,8 @@ Thanks for checking it out!
 one command, to spin up auto generated code with pragmatic separation of Model, Controller and Interface 
 <small>(Hence the name, MIC stack)</small>! 
 - One command to setup a production ready server side stack with managed DB connections <small>(PROTON ships with postgresql)</small>, 
-managed caching <small>(PROTON ships with redis)</small>, managed JWT authenticated routes, descriptive logging and 
-auto-generated openAPI specs.
+managed caching <small>(PROTON ships with redis)</small>, managed JWT authenticated routes, descriptive logging, 
+managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - PROTON also ships with `signup` and `login` routes to on-board & login users onto platform.
 - All of this, **containerised**!
 
@@ -44,6 +44,25 @@ Authentication! Reckon that is pretty cool!
 - And, if you did not already expect, PROTON ships with login validation. Of course!
 ![PROTON_postgres_login_validation_invalid_username](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_username.png)
 ![PROTON_postgres_login_validation_invalid_password](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_password.png)
+- Did you say "What about monitoring & dashboards". Good! coz, PROTON ships with native support leveraging the mighty prometheus and 
+beautiful grafana. 
+![PROTON_Prom_Grafana](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_Home_Prom_Graf.png)
+- Once you've initialized the platform, visit `localhost:3000/proton-prom` in your favourite web browser and you'll have 
+mighty prometheus welcoming you.
+![Proton_Prometheus](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_Prom.png)
+- Did you want to see some beautiful dashboards alongside monitoring? Visit `localhost:3000/proton-grafana` in your 
+favourite browser and login with default credentials:
+    - username: admin
+    - password: admin
+    - You'll be prompted to change and choose your own strong password on first login.
+![Proton_Grafana_1](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_1.png)
+![Proton_Grafana_2](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_2.png)
+- PROTON ships with 2 beast of dashboards by default. 
+    - `Proton Monitor` as the name suggests, delivers insights by monitoring PROTON stack.
+    ![PROTON_Grafana_Monitor](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_monitor.png)
+    - `Proton Stack - Holistic Monitor` is another beautiful; at the same time very insightful dashboard that delivers
+    insights around all containers that constitute PROTON.
+    ![PROTON_Grafana_Cadvisor](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_grafana_container_monitor.png)
 
 # The MIC stack - What, why & how?
 
