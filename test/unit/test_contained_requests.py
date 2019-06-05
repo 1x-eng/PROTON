@@ -36,7 +36,6 @@ class TestContainedRequests(TestCase):
 
     def test_session_factory(self):
 
-        import requests
         requests_session_object = ContainedRequests()
         assert str(type(requests_session_object.session_factory())) == "<class 'requests.sessions.Session'>"
 

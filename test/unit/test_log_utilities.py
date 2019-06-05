@@ -22,20 +22,25 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
+
+from nucleus.generics.log_utilities import LogUtilities
 from unittest import TestCase
-from nucleus.db.cache_manager import CacheManager
-from test.database import db
 
 __author__ = "Pooja Pruthvi, pooja.pruthvikumar@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pooja Pruthvi"
 __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
-class TestBase(TestCase):
+class TestLogUtilities(TestCase):
 
-    def setUp(self):
-        db.create_all()
+    def test_log_utilities(self):
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+        log_utilities_object = LogUtilities()
+        assert str(type(log_utilities_object.get_logger)) == "<class 'function'>"
+        print(type(log_utilities_object.get_logger))
+
+    def test_logger(self):
+
+        logger_object = LogUtilities()
+        Not sure----> print(type(logger_object.my_logger))
