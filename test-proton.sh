@@ -90,15 +90,18 @@ PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 PROTON_TESTER_SQLITE_VOLUME_MOUNT=$PROTON_TESTER_SQLITE_VOLUME_MOUNT
 EOF
 
-    cat .env
-
     # configuring SQLITE mount path for the PROTON container.
     mkdir -p ./proton_vars
     rm -f ./proton_vars/proton_sqlite_config.txt
     touch ./proton_vars/proton_sqlite_config.txt
     echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
-    docker-compose down && docker-compose rm -f && docker-compose up
+
+    if [[ "$(docker images -q proton_stretch:latest 2> /dev/null)" == "" ]]; then
+        docker build -t proton_stretch:latest .
+    fi
+
+    docker-compose down && docker-compose up --force-recreate -d
 
     echo "PROTON test container is initialized"
 elif [[ ! -z $test ]]; then
