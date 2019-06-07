@@ -16,10 +16,12 @@ before_script:
   - docker --version
   - docker-compose --version
   - ls -lart
-  - ./test-proton.sh -i "yes"
+  - docker-compose up --force-recreate -d pg redis proton_test
 
 script:
-  - ./test-proton.sh -t "yes"
+  - docker run proton_test -pt yes
 
 after_script:
-  - docker-compose down
+  - docker-compose down pg redis proton_test
+  - docker stop $(docker ps -a -q)
+  - docker rm $(docker ps -a -q)

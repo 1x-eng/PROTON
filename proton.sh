@@ -32,7 +32,7 @@
 ## usage <Execute Proton without instantiating MIC Stack> ./proton.sh -s
 ## usage <Kill a MIC stack with Proton> ./proton.sh -k <targetMicName>
 
-while getopts c:n:p:t:d:s:k:it:rt: option
+while getopts c:n:p:t:d:s:k:e:pt: option
 do
  case "${option}"
  in
@@ -43,8 +43,8 @@ do
  d) targetDbTable=${OPTARG};;
  s) forceStart=${OPTARG};;
  k) micNameToKill=${OPTARG};;
- it) initializeTests=${OPTARG};;
- rt) runTests=${OPTARG};;
+ e) environment=${OPTARG};;
+ pt) protonTest=${OPTARG};;
  esac
 done
 
@@ -64,18 +64,77 @@ echo -e "\e[36m
 
 \e[0m"
 
-# Validate existance of key environment variables.
-./init-proton.sh
+if [[ "$protonTest" == 'yes' ]]; then
+    pytest
+fi
 
-# Parse .env and get binding params.
-eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
-eval "$(grep ^PROTON_TARGET_PORT= .env)"
+if [[ -z "$environment" || "$environment" != 'test' ]]; then
+    # Default environment = production
 
-# Interpolate values from .env to databaseConfig.ini
-eval "$(grep ^PG_TARGET_DB= .env)"
-eval "$(grep ^PG_USERNAME= .env)"
-eval "$(grep ^PG_PASSWORD= .env)"
-eval "$(grep ^PG_TARGET_PORT= .env)"
+    # Validate existance of key environment variables.
+    ./init-proton.sh
+
+    # Parse .env and get binding params.
+    eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+    eval "$(grep ^PROTON_TARGET_PORT= .env)"
+
+    # Interpolate values from .env to databaseConfig.ini
+    eval "$(grep ^PG_TARGET_DB= .env)"
+    eval "$(grep ^PG_USERNAME= .env)"
+    eval "$(grep ^PG_PASSWORD= .env)"
+    eval "$(grep ^PG_TARGET_PORT= .env)"
+
+elif [[ "$environment" == 'test' ]]; then
+
+    rm ./.test-env
+    touch .test-env
+
+    mkdir -p /tmp/proton_test/sqlite
+    mkdir -p /tmp/proton_test/postgres
+    mkdir -p /tmp/proton_test/redis
+    mkdir -p /tmp/proton_test/test/sqlite
+
+    PG_TARGET_DB=proton
+    PG_TARGET_PORT=5432
+    REDIS_TARGET_PORT=6379
+    PROTON_BIND_ADDRESS=0.0.0.0
+    PROTON_TARGET_PORT=4000
+    PG_USERNAME=proton_postgres_test
+    PG_PASSWORD=proton_postgres_test_password
+    PROTON_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
+    PROTON_POSTGRES_VOLUME_MOUNT=/tmp/proton_test/postgres
+    PROTON_REDIS_VOLUME_MOUNT=/tmp/proton_test/redis
+    PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/test/sqlite
+
+    cat << EOF > .test-env
+# PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
+# PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+PG_USERNAME=$PG_USERNAME
+PG_PASSWORD=$PG_PASSWORD
+PG_TARGET_DB=$PG_TARGET_DB
+PG_TARGET_PORT=$PG_TARGET_PORT
+REDIS_TARGET_PORT=$REDIS_TARGET_PORT
+PROTON_BIND_ADDRESS=$PROTON_BIND_ADDRESS
+PROTON_TARGET_PORT=$PROTON_TARGET_PORT
+PROTON_SQLITE_VOLUME_MOUNT=$PROTON_SQLITE_VOLUME_MOUNT
+PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
+PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
+PROTON_TESTER_SQLITE_VOLUME_MOUNT=$PROTON_TESTER_SQLITE_VOLUME_MOUNT
+EOF
+
+    # configuring SQLITE mount path for the PROTON container.
+    mkdir -p ./proton_vars
+    rm -f ./proton_vars/proton_sqlite_config.txt
+    touch ./proton_vars/proton_sqlite_config.txt
+    echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+
+    # Parse .test-env and get binding params.
+    eval "$(grep ^PROTON_BIND_ADDRESS= .test-env)"
+    eval "$(grep ^PROTON_TARGET_PORT= .test-env)"
+
+else
+    :
+fi
 
 cat << EOF > ./databaseConfig.ini
 # PS: DO NOT MAKE ANY CHANGES HERE. THIS FILE IS DYNAMICALLY GENERATED.
