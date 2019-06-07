@@ -68,7 +68,7 @@ if [[ ! -z $initialize ]]; then
     PROTON_BIND_ADDRESS=0.0.0.0
     PROTON_TARGET_PORT=3001
     PG_USERNAME=proton_postgres_test
-    PG_PASSWORD=proton_postgres_test
+    PG_PASSWORD=proton_postgres_test_password
     PROTON_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
     PROTON_POSTGRES_VOLUME_MOUNT=/tmp/proton_test/postgres
     PROTON_REDIS_VOLUME_MOUNT=/tmp/proton_test/redis
@@ -90,13 +90,15 @@ PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 PROTON_TESTER_SQLITE_VOLUME_MOUNT=$PROTON_TESTER_SQLITE_VOLUME_MOUNT
 EOF
 
+    cat .env
+
     # configuring SQLITE mount path for the PROTON container.
     mkdir -p ./proton_vars
     rm -f ./proton_vars/proton_sqlite_config.txt
     touch ./proton_vars/proton_sqlite_config.txt
     echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
-    docker-compose down && docker-compose up
+    docker-compose down && docker-compose rm -f && docker-compose up
 
     echo "PROTON test container is initialized"
 elif [[ ! -z $test ]]; then
