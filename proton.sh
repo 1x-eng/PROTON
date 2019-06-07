@@ -32,7 +32,7 @@
 ## usage <Execute Proton without instantiating MIC Stack> ./proton.sh -s
 ## usage <Kill a MIC stack with Proton> ./proton.sh -k <targetMicName>
 
-while getopts c:n:p:t:d:s:k: option
+while getopts c:n:p:t:d:s:k:it:rt: option
 do
  case "${option}"
  in
@@ -43,6 +43,8 @@ do
  d) targetDbTable=${OPTARG};;
  s) forceStart=${OPTARG};;
  k) micNameToKill=${OPTARG};;
+ it) initializeTests=${OPTARG};;
+ rt) runTests=${OPTARG};;
  esac
 done
 

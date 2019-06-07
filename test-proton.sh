@@ -34,6 +34,7 @@ do
  in
  i) initialize=${OPTARG};;
  t) test=${OPTARG};;
+ d) destroy=${OPTARG};;
  esac
 done
 
@@ -54,8 +55,8 @@ if [[ ! -z $initialize ]]; then
 
 \e[0m"
 
-    rm ./.env
-    touch .env
+    rm ./.test-env
+    touch .test-env
 
     mkdir -p /tmp/proton_test/sqlite
     mkdir -p /tmp/proton_test/postgres
@@ -66,7 +67,7 @@ if [[ ! -z $initialize ]]; then
     PG_TARGET_PORT=5432
     REDIS_TARGET_PORT=6379
     PROTON_BIND_ADDRESS=0.0.0.0
-    PROTON_TARGET_PORT=3001
+    PROTON_TARGET_PORT=3000
     PG_USERNAME=proton_postgres_test
     PG_PASSWORD=proton_postgres_test_password
     PROTON_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
@@ -74,7 +75,7 @@ if [[ ! -z $initialize ]]; then
     PROTON_REDIS_VOLUME_MOUNT=/tmp/proton_test/redis
     PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/test/sqlite
 
-    cat << EOF > .env
+    cat << EOF > .test-env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
 PG_USERNAME=$PG_USERNAME
@@ -101,6 +102,8 @@ EOF
         docker build -t proton_stretch:latest .
     fi
 
+    set -a
+    source .test-env
     docker-compose down && docker-compose up --force-recreate -d
 
     echo "PROTON test container is initialized"
@@ -108,6 +111,13 @@ elif [[ ! -z $test ]]; then
 
     echo "PROTON test container will initialize tests"
     docker exec proton_test -t $test
+
+elif [[ ! -z $destroy ]]; then
+
+    echo "PROTON test containers will be gracefully shut down and cleaned up"
+    docker-compose down
+    rm ./.test-env
+    echo "PROTON test containers are gracefully shutdown"
 
 else
     echo "PROTON test container has received an invalid argument. No action will be taken."
