@@ -65,10 +65,13 @@ echo -e "\e[36m
 \e[0m"
 
 if [[ "$protonTest" == 'yes' ]]; then
+    echo "Acknowledging test request for PROTON"
+    echo "Starting Pytest"
     pytest
+    echo "Pytest completed"
 fi
 
-if [[ -z "$environment" || "$environment" != 'test' ]]; then
+if [[ -z "$environment" || "$environment" != 'test' ||  "$protonTest" != 'yes' ]]; then
     # Default environment = production
 
     # Validate existance of key environment variables.
@@ -84,7 +87,7 @@ if [[ -z "$environment" || "$environment" != 'test' ]]; then
     eval "$(grep ^PG_PASSWORD= .env)"
     eval "$(grep ^PG_TARGET_PORT= .env)"
 
-elif [[ "$environment" == 'test' ]]; then
+elif [[ "$environment" == 'test' ||  "$protonTest" == 'yes' ]]; then
 
     # Parse .test-env and get binding params.
     eval "$(grep ^PROTON_BIND_ADDRESS= .test-env)"
