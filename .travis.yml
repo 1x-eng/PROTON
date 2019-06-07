@@ -27,8 +27,8 @@ before_script:
   - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
   - docker ps -a
-  - docker-compose stop proton_test | grep "No such service" && docker stop proton_test
-  - docker-compose rm -f proton_test | grep "No stopped containers" && docker rm -f proton_test && docker image prune -f
+  - docker stop proton_test
+  - docker rm -f proton_test && docker image prune -f
   - docker ps -a
 
 script:
