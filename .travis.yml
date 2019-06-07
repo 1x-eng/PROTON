@@ -16,10 +16,10 @@ before_script:
   - docker --version
   - docker-compose --version
   - ls -lart
-  - sh ./test-proton.sh -i "yes"
+  - ./test-proton.sh -i "yes"
 
 script:
-  - sh ./test-proton.sh -t "yes"
+  - ./test-proton.sh -t "yes"
 
 after_script:
   - docker-compose down
