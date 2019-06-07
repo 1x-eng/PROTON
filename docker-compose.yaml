@@ -50,7 +50,6 @@ services:
       - pg
       - redis
     entrypoint: ["./test-proton.sh"]
-    command: -i "yes"
   prometheus:
     image: prom/prometheus
     container_name: proton_prometheus

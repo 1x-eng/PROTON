@@ -15,7 +15,8 @@ before_install:
 before_script:
   - docker --version
   - docker-compose --version
-  - docker-compose down && docker-compose up --force-recreate -d
+  - ls -lart
+  - sh ./test-proton.sh -i "yes"
 
 script:
   - sh ./test-proton.sh -t "yes"
