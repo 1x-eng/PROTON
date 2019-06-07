@@ -16,7 +16,6 @@ before_script:
   - docker --version
   - docker-compose --version
   - ls -lart
-  - rm ./.test-env
   - touch .test-env
   - mkdir -p /tmp/proton_test/sqlite
   - mkdir -p /tmp/proton_test/postgres
