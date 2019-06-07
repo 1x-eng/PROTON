@@ -66,9 +66,9 @@ echo -e "\e[36m
 
 if [[ "$protonTest" == 'yes' ]]; then
     echo "Acknowledging test request for PROTON"
-    echo "Starting Pytest"
-    python -m pytest -s
-    echo "Pytest completed"
+    echo "****************** Starting Pytest for PROTON ******************"
+    python -m pytest -s ./test/
+    echo "****************** Pytest completed for PROTON ******************"
 
 else
 
