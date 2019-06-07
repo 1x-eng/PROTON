@@ -28,11 +28,11 @@ before_script:
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
 
 script:
-  - docker run proton_test -pt yes
+  - docker run proton_stretch_test -pt yes
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
   - lsof -i tcp:5432 | xargs kill -9
   - lsof -i tcp:6379 | xargs kill -9
   - lsof -i tcp:4000 | xargs kill -9
-  - rm ./test-env
+  - rm ./.test-env
