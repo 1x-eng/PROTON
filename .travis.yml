@@ -16,6 +16,34 @@ before_script:
   - docker --version
   - docker-compose --version
   - ls -lart
+  - rm ./.test-env
+  - touch .test-env
+  - mkdir -p /tmp/proton_test/sqlite
+  - mkdir -p /tmp/proton_test/postgres
+  - mkdir -p /tmp/proton_test/redis
+  - mkdir -p /tmp/proton_test/test/sqlite
+  - cat << EOF > .test-env
+    # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
+    # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+    PG_USERNAME=proton_postgres_test
+    PG_PASSWORD=proton_postgres_test_password
+    PG_TARGET_DB=proton
+    PG_TARGET_PORT=5432
+    REDIS_TARGET_PORT=6379
+    PROTON_BIND_ADDRESS=0.0.0.0
+    PROTON_TARGET_PORT=4000
+    PROTON_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
+    PROTON_POSTGRES_VOLUME_MOUNT=/tmp/proton_test/postgres
+    PROTON_REDIS_VOLUME_MOUNT=/tmp/proton_test/redis
+    PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/test/sqlite
+    EOF
+  - mkdir -p ./proton_vars
+  - rm -f ./proton_vars/proton_sqlite_config.txt
+  - touch ./proton_vars/proton_sqlite_config.txt
+  - echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+  - docker build -t proton_stretch_test:latest .
+  - set -a
+  - source .test-env
   - docker-compose up --force-recreate -d pg redis proton_test
 
 script:
@@ -25,3 +53,6 @@ after_script:
   - docker-compose down pg redis proton_test
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)
+  - set -a
+  - source .env
+  - rm ./test-env

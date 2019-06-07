@@ -38,7 +38,7 @@ services:
   proton_test:
     container_name: proton_test
     restart: always
-    image: proton_stretch
+    image: proton_stretch_test
     ports:
       - 4000:4000
     expose:
