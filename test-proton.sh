@@ -96,7 +96,7 @@ EOF
     touch ./proton_vars/proton_sqlite_config.txt
     echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
-    docker-compose down && docker-compose up --force-recreate
+    docker-compose down && docker-compose up
 
     echo "PROTON test container is initialized"
 elif [[ ! -z $test ]]; then
