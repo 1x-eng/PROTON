@@ -23,6 +23,7 @@ before_script:
   - mkdir -p /tmp/proton_test/redis
   - mkdir -p /tmp/proton_test/test/sqlite
   - cat << EOF > .test-env
+    # PS: THIS IS ONLY TO BE USED FOR TEST AND BY CI ONLY.
     # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
     # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
     PG_USERNAME=proton_postgres_test
