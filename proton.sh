@@ -32,7 +32,7 @@
 ## usage <Execute Proton without instantiating MIC Stack> ./proton.sh -s
 ## usage <Kill a MIC stack with Proton> ./proton.sh -k <targetMicName>
 
-while getopts c:n:p:t:d:s:k:e:pt: option
+while getopts c:n:p:t:d:s:k:e:T: option
 do
  case "${option}"
  in
@@ -44,7 +44,7 @@ do
  s) forceStart=${OPTARG};;
  k) micNameToKill=${OPTARG};;
  e) environment=${OPTARG};;
- pt) protonTest=${OPTARG};;
+ T) protonTest=${OPTARG};;
  esac
 done
 
@@ -75,6 +75,9 @@ if [[ -z "$environment" || "$environment" != 'test' ||  "$protonTest" != 'yes' ]
     # Default environment = production
 
     echo "Instantiating PROTON in production environment"
+    echo "Environment is: $environment"
+    echo "protonTest is: $protonTest"
+    
     # Validate existance of key environment variables.
     ./init-proton.sh
 
