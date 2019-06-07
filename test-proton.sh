@@ -33,7 +33,7 @@ do
  case "${option}"
  in
  i) initialize=${OPTARG};;
- n) test=${OPTARG};;
+ t) test=${OPTARG};;
  esac
 done
 
@@ -96,10 +96,7 @@ EOF
     touch ./proton_vars/proton_sqlite_config.txt
     echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
-    docker-compose down
-    docker-compose pull
-    docker-compose build
-    docker-compose start
+    docker-compose down && docker-compose up --force-recreate -d
 
     echo "PROTON test container is initialized"
 elif [[ ! -z $test ]]; then
