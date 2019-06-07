@@ -18,6 +18,9 @@ before_script:
   - ls -lart
   - docker build -t proton_stretch_test:latest .
   - ./test-env-gen.sh
+  - ls -lart
+  - cat .test-env
+  - set -a && source .test-env
   - docker-compose up --force-recreate -d pg redis proton_test
 
 script:
