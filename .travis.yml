@@ -21,8 +21,7 @@ before_script:
   - cat .test-env
   - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml down
-  - docker stop $(docker ps -a -q)
-  - docker rm $(docker ps -a -q)
+  - docker rm -f "$(docker ps -a -q)"
   - lsof -i tcp:5432 | xargs kill -9
   - lsof -i tcp:6379 | xargs kill -9
   - lsof -i tcp:4000 | xargs kill -9
