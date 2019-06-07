@@ -1,15 +1,31 @@
-dist: xenial   # required for Python >= 3.7
+#dist: xenial   # required for Python >= 3.7
+#language: python
+#python:
+#  - "3.7"
+#cache: pip
+#before_install:
+#  - sudo apt-get update
+#  - sudo apt-get install -y python3-dev
+#  - sudo apt-get install -y unixodbc-dev
+## command to install dependencies
+#install:
+#  - pip install -r requirements.txt
+## command to run tests
+#script:
+#  - pytest
+
 language: python
-python:
-  - "3.7"
-cache: pip
+services:
+  - docker
+env:
+  - DOCKER_COMPOSE_VERSION=3.4
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y python3-dev
-  - sudo apt-get install -y unixodbc-dev
-# command to install dependencies
-install:
-  - pip install -r requirements.txt
-# command to run tests
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker-compose --version
+  - sh ./test-proton.sh -i "yes"
 script:
-  - pytest
+  - sh ./test-proton.sh -t "yes"
