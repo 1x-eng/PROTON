@@ -44,7 +44,6 @@ if [[ -f .env ]]; then
     eval "$(grep ^PROTON_SQLITE_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_POSTGRES_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_REDIS_VOLUME_MOUNT= .env)"
-    eval "$(grep ^PROTON_TESTER_SQLITE_VOLUME_MOUNT= .env)"
 
     if [[ -z "$PG_USERNAME" ]]; then
         while [[ -z "$PG_USERNAME" ]]
@@ -116,23 +115,15 @@ Please enter the absolute location where PROTON's redis can mount onto: " PROTON
         done
     fi
 
-    if [[ -z "$PROTON_TESTER_SQLITE_VOLUME_MOUNT" || "$PROTON_TESTER_SQLITE_VOLUME_MOUNT" ==  "$PROTON_SQLITE_VOLUME_MOUNT" ]]; then
-        mkdir -p /tmp/proton_test/sqlite
-        PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
-    fi
-
 else
 
     touch .env
-
-    mkdir -p /tmp/proton_test/sqlite
 
     PG_TARGET_DB=proton
     PG_TARGET_PORT=5432
     REDIS_TARGET_PORT=6379
     PROTON_BIND_ADDRESS=0.0.0.0
     PROTON_TARGET_PORT=3000
-    PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
 
     while [[ -z "$PG_USERNAME" ]]
         do
@@ -184,7 +175,6 @@ PROTON_TARGET_PORT=$PROTON_TARGET_PORT
 PROTON_SQLITE_VOLUME_MOUNT=$PROTON_SQLITE_VOLUME_MOUNT
 PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
-PROTON_TESTER_SQLITE_VOLUME_MOUNT=$PROTON_TESTER_SQLITE_VOLUME_MOUNT
 EOF
 
 # configuring SQLITE mount path for the PROTON container.
