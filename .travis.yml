@@ -20,6 +20,7 @@ before_script:
   - ./test-env-gen.sh
   - ls -lart
   - cat .test-env
+  - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml down
   - lsof -nti:5432 | xargs kill -9
   - lsof -nti:6379 | xargs kill -9
