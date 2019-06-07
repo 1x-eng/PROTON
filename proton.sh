@@ -67,13 +67,14 @@ echo -e "\e[36m
 if [[ "$protonTest" == 'yes' ]]; then
     echo "Acknowledging test request for PROTON"
     echo "Starting Pytest"
-    pytest
+    python -m pytest
     echo "Pytest completed"
 fi
 
 if [[ -z "$environment" || "$environment" != 'test' ||  "$protonTest" != 'yes' ]]; then
     # Default environment = production
 
+    echo "Instantiating PROTON in production environment"
     # Validate existance of key environment variables.
     ./init-proton.sh
 
