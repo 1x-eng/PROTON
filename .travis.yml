@@ -37,7 +37,7 @@ before_script:
 script:
   - docker-compose -f docker-compose-test.yaml run -d --name proton_test --service-ports --rm proton_test -T yes
   - docker ps -a
-  - docker logs proton_test
+  - docker logs -f proton_test
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
