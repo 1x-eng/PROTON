@@ -1,26 +1,8 @@
-#dist: xenial   # required for Python >= 3.7
-#language: python
-#python:
-#  - "3.7"
-#cache: pip
-#before_install:
-#  - sudo apt-get update
-#  - sudo apt-get install -y python3-dev
-#  - sudo apt-get install -y unixodbc-dev
-## command to install dependencies
-#install:
-#  - pip install -r requirements.txt
-## command to run tests
-#script:
-#  - pytest
-
-language: python
+env:
+  - DOCKER_COMPOSE_VERSION=1.23.2
 
 services:
   - docker
-
-env:
-  - DOCKER_COMPOSE_VERSION=3.4
 
 before_install:
   - sudo apt-get update
