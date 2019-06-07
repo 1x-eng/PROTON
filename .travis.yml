@@ -15,17 +15,28 @@
 #  - pytest
 
 language: python
+
 services:
   - docker
+
 env:
   - DOCKER_COMPOSE_VERSION=3.4
+
 before_install:
   - sudo apt-get update
+  - docker --version
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+
+before_script:
+  - docker --version
   - docker-compose --version
-  - sh ./test-proton.sh -i "yes"
+  - docker-compose down && docker-compose up --force-recreate -d
+
 script:
   - sh ./test-proton.sh -t "yes"
+
+after_script:
+  - docker-compose down
