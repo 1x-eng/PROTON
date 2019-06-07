@@ -15,16 +15,17 @@ before_install:
 before_script:
   - docker --version
   - docker-compose --version
-  - ls -lart
   - docker build -t proton_stretch_test:latest .
   - ./test-env-gen.sh
   - ls -lart
   - cat .test-env
   - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml down
-  - lsof -nti:5432 | xargs kill -9
-  - lsof -nti:6379 | xargs kill -9
-  - lsof -nti:4000 | xargs kill -9
+  - docker stop $(docker ps -a -q)
+  - docker rm $(docker ps -a -q)
+  - lsof -i tcp:5432 | xargs kill -9
+  - lsof -i tcp:6379 | xargs kill -9
+  - lsof -i tcp:4000 | xargs kill -9
   - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
 
@@ -35,7 +36,7 @@ after_script:
   - docker-compose -f docker-compose-test.yaml down
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)
-  - lsof -nti:5432 | xargs kill -9
-  - lsof -nti:6379 | xargs kill -9
-  - lsof -nti:4000 | xargs kill -9
+  - lsof -i tcp:5432 | xargs kill -9
+  - lsof -i tcp:6379 | xargs kill -9
+  - lsof -i tcp:4000 | xargs kill -9
   - rm ./test-env
