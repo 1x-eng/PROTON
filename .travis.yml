@@ -25,6 +25,7 @@ before_script:
   - lsof -i tcp:6379 | xargs kill -9
   - lsof -i tcp:4000 | xargs kill -9
   - set -a && source .test-env
+  - docker ps -aq
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
 
 script:
