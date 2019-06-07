@@ -20,15 +20,11 @@ before_script:
   - ls -lart
   - cat .test-env
   - set -a && source .test-env
-  - docker-compose -f docker-compose-test.yaml down --rmi all
+  - docker-compose -f docker-compose-test.yaml down
   - lsof -i tcp:5432 | xargs kill -9
   - lsof -i tcp:6379 | xargs kill -9
   - lsof -i tcp:4000 | xargs kill -9
   - set -a && source .test-env
-  - sudo service postgresql stop
-  -
-  - docker ps -aq
-  - lsof -i :5432
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
 
 script:
@@ -36,8 +32,6 @@ script:
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
-  - docker stop $(docker ps -a -q)
-  - docker rm $(docker ps -a -q)
   - lsof -i tcp:5432 | xargs kill -9
   - lsof -i tcp:6379 | xargs kill -9
   - lsof -i tcp:4000 | xargs kill -9
