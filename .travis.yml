@@ -15,7 +15,6 @@ before_install:
 before_script:
   - docker --version
   - docker-compose --version
-  - ls -lart
   - touch .test-env
   - mkdir -p /tmp/proton_test/sqlite
   - mkdir -p /tmp/proton_test/postgres
@@ -42,9 +41,10 @@ before_script:
   - rm -f ./proton_vars/proton_sqlite_config.txt
   - touch ./proton_vars/proton_sqlite_config.txt
   - echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+  - ls -lart
   - docker build -t proton_stretch_test:latest .
-  - set -a
-  - source .test-env
+  - |
+      set -a && source .test-env
   - docker-compose up --force-recreate -d pg redis proton_test
 
 script:
@@ -54,6 +54,4 @@ after_script:
   - docker-compose down pg redis proton_test
   - docker stop $(docker ps -a -q)
   - docker rm $(docker ps -a -q)
-  - set -a
-  - source .env
   - rm ./test-env
