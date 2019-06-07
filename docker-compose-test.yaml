@@ -25,9 +25,9 @@ services:
     restart: always
     image: proton_stretch_test
     ports:
-      - 4000
+      - ${PROTON_TARGET_PORT}
     expose:
-      - 4000
+      - ${PROTON_TARGET_PORT}
     volumes:
       - .:/home/PROTON
       - ${PROTON_TESTER_SQLITE_VOLUME_MOUNT}:/home/PROTON/proton-db
