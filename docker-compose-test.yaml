@@ -1,0 +1,38 @@
+version: "3.4"
+services:
+  pg:
+    container_name: proton_postgres
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=${PG_USERNAME}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_TARGET_DB}
+    volumes:
+      - ${PROTON_POSTGRES_VOLUME_MOUNT}:/var/lib/postgresql/data
+    ports:
+      - ${PG_TARGET_PORT}
+  redis:
+    container_name: proton_redis
+    restart: always
+    image: redis
+    volumes:
+      - ${PROTON_REDIS_VOLUME_MOUNT}:/data
+    ports:
+      - ${REDIS_TARGET_PORT}
+  proton_test:
+    container_name: proton_test
+    restart: always
+    image: proton_stretch_test
+    ports:
+      - ${PROTON_TARGET_PORT}
+    expose:
+      - ${PROTON_TARGET_PORT}
+    volumes:
+      - .:/PROTON
+      - ${PROTON_TESTER_SQLITE_VOLUME_MOUNT}:/PROTON/proton-db
+    depends_on:
+      - pg
+      - redis
+    entrypoint: ["./proton.sh"]
+    command: ["-e", "test"]

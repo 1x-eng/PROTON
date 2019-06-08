@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # BSD 3-Clause License
 #
 # Copyright (c) 2018, Pruthvi Kumar All rights reserved.
@@ -24,29 +26,34 @@
 
 ## @Author: Pruthvi Kumar
 ## @Email: pruthvikumar.123@gmail.com
-## @Desc: Base PROTON Container with default sqlite and postgres config.
+## @Desc: Script to generate .test-env required by CI to test cproton.
 
-FROM python:3.7.3-stretch
-RUN apt-get update
-RUN apt-get install bash
+touch .test-env
+mkdir -p /tmp/proton_test/sqlite
+mkdir -p /tmp/proton_test/postgres
+mkdir -p /tmp/proton_test/redis
+mkdir -p /tmp/proton_test/test/sqlite
 
-RUN apt-get install -y gcc g++ unixodbc-dev
+cat << EOF > .test-env
+# PS: THIS IS ONLY TO BE USED FOR TEST AND BY CI ONLY.
+# PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
+# PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+PG_USERNAME=proton_postgres_test
+PG_PASSWORD=proton_postgres_test_password
+PG_TARGET_DB=proton
+PG_TARGET_PORT=5432
+REDIS_TARGET_PORT=6379
+PROTON_BIND_ADDRESS=0.0.0.0
+PROTON_TARGET_PORT=3000
+PROTON_SQLITE_VOLUME_MOUNT=/tmp/proton_test/sqlite
+PROTON_POSTGRES_VOLUME_MOUNT=/tmp/proton_test/postgres
+PROTON_REDIS_VOLUME_MOUNT=/tmp/proton_test/redis
+PROTON_TESTER_SQLITE_VOLUME_MOUNT=/tmp/proton_test/test/sqlite
+EOF
 
-RUN mkdir -p /PROTON
-RUN mkdir -p /PROTON/proton-db
-RUN mkdir -p /PROTON/trace
+mkdir -p ./proton_vars
+rm -f ./proton_vars/proton_sqlite_config.txt
+touch ./proton_vars/proton_sqlite_config.txt
+echo "/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
-RUN groupadd proton_user_group
-RUN useradd -G proton_user_group default_proton_user
-
-WORKDIR /PROTON
-COPY . /PROTON
-
-RUN python3 -m pip install -r requirements.txt --no-cache-dir
-
-RUN chown -R default_proton_user:proton_user_group /PROTON
-RUN chmod 777 -R /PROTON
-
-USER default_proton_user
-
-EXPOSE 3000/tcp
+set -a && source .test-env
