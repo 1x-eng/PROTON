@@ -15,7 +15,6 @@ before_install:
 before_script:
   - pwd
   - whoami
-  - sudo chmod 777 -R /home/PROTON
   - docker --version
   - docker-compose --version
   - docker build -t proton_stretch_test:latest .
