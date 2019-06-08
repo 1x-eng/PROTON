@@ -29,8 +29,8 @@ services:
     expose:
       - ${PROTON_TARGET_PORT}
     volumes:
-      - .:/tmp/PROTON
-      - ${PROTON_TESTER_SQLITE_VOLUME_MOUNT}:/tmp/PROTON/proton-db
+      - .:/PROTON
+      - ${PROTON_TESTER_SQLITE_VOLUME_MOUNT}:/PROTON/proton-db
     depends_on:
       - pg
       - redis

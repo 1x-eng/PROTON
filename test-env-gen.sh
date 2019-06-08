@@ -54,6 +54,6 @@ EOF
 mkdir -p ./proton_vars
 rm -f ./proton_vars/proton_sqlite_config.txt
 touch ./proton_vars/proton_sqlite_config.txt
-echo "/tmp/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+echo "/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
 set -a && source .test-env

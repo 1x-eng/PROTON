@@ -32,20 +32,21 @@ RUN apt-get install bash
 
 RUN apt-get install -y gcc g++ unixodbc-dev
 
-RUN mkdir -p /tmp/PROTON
-RUN mkdir -p /tmp/PROTON/proton-db
-RUN mkdir -p /tmp/PROTON/trace
+RUN mkdir -p /PROTON
+RUN mkdir -p /PROTON/proton-db
+RUN mkdir -p /PROTON/trace
 
-RUN groupadd proton_user_group
-RUN useradd -G proton_user_group default_proton_user
+#RUN groupadd proton_user_group
+#RUN useradd -G proton_user_group default_proton_user
 
-WORKDIR /tmp/PROTON
-COPY . /tmp/PROTON
+WORKDIR /PROTON
+COPY . /PROTON
 
 RUN python3 -m pip install -r requirements.txt --no-cache-dir
 
-RUN chown -R default_proton_user:proton_user_group /tmp/PROTON
+#RUN chown -R default_proton_user:proton_user_group /PROTON
+RUN chmod 777 -R /PROTON
 
-USER default_proton_user
+#USER default_proton_user
 
 EXPOSE 3000/tcp
