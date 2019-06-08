@@ -28,21 +28,23 @@ before_script:
   - lsof -i tcp:4000 | xargs kill -9
   - set -a && source .test-env
   - docker-compose -f docker-compose-test.yaml up --force-recreate -d
+  - docker-compose ps
   - docker ps -a
   - docker logs proton_postgres
   - docker logs proton_redis
   - docker logs proton_test
   - docker stop proton_test
   - docker rm -f proton_test && docker image prune -f
+  - docker-compose ps
   - docker ps -a
 
 script:
-  - docker-compose -f docker-compose-test.yaml run -d --name proton_test --service-ports --rm proton_test -T yes
+  - docker-compose -f docker-compose-test.yaml run -d --name proton_test --rm proton_test -T yes
   - results=$(docker wait proton_test)
+  - echo $results
   - docker ps -a
   - docker logs -f proton_test
   - docker-compose ps
-  - docker-compose ps | grep pytest | grep -v 'Exit 0' && echo "Automation or integration tests failed." && exit 1
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
