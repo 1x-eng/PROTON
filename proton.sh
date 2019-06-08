@@ -64,6 +64,11 @@ echo -e "\e[36m
 
 \e[0m"
 
+echo "Granting PROTON necessary permissions"
+chmod 777 -R /home/PROTON
+echo "working directory is: $(pwd)"
+ls -lart
+
 if [[ "$protonTest" == 'yes' ]]; then
     echo "Acknowledging test request for PROTON"
     echo "****************** Starting Pytest for PROTON ******************"

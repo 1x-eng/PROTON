@@ -28,10 +28,6 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to check and set all vitals required by proton platform.!
 
-pwd
-whoami
-ls -lart
-
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m Validating PROTON vitals... \e[0m"
 echo -e "-------------------------------------------------------------------------------------------------------------------"
