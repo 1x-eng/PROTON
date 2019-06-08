@@ -44,11 +44,8 @@ script:
   - docker ps -a
   - docker logs -f proton_test
   - docker-compose ps
-  - |
-      if [[ "$proton_test_results" == 1 ]]; then
-          travis_terminate 1
-      fi
-  
+  - travis_terminate $proton_test_results
+
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
