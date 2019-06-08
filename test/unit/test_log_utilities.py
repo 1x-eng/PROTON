@@ -22,6 +22,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from configuration import ProtonConfig
 from nucleus.generics.log_utilities import LogUtilities
 from unittest import TestCase
 
@@ -32,14 +33,14 @@ __version__ = "1.0"
 
 
 class TestLogUtilities(TestCase):
-
     log_utilities_object = LogUtilities()
 
     def test_log_utilities(self):
         assert isinstance(self.log_utilities_object, LogUtilities)
 
     def test_logger(self):
-
-        return_logger = self.log_utilities_object.get_logger()
+        return_logger = self.log_utilities_object.get_logger(log_file_name='test_log_utillities_logs',
+                                                             log_file_path='{}/trace/test_log_utillities_logs.log'.format(
+                                                                 ProtonConfig.ROOT_DIR))
         assert str(type(return_logger)) == "<class 'logging.Logger'>"
         assert str(return_logger) == '<Logger proton_generic_logs.base (DEBUG)>'
