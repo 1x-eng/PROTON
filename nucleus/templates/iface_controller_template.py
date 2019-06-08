@@ -132,7 +132,7 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}({{control
                 response = json.dumps({
                     'Message': 'POST Payload invalid. Please input payload in PROTON standard format.',
                     'Sample Format': {
-                                'db_flavour': 'sqlite or postgres',
+                                'db_flavour': 'sqlite or postgresql',
                                 'db_name': 'target db name, either it should already exist, if not, this will be created',
                                 'schema_name': 'target schema in specified database.',
                                 'table_name': 'target table name',
