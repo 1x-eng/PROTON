@@ -42,5 +42,6 @@ class TestLogUtilities(TestCase):
         return_logger = self.log_utilities_object.get_logger(log_file_name='test_log_utillities_logs',
                                                              log_file_path='{}/trace/test_log_utillities_logs.log'.format(
                                                                  ProtonConfig.ROOT_DIR))
+        print(str(return_logger))
         assert str(type(return_logger)) == "<class 'logging.Logger'>"
-        assert str(return_logger) == '<Logger proton_generic_logs.base (DEBUG)>'
+        assert str(return_logger) == '<Logger test_log_utillities_logs.base (DEBUG)>'
