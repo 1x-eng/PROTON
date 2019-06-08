@@ -181,7 +181,7 @@ EOF
 mkdir -p ./proton_vars
 rm -f ./proton_vars/proton_sqlite_config.txt
 touch ./proton_vars/proton_sqlite_config.txt
-echo "/home/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+echo "/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
 
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"

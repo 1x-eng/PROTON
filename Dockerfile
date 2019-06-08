@@ -30,20 +30,21 @@ FROM python:3.7.3-stretch
 RUN apt-get update
 RUN apt-get install bash
 
-RUN groupadd proton_user_group
-RUN useradd -G proton_user_group default_proton_user
-
-RUN mkdir -p /home/PROTON
-RUN mkdir -p /home/PROTON/proton-db
-RUN mkdir -p /home/PROTON/trace
-WORKDIR /home/PROTON
-COPY . /home/PROTON
-
 RUN \
  apt-get install -y gcc g++ unixodbc-dev && \
  python3 -m pip install -r requirements.txt --no-cache-dir
+ 
+RUN mkdir -p /PROTON
+RUN mkdir -p /PROTON/proton-db
+RUN mkdir -p /PROTON/trace
 
-RUN chown -R default_proton_user:proton_user_group /home/PROTON
+RUN groupadd proton_user_group
+RUN useradd -G proton_user_group default_proton_user
+
+WORKDIR /PROTON
+COPY . /PROTON
+
+RUN chown -R default_proton_user:proton_user_group /PROTON
 
 USER default_proton_user
 
