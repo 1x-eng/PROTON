@@ -65,10 +65,13 @@ echo -e "\e[36m
 \e[0m"
 
 if [[ "$protonTest" == 'yes' ]]; then
+
     echo "Acknowledging test request for PROTON"
     echo "****************** Acknowledging test request for PROTON ******************"
     python -m pytest -sv ./test/
-    echo "Pytest exit code for PROTON is : $?"
+    proton_pytest_exit_code=$?
+    echo "Pytest exit code for PROTON is : $proton_pytest_exit_code"
+    exit $proton_pytest_exit_code
 
 else
 
