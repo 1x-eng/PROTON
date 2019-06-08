@@ -17,7 +17,7 @@ before_script:
   - whoami
   - docker --version
   - docker-compose --version
-  - docker build -t proton_stretch_test:latest .
+  - docker build -t proton_stretch_test:latest -f CI_Dockerfile .
   - ./test-env-gen.sh
   - ls -lart
   - cat .test-env
