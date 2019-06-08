@@ -13,6 +13,8 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
+  - pwd
+  - whoami
   - docker --version
   - docker-compose --version
   - docker build -t proton_stretch_test:latest .

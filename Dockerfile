@@ -45,6 +45,8 @@ RUN \
 
 RUN chown -R default_proton_user:proton_user_group /home/PROTON
 
+RUN chmod 777 -R /home/PROTON
+
 USER default_proton_user
 
 EXPOSE 3000/tcp
