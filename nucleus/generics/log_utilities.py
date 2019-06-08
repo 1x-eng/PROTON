@@ -22,8 +22,10 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 import logging
 import pygogo as gogo
+from pathlib import Path
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -42,13 +44,34 @@ class LogUtilities(object):
 
     @staticmethod
     def _logger(log_file_name, log_file_path):
-        log_format = '[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]'
-        formatter = logging.Formatter(log_format)
-        my_logger = gogo.Gogo(
-            log_file_name,
-            low_hdlr=gogo.handlers.file_hdlr(log_file_path),
-            low_formatter=formatter,
-            high_level='error',
-            high_formatter=formatter,
-        ).logger
-        return my_logger
+        """
+        Spins up a logger.
+        :param log_file_name:[str] logger file name
+        :param log_file_path:[str] path where log file needs to be created.
+        :return: A valid logger on success; error message on failure.
+        """
+        try:
+            if log_file_name is None or log_file_path is None:
+                raise Exception('log_file_name and log_file_path are mandatory to spawn a logger. '
+                                'They cannot be None.')
+            elif type(log_file_name) is not str or type(log_file_path) is not str:
+                raise Exception('log_file_name and log_file_path must be of type String.')
+            else:
+                dirname = os.path.dirname(log_file_path)
+                if os.path.exists(dirname):
+                    log_format = '[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]'
+                    formatter = logging.Formatter(log_format)
+                    my_logger = gogo.Gogo(
+                        log_file_name,
+                        low_hdlr=gogo.handlers.file_hdlr(log_file_path),
+                        low_formatter=formatter,
+                        high_level='error',
+                        high_formatter=formatter,
+                    ).logger
+                    return my_logger
+                else:
+                    raise Exception('Given path does not exist in the system. Please enter valid path. '
+                                    'PS: PROTON loggers are in ~/PROTON/trace directory')
+        except Exception as e:
+            print('Unable to spawn a logger. Stack Trace to follow.')
+            print(str(e))
