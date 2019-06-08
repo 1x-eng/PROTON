@@ -72,7 +72,7 @@ ls -lart
 if [[ "$protonTest" == 'yes' ]]; then
     echo "Acknowledging test request for PROTON"
     echo "****************** Starting Pytest for PROTON ******************"
-    python -m pytest -s ./test/ -m preview
+    python -m pytest -s ./test/
     echo "****************** Pytest completed for PROTON ******************"
 
 else
