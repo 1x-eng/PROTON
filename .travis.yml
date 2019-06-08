@@ -40,11 +40,15 @@ before_script:
 
 script:
   - docker-compose -f docker-compose-test.yaml run -d --name proton_test --rm proton_test -T yes
-  - results=$(docker wait proton_test)
-  - echo $results
+  - proton_test_results=$(docker wait proton_test)
   - docker ps -a
   - docker logs -f proton_test
   - docker-compose ps
+  - |
+      if [[ "$proton_test_results" == 1 ]]; then
+          travis_terminate 1
+      fi
+  
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
