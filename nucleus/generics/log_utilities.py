@@ -41,7 +41,7 @@ class LogUtilities(object):
         self.get_logger = self._logger
 
     @staticmethod
-    def _logger(log_file_name='proton_generic_logs', log_file_path='./../../trace/proton_generic_logs.log'):
+    def _logger(log_file_name, log_file_path):
         log_format = '[%(asctime)s] <---> [%(name)s] <---> [%(levelname)s] <---> [%(message)s]'
         formatter = logging.Formatter(log_format)
         my_logger = gogo.Gogo(
