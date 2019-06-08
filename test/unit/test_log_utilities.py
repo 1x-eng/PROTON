@@ -31,15 +31,15 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class TestLogUtilities(TestCase):
-
-    log_utilities_object = LogUtilities()
-
-    def test_log_utilities(self):
-        assert isinstance(self.log_utilities_object, LogUtilities)
-
-    def test_logger(self):
-
-        return_logger = self.log_utilities_object.get_logger()
-        assert str(type(return_logger)) == "<class 'logging.Logger'>"
-        assert str(return_logger) == '<Logger proton_generic_logs.base (DEBUG)>'
+# class TestLogUtilities(TestCase):
+#
+#     log_utilities_object = LogUtilities()
+#
+#     def test_log_utilities(self):
+#         assert isinstance(self.log_utilities_object, LogUtilities)
+#
+#     def test_logger(self):
+#
+#         return_logger = self.log_utilities_object.get_logger()
+#         assert str(type(return_logger)) == "<class 'logging.Logger'>"
+#         assert str(return_logger) == '<Logger proton_generic_logs.base (DEBUG)>'
