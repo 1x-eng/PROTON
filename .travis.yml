@@ -38,8 +38,11 @@ before_script:
 
 script:
   - docker-compose -f docker-compose-test.yaml run -d --name proton_test --service-ports --rm proton_test -T yes
+  - results=$(docker wait proton_test)
   - docker ps -a
   - docker logs -f proton_test
+  - docker-compose ps
+  - docker-compose ps | grep pytest | grep -v 'Exit 0' && echo "Automation or integration tests failed." && exit 1
 
 after_script:
   - docker-compose -f docker-compose-test.yaml down
