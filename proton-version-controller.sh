@@ -137,18 +137,18 @@ if [[ -z "$tag" && -z "$commit" ]]; then
 
 elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
     echo "WARNING: Downgrading PROTON to significantly older tags/commits might break code base beyond repair."
-    confirm_tagged_upgrade_or_downgrade=""
-    while [[ "$confirm_tagged_upgrade_or_downgrade" != "YES" || "$confirm_tagged_upgrade_or_downgrade" != "NO" ]]
+    CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE=""
+    while [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" != "YES" || "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" != "NO" ]]
     do
-        echo "entered value is: $confirm_tagged_upgrade_or_downgrade"
+        echo "entered value is: $CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE"
         if [[ -z "$commit" ]]; then
-            read -p "Do you still want to proceed replacing your current PROTON version to ${tag} ?[YES/NO]" confirm_tagged_upgrade_or_downgrade
+            read -p "Do you still want to proceed replacing your current PROTON version to v${tag} ?[YES/NO]" CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE
         else
-            read -p "Do you still want to proceed replacing your current PROTON version to ${commit} ?[YES/NO]" confirm_tagged_upgrade_or_downgrade
+            read -p "Do you still want to proceed replacing your current PROTON version to ${commit} ?[YES/NO]" CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE
         fi
     done
 
-    if [[ "$confirm_tagged_upgrade_or_downgrade" == "YES" ]]; then
+    if [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "YES" ]]; then
 
         cd /tmp/proton_ver_ctrl
         git clone https://github.com/PruthviKumarBK/PROTON.git
@@ -178,7 +178,7 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
             echo "PROTON will not be able to continue due to errors checking out to specified ${rebase_code}"
         fi
 
-    elif [[ "$confirm_tagged_upgrade_or_downgrade" == "NO" ]]; then
+    elif [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "NO" ]]; then
         echo "PROTON will discontinue any further update/downgrade actions"
         echo "Your existing codebase remains unaltered"
 
