@@ -165,7 +165,8 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
             rebase_code="tag"
             rebase_pointer="$tag"
             echo "PROTON will rebase itself to tagged release of v${tag}"
-            git checkout tags/"$tag"
+            git fetch && git fetch --tags
+            git checkout tags/v"$tag"
             rebase_exit_code=$?
         else
             rebase_code="commit"
