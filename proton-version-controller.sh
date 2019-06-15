@@ -146,7 +146,7 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
 
     PS3='Your choice: '
     select CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE in 'NO' 'YES'; do
-        case $CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE in
+        case $REPLY in
             [12])
                 break
                 ;;
