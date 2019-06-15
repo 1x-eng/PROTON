@@ -182,7 +182,7 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
             echo "PROTON is successfully updated to specified ${rebase_code} - ${rebase_pointer}"
             echo "PS: If you wanted your old files for some reason, they are available here: /tmp/proton_ver_ctrl/${current_year}_${current_month}_${todays_date}_${current_hour}_${current_minute}_${current_second}"
         else
-
+            rm -rf /tmp/proton_ver_ctrl/PROTON
             echo "Could not checkout to specified ${rebase_code} - ${rebase_pointer}. Please verify appropriate tags or commits here - https://github.com/PruthviKumarBK/PROTON/tags"
             echo "PROTON will not be able to continue due to errors checking out to specified ${rebase_code}"
             echo "Available releases are: "
