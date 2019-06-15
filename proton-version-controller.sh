@@ -139,7 +139,7 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
     echo "WARNING: Downgrading PROTON to significantly older tags/commits might break code base beyond repair."
 
     if [[ -z "$commit" ]]; then
-        echo "Do you still want to proceed replacing your current PROTON version to v${tag} ?[YES/NO]"
+        echo "Do you still want to proceed replacing your current PROTON version to ${tag} ?[YES/NO]"
     else
         echo "Do you still want to proceed replacing your current PROTON version to ${commit} ?[YES/NO]"
     fi
@@ -164,9 +164,9 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
         if [[ -z "$commit" ]]; then
             rebase_code="tag"
             rebase_pointer="$tag"
-            echo "PROTON will rebase itself to tagged release of v${tag}"
+            echo "PROTON will rebase itself to tagged release of ${tag}"
             git fetch && git fetch --tags
-            git checkout tags/v"$tag"
+            git checkout tags/"$tag"
             rebase_exit_code=$?
         else
             rebase_code="commit"
