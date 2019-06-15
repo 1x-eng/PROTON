@@ -62,6 +62,8 @@ action_version_control(){
     current_minute=$(date +"%M")
     current_second=$(date +"%S")
 
+    mkdir -p /tmp/proton_ver_ctrl/"$current_year"_"$current_month"_"$todays_date"_"$current_hour"_"$current_minute"_"$current_second"
+
     cd "$current_proton_location"
     mv ./grafana /tmp/proton_ver_ctrl/"$current_year"_"$current_month"_"$todays_date"_"$current_hour"_"$current_minute"_"$current_second"/
     mv ./mic/iface/middlewares/iface_watch.py /tmp/proton_ver_ctrl/"$current_year"_"$current_month"_"$todays_date"_"$current_hour"_"$current_minute"_"$current_second"/
@@ -124,7 +126,6 @@ action_version_control(){
 
 current_proton_location=$(pwd)
 mkdir -p /tmp/proton_ver_ctrl
-mkdir -p /tmp/proton_ver_ctrl/"$current_year"_"$current_month"_"$todays_date"_"$current_hour"_"$current_minute"_"$current_second"
 
 if [[ -z "$tag" && -z "$commit" ]]; then
     echo "PROTON will update itself to most latest version"
