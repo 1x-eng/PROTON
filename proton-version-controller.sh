@@ -140,6 +140,7 @@ elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
     confirm_tagged_upgrade_or_downgrade=""
     while [[ "$confirm_tagged_upgrade_or_downgrade" != "YES" || "$confirm_tagged_upgrade_or_downgrade" != "NO" ]]
     do
+        echo "entered value is: $confirm_tagged_upgrade_or_downgrade"
         if [[ -z "$commit" ]]; then
             read -p "Do you still want to proceed replacing your current PROTON version to ${tag} ?[YES/NO]" confirm_tagged_upgrade_or_downgrade
         else
