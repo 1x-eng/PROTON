@@ -137,17 +137,22 @@ if [[ -z "$tag" && -z "$commit" ]]; then
 
 elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
     echo "WARNING: Downgrading PROTON to significantly older tags/commits might break code base beyond repair."
-    while [[ -z "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" ]]
-    do
-        while [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "YES" || "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "NO" ]]
-        do
-            echo "entered value is: $CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE"
-            if [[ -z "$commit" ]]; then
-                read -p "Do you still want to proceed replacing your current PROTON version to v${tag} ?[YES/NO]" CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE
-            else
-                read -p "Do you still want to proceed replacing your current PROTON version to ${commit} ?[YES/NO]" CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE
-            fi
-        done
+
+    if [[ -z "$commit" ]]; then
+        echo "Do you still want to proceed replacing your current PROTON version to v${tag} ?[YES/NO]"
+    else
+        echo "Do you still want to proceed replacing your current PROTON version to ${commit} ?[YES/NO]"
+    fi
+
+    PS3='Your choice: '
+    select CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE in 'NO' 'YES'; do
+        case $CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE in
+            [12])
+                break
+                ;;
+            *)
+                echo 'Invalid choice. Confirm 1 for NO or 2 YES' >&2
+        esac
     done
 
     if [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "YES" ]]; then
