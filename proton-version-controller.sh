@@ -137,7 +137,7 @@ if [[ -z "$tag" && -z "$commit" ]]; then
 
 elif [[ ! -z "$tag" || ! -z "$commit" ]]; then
     echo "WARNING: Downgrading PROTON to significantly older tags/commits might break code base beyond repair."
-    while [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" != "YES" || "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" != "NO" ]]
+    while [[ "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "YES" || "$CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE" == "NO" ]]
     do
         echo "entered value is: $CONFIRM_TAGGED_UPGRADE_OR_DOWNGRADE"
         if [[ -z "$commit" ]]; then
