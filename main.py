@@ -104,7 +104,8 @@ class RedirectToGrafana(object):
 
 
 prom = ProtonPrometheus()
-cors = CORS(allow_all_origins=True)
+cors = CORS(allow_all_origins=True,
+            allow_all_headers=True,)
 app = falcon.API(middleware=[TokenAuthenticator(), cors.middleware, Iface_watch(), prom])
 
 app.add_route('/', DefaultRouteHandler())
