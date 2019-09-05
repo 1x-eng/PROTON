@@ -49,7 +49,6 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             'postgresql': self.pg_cursor_generator,
             # TODO: Add cursorGenerators for MYSQL and SQL Server when they are available within ConnectionManager.
         }
-        self.__j_sql = JinjaSql(param_style='named')
         self.__cursor_engine = self.connection_store()
         self.__alchemy_engine = self.alchemy_engine()
 
@@ -103,9 +102,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             if db_flavour == 'sqlite':
                 # lite database
                 try:
+                    __j_sql = JinjaSql(param_style='named')
                     connection = self.sqlite_connection_generator()
                     cursor = connection.cursor()
-                    query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                    query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                     cursor.execute(query, binding_params)
                     results = cursor.fetchall()
                     results_df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
@@ -121,7 +121,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 # Prodgrade databases
                 try:
                     with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
-                        query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                        __j_sql = JinjaSql(param_style='pyformat')
+                        query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                         cursor.execute(query, bind_params)
                         results_headers= [x[0] for x in cursor.description]
                         results = cursor.fetchall()
@@ -198,6 +199,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
         def perform_update_or_delete_operation(sql, binding_params):
             """
+            TODO: Facilitate UPDATE &/ DELETE Operation on SQLITE.
 
             :param sql: Template:
 
@@ -226,7 +228,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
             try:
                 with self.pg_cursor_generator(self.__cursor_engine) as cursor:
-                    query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                    __j_sql = JinjaSql(param_style='pyformat')
+                    query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                     cursor.execute(query, bind_params)
                     cursor.commit()
                     return True
