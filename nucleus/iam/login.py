@@ -181,7 +181,8 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                     return {
                                         'status': True,
                                         'message': 'Successful Login',
-                                        'token': token
+                                        'token': token,
+                                        'id': existence_results[0][0]
                                     }
                         else:
                             self.iam_login_logger.info(
