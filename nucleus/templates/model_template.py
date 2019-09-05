@@ -123,8 +123,12 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
                         query, bind_params = self.__j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                         cursor.execute(query, bind_params)
+                        results_headers= [x[0] for x in cursor.description]
                         results = cursor.fetchall()
-                        return json.dumps(results)
+                        json_response = []
+                        for r in results:
+                            json_response.append(dict(zip(results_headers, r)))
+                        return json.dumps(json_response)
 
                 except Exception as e:
                     self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
