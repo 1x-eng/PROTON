@@ -231,12 +231,12 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     __j_sql = JinjaSql(param_style='pyformat')
                     query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
                     cursor.execute(query, bind_params)
-                    cursor.commit()
-                    return True
+                return True
             except Exception as e:
                 self.model_{{ modelName }}_logger.exception('[{{modelName}} - Exception during UPDATE operation. Details: {}]'.format(str(e)))
                 print(Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
                       '{}]'.format(str(e)) + Style.RESET_ALL)
+                return
 
         return {
             'insert': perform_insert_operation,

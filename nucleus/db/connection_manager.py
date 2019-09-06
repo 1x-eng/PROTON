@@ -118,6 +118,7 @@ class ConnectionManager(ConnectionDialects, metaclass=Singleton):
         try:
             yield connection.cursor()
         finally:
+            connection.commit()
             connection_pool.putconn(connection)
 
     @classmethod
