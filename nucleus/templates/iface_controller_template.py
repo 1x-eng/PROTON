@@ -154,6 +154,77 @@ class Ictrl_post_{{controller.micName}}_{{controller.iControllerName}}({{control
             resp.body = response
             resp.status = status
 
+{% elif methodName == 'update' %}
+
+
+class Ictrl_update_{{controller.micName}}_{{controller.iControllerName}}({{controller.controllerName}}, ProtonConfig):
+
+    def __init__(self):
+        super(Ictrl_update_{{controller.micName}}_{{controller.iControllerName}}, self).__init__()
+        self.ictrl_{{controller.iControllerName}}_logger = self.get_logger(log_file_name='{{ controller.iControllerName }}',
+                                                                           log_file_path='{}/trace/{{ controller.iControllerName }}.log'.format(self.ROOT_DIR))
+
+    def on_post(self, req, resp):
+        """
+        This is recipient of REST UPDATE request with update payload sent via HTTP POST.
+
+        Extract POST payload using json.loads(req.stream.read())
+
+        ---
+            description: POST call for {{ iControllerName }} leveraging Ctrl_{{ controllerName }} of PROTON MIC
+            responses:
+                204:
+                    description: <Add description relevant to UPDATE. This will be picked by Swagger generator>
+                    schema: <Schema of Response>
+        """
+        try:
+
+            ##############################
+            # POST payload format
+            ##############################
+            # {
+            #     'db_flavour': '', # sqlite or postgres
+            #     'db_name': '', # target db name, either it should already exist, if not, this will be created
+            #     'schema_name': 'public', # target schema name (in postgres). If not provided, will default to 'public'
+            #     'table_name': '', # target table name.
+            #     'payload': {'id': 'value', 'column-2': 'value', 'column-3': 'value' } # where id is PK.
+            # }
+
+            from nucleus.generics.utilities import MyUtilities
+
+            post_payload = json.loads(req.stream.read())
+            validity = MyUtilities.validate_proton_post_payload(post_payload)
+
+            if validity:
+                post_response = self.controller_processor()['{{ controller.iControllerName }}']['{{ methodName }}'](post_payload['db_flavour'], post_payload['db_name'], post_payload['schema_name'], post_payload['table_name'], post_payload['payload'])
+                response = post_response
+                status = falcon.HTTP_204
+            else:
+                response = json.dumps({
+                    'Message': 'POST Payload for UPDATE operation is invalid. '
+                               'Please input payload in PROTON standard format.',
+                    'Sample Format': {
+                                'db_flavour': 'sqlite or postgresql',
+                                'db_name': 'target db name, either it should already exist, if not, this will be created',
+                                'schema_name': 'target schema in specified database.',
+                                'table_name': 'target table name',
+                                'payload': {'id': 1, 'column-2': 'value', 'column-3': 'value' } # Where id=PK
+                    }
+                })
+                status = falcon.HTTP_400
+
+        except Exception as e:
+            response = json.dumps({'Message': 'Server has failed to service this request.',
+                                   'stackTrace': str(e)})
+            status = falcon.HTTP_500
+            print(
+                Fore.LIGHTRED_EX + '[Ictrl_{{ controller.iControllerName }}]: UPDATE is unsuccessful. InterfaceController has returned HTTP 500'
+                                   ' to client. Exception Details: {}'.format(str(e)) + Style.RESET_ALL)
+
+        finally:
+            resp.body = response
+            resp.status = status
+
 {% endif %}
 
 {% endfor %}
