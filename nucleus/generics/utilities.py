@@ -64,3 +64,46 @@ class MyUtilities(object):
             if MyUtilities.validate_list_of_dicts_consistency(proton_post_payload['payload']):
                 return True
         return False
+
+    @staticmethod
+    def validate_proton_payload_type(base_type_map, actual_payload):
+        """
+        Validate datatype of a PROTON payload. This is a pre-requisite for all CUD ops. Essentially, this is
+        inducing type safety for all db transactions that either creates or modifies existing data.
+        :param base_type_map: A dictionary whose key is the actual payload key and value is the expected data type
+        for that respective entry.
+        :param actual_payload: Actual PROTON payload.
+        :return: A dictionary with status of boolean indicating concurrence and a message indicating reason (str)
+        """
+
+        if isinstance(base_type_map, dict) and isinstance(actual_payload, dict):
+            if base_type_map.keys() == actual_payload.keys():
+                if all(elem in actual_payload for elem in base_type_map.keys()):
+                    if all(list(isinstance(actual_payload[elem], base_type_map[elem]) for elem in base_type_map)):
+                        return {
+                            'status': True,
+                            'message': 'Payload complies with expected types.'
+                        }
+                    else:
+                        return {
+                            'status': False,
+                            'message': 'Given payload does not match with expected types. '
+                                       'Expected types are: {}'.format(str(base_type_map))
+                        }
+                else:
+                    return {
+                        'status': False,
+                        'message': 'Given payload does not contain all expected columns. '
+                                   'Expected columns and types are: {}'.format(str(base_type_map))
+                    }
+            else:
+                return {
+                    'status': False,
+                    'message': 'Given payload is not in agreement with required metadata for PROTON transaction.'
+                               ' Expected metadata: {}'.format(str(base_type_map))
+                }
+        else:
+            return {
+                'status': False,
+                'message': 'Validation not possible unless actual payload(dict) and type map(dict) are provided.'
+            }
