@@ -57,6 +57,8 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                          '/proton-prom',
                          '/proton-grafana']):
             pass
+        elif req.method == 'OPTIONS':
+            pass
         else:
             setattr(req.context, 'cache_ready', False)
             challenges = ['Token type="Fernet"']
