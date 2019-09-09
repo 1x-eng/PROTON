@@ -81,6 +81,13 @@ class Ctrl_{{ controllerName }}(Creator, Reader, Updater, Deleter, Parallel_Prog
         # Delete: self.transaction['update'](db_flavour, sql, binding_params)
         # To learn more, do dir(self.getter) and dir(self.transaction).
 
+        PS: You have respective CRUD levers for this respective MIC available under controller_levers.
+        Make use of these levers to extens specific CRUD activities so you code is more maintainable.
+
+        To make use of these levers, all you have to do is create a wrapper function and wire it up in the final return.
+        eg. refer proton's default GET/POST wrappers for every new MIC.
+
+
         ####################################
         # Concurrent Method Definition Index
         ####################################
