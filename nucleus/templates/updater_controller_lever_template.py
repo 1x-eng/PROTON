@@ -51,3 +51,4 @@ class Updater(Model_{{modelName}}):
 
         except Exception as e:
             log_head.exception('[{{modelName}}] - Exception while updating data. Details: {}'.format(str(e)))
+

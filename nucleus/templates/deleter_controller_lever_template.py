@@ -51,3 +51,4 @@ class Deleter(Model_{{modelName}}):
 
         except Exception as e:
             log_head.exception('[{{modelName}}] - Exception while deleting data')
+

@@ -41,7 +41,7 @@ class Creator(Model_{{ modelName }}):
 
         try:
             if len(input_payload) > 0:
-                validation_results = list(map(lambda p: self.validate_proton_payload_type(expected_metadata),
+                validation_results = list(map(lambda p: self.validate_proton_payload_type(expected_metadata, p),
                                               input_payload))
 
                 if all(r['status'] for r in validation_results):
