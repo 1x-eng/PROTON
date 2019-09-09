@@ -32,7 +32,10 @@ from colorama import Style
 from configuration import ProtonConfig
 from nucleus.generics.parallel_programming import Parallel_Programming
 from nucleus.generics.contained_requests import ContainedRequests
-from mic.models.{{ modelName }}.model_{{ modelName }} import Model_{{modelName}}
+from mic.controller_levers.create_{{ modelName }}_lever import Creator
+from mic.controller_levers.read_{{ modelName }}_lever import Reader
+from mic.controller_levers.update_{{ modelName }}_lever import Updater
+from mic.controller_levers.delete_{{ modelName }}_lever import Deleter
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -40,7 +43,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, ContainedRequests):
+class Ctrl_{{ controllerName }}(Creator, Reader, Updater, Deleter, Parallel_Programming, ContainedRequests):
 
     def __init__(self):
         super( Ctrl_{{ controllerName }}, self ).__init__()
@@ -89,81 +92,21 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
         :return: serialized response ready for transmission to Interface.
         """
 
-        def proton_default_get(db_flavour, *args):
-            """
+        def proton_reader_default_get(db_flavour, *args):
+            return self.proton_default_get(db_flavour, self.ctrl_{{ controllerName }}_logger, *args)
 
-            ####################################
-            # How to write SQL?
-            ####################################
+        def proton_creator_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
 
-            {% raw %}
+            expected_metadata = {
+                'id': int,
+                'firstName': str,
+                'lastName': str,
+                'age': float
+            }
 
-                    SELECT
-                    employeeName, employeeAddress
-                    FROM
-                    employee
-                    WHERE
-                    employeeId = {{employeeId}}
-                    { % if projectId %}
-                    AND
-                    projectId = {{projectId}}
-                    { % endif %}
-
-            {% endraw %}
-
-            data = {
-                    "employeeId": 123,
-                    "projectId": u"proton"
-                }
-
-
-            results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
-
-            :param db_flavour: Target database.
-            :param args: All other arguments packed into a tuple.
-            :return: serialized response.
-            """
-
-            req_params_dict = args[0]  # Any/All query params passed to this route is packaged into this dictionary.
-
-            if ProtonConfig.TARGET_DB == 'sqlite':
-                target_table = 'PROTON_default'
-
-                example_sql = """
-                SELECT * from {} ORDER BY id DESC LIMIT 10
-                """.format(target_table)
-                binding_params = {}
-
-            elif ProtonConfig.TARGET_DB == 'postgresql':
-
-                example_sql = """
-                SELECT table_schema, table_name
-                FROM information_schema.tables
-                ORDER BY table_schema,table_name;
-                """
-
-                binding_params = {}
-            else:
-                example_sql = """
-                """
-                binding_params = {}
-
-            try:
-                results = self.getter["get_model_data"](db_flavour, example_sql, binding_params)
-                return results
-            except Exception as e:
-                self.ctrl_{{ controllerName }}_logger.exception('[{{ controllerName }}] - Exception while getting model data. '
-                                                                'Details: {}'.format(str(e)))
-
-        def proton_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
-            try:
-                self.transaction['insert'](db_flavour, db_name, schema_name, table_name, input_payload)
-                return json.dumps({
-                    'Message': 'Insert operation to {}.{} table in {} database under {} '
-                    'is successful'.format(schema_name, table_name, db_name, db_flavour)})
-            except Exception as e:
-                self.ctrl_{{ controllerName }}_logger.exception('[{{ controllerName }}] - Exception while inserting data. '
-                                                                'Details: {}'.format(str(e)))
+            return json.dumps(self.proton_{{ modelName }}_creator(db_flavour, db_name, schema_name,
+                                                                  table_name, input_payload, expected_metadata,
+                                                                  self.ctrl_{{ controllerName }}_logger))
 
         def proton_multi_threaded_http_op(*args):
             """
@@ -223,7 +166,7 @@ class Ctrl_{{ controllerName }}(Model_{{ modelName }}, Parallel_Programming, Con
             return json.dumps(default_concurrency_response)
 
         return {
-            "default": {'get': proton_default_get, 'post': proton_default_post},  # Supported methods are 'get', 'post'.
+            "default": {'get': proton_reader_default_get, 'post': proton_creator_default_post},  # Supported methods are 'get', 'post'.
             "default_http_concurrency": {'get': proton_multi_threaded_http_op}
             # Similar to above, add more processor methods according to developer's convenience.
         }
