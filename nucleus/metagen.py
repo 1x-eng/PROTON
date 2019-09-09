@@ -40,10 +40,15 @@ class MetaGen(CacheManager):
                                               log_file_path='{}/trace/meta_gen_logs.log'.format(self.ROOT_DIR))
         self.__models_root = '{}/mic/models'.format(self.ROOT_DIR)
         self.__controllers_root = '{}/mic/controllers'.format(self.ROOT_DIR)
+        self.__controllers_levers_root = '{}/mic/controller_levers'.format(self.ROOT_DIR)
         self.__main_executable = '{}/main.py'.format(self.ROOT_DIR)
         self.__jinja_env = Environment(loader=FileSystemLoader('{}/nucleus/templates/'.format(self.ROOT_DIR)))
         self.__models_template = self.__jinja_env.get_template('model_template.py')
         self.__controllers_template = self.__jinja_env.get_template('controller_template.py')
+        self.__creator_controller_lever_template = self.__jinja_env.get_template('creator_controller_lever_template.py')
+        self.__reader_controller_lever_template = self.__jinja_env.get_template('reader_controller_lever_template.py')
+        self.__updater_controller_lever_template = self.__jinja_env.get_template('updater_controller_lever_template.py')
+        self.__deleter_controller_lever_template = self.__jinja_env.get_template('deleter_controller_lever_template.py')
 
         self.bootstrap_sqlite = self.__sqlite_meta_generator
         self.new_mic = self.__meta_generator
@@ -153,9 +158,20 @@ class MetaGen(CacheManager):
             if not os.path.exists(new_model):
                 os.makedirs(new_model)
                 open(new_model + '/__init__.py', 'w+').close()
-                # open(new_model + '/model_{}.py'.format(mic_name), 'w+').close()
+
                 with open(new_model + '/model_{}.py'.format(mic_name), 'w+') as mf:
                     mf.write(self.__models_template.render(modelName=mic_name))
+
+                # Generate Controller Levers for newly created model.
+                with open(self.__controllers_levers_root + '/create_{}_lever.py'.format(mic_name), 'w+') as cclf:
+                    cclf.write(self.__creator_controller_lever_template.render(modelName=mic_name))
+                with open(self.__controllers_levers_root + '/read_{}_lever.py'.format(mic_name), 'w+') as crlf:
+                    crlf.write(self.__reader_controller_lever_template.render(modelName=mic_name))
+                with open(self.__controllers_levers_root + '/update_{}_lever.py'.format(mic_name), 'w+') as culf:
+                    culf.write(self.__updater_controller_lever_template.render(modelName=mic_name))
+                with open(self.__controllers_levers_root + '/delete_{}_lever.py'.format(mic_name), 'w+') as cdlf:
+                    cdlf.write(self.__deleter_controller_lever_template.render(modelName=mic_name))
+
                 # Generate Controllers for newly created model.
                 with open(self.__controllers_root + '/controller_{}.py'.format(mic_name), 'w+') as cf:
                     cf.write(self.__controllers_template.render(modelName=mic_name, controllerName=mic_name))
