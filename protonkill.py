@@ -73,11 +73,19 @@ class ProtonKill(CacheManager):
 
             model_path = '{}/mic/models/{}'.format(self.ROOT_DIR, mic_name)
             controller_path = '{}/mic/controllers/controller_{}.py'.format(self.ROOT_DIR, mic_name)
+            create_controller_lever_path = '{}/mic/controller_levers/create_{}_lever.py'.format(self.ROOT_DIR, mic_name)
+            read_controller_lever_path = '{}/mic/controller_levers/read_{}_lever.py'.format(self.ROOT_DIR, mic_name)
+            update_controller_lever_path = '{}/mic/controller_levers/update_{}_lever.py'.format(self.ROOT_DIR, mic_name)
+            delete_controller_lever_path = '{}/mic/controller_levers/delete_{}_lever.py'.format(self.ROOT_DIR, mic_name)
             iface_controller_path = '{}/mic/iface/controllers/iface_ctrl_{}.py'.format(self.ROOT_DIR, mic_name)
             model_existance = os.path.isdir(model_path)
 
             if model_existance:
                 shutil.rmtree(model_path, ignore_errors=True)
+                os.remove(create_controller_lever_path)
+                os.remove(read_controller_lever_path)
+                os.remove(update_controller_lever_path)
+                os.remove(delete_controller_lever_path)
                 os.remove(controller_path)
                 os.remove(iface_controller_path)
                 self.protonkill_logger.info('PROTON MIC for {} is killed successfully!'.format(mic_name))
