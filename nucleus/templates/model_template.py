@@ -116,11 +116,11 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                 if len(results) > 0:
                     for r in results:
                         json_response.append(dict(zip(results_headers, r)))
-                    return json.dumps(json_response)
-                return json.dumps({
+                    return json_response
+                return {
                     'results': json_response,
                     'message': 'Table not found / Table empty'
-                })
+                }
 
             if db_flavour == 'sqlite':
                 # lite database
@@ -136,10 +136,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
-                    return json.dumps({
+                    return {
                         'results': [],
                         'message': 'Server unable to service request. Error - 500'
-                    })
+                    }
             else:
                 # Prodgrade databases
                 try:
@@ -151,10 +151,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
-                    return json.dumps({
+                    return {
                         'results': [],
                         'message': 'Server unable to service request. Error - 500'
-                    })
+                    }
 
         return {
             "get_model_data": get_data_for_model,
