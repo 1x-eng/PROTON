@@ -102,7 +102,7 @@ class Reader(Model_{{ modelName }}):
             log_head.exception('[{{ modelName }}] - Exception while getting model data. '
                               'Details: {}'.format(str(e)))
 
-    def proton_{{ modelName }}__reader(self, db_flavour, log_head, *args):
+    def proton_{{ modelName }}_reader(self, db_flavour, log_head, *args):
 
         try:
             query_params = args[0]
