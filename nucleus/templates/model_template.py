@@ -99,42 +99,62 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
 
             :return:
             """
+
+            def _get_data_utility(___j_sql, _cursor):
+                """
+                Reusable utility across all PROTON supported db flavours. Falls back on parent's scope to obtain
+                sql, binding_params and method to generate sql template,
+                :param ___j_sql: Jinja Sql object
+                :param _cursor: Cursor for respective DB flavour
+                :return: serialized response
+                """
+                query, bind_params = ___j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                _cursor.execute(query, binding_params)
+                results_headers = [x[0] for x in _cursor.description]
+                results = _cursor.fetchall()
+                json_response = []
+                if len(results) > 0:
+                    for r in results:
+                        json_response.append(dict(zip(results_headers, r)))
+                    return json.dumps(json_response)
+                return json.dumps({
+                    'results': json_response,
+                    'message': 'Table not found / Table empty'
+                })
+
             if db_flavour == 'sqlite':
                 # lite database
                 try:
                     __j_sql = JinjaSql(param_style='named')
                     connection = self.sqlite_connection_generator()
                     cursor = connection.cursor()
-                    query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
-                    cursor.execute(query, binding_params)
-                    results = cursor.fetchall()
-                    results_df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
-                    return results_df.to_json(orient='records')
+                    response = _get_data_utility(__j_sql, cursor)
+                    connection.close()
+                    return response
                 except Exception as e:
                     connection.rollback()
                     self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
-                finally:
-                    connection.close()
+                    return json.dumps({
+                        'results': [],
+                        'message': 'Server unable to service request. Error - 500'
+                    })
             else:
                 # Prodgrade databases
                 try:
                     with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
                         __j_sql = JinjaSql(param_style='pyformat')
-                        query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
-                        cursor.execute(query, bind_params)
-                        results_headers= [x[0] for x in cursor.description]
-                        results = cursor.fetchall()
-                        json_response = []
-                        for r in results:
-                            json_response.append(dict(zip(results_headers, r)))
-                        return json.dumps(json_response)
+                        return _get_data_utility(__j_sql, cursor)
 
                 except Exception as e:
                     self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
+                    return json.dumps({
+                        'results': [],
+                        'message': 'Server unable to service request. Error - 500'
+                    })
 
         return {
             "get_model_data": get_data_for_model,
