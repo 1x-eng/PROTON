@@ -100,7 +100,7 @@ class Ctrl_{{ controllerName }}(Creator, Reader, Updater, Deleter, Parallel_Prog
         """
 
         def proton_reader_default_get(db_flavour, *args):
-            return self.proton_default_get(db_flavour, self.ctrl_{{ controllerName }}_logger, *args)
+            return json.dumps(self.proton_default_get(db_flavour, self.ctrl_{{ controllerName }}_logger, *args))
 
         def proton_creator_default_post(db_flavour, db_name, schema_name, table_name, input_payload):
 
