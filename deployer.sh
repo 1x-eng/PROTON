@@ -32,6 +32,8 @@
 echo -e "[Pre-Requisites] Only continue should you have met all the below PROTON deployer pre-requisites:"
 echo -e "1. You need to have a DNS mapped to a domain/sub-domain."
 echo -e "2. This DNS must be pointing to your remote PROTON server @ default http(80) & https(443) ports."
+echo -e "3. Should you opt in to Automated mode, deployer will need to have permission to create new directory from a level above this file\n"
+
 echo -e "\n"
 
 while getopts d:a: option
