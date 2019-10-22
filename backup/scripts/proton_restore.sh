@@ -26,7 +26,8 @@
 
 ## @Author: Pruthvi Kumar
 ## @Email: pruthvikumar.123@gmail.com
-## @Desc: Script to initiate and orchestrate proton stack restoration!
+## @Desc: Script to initiate and orchestrate proton stack restoration from remote dropbox locations.
+## Pre-requisites: Please get your access token(s) to remote dropbox location(s) before you initiate this script.
 
 proton_backup_env_token=''
 proton_backup_pg_token=''

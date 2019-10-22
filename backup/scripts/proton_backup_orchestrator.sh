@@ -26,7 +26,9 @@
 
 ## @Author: Pruthvi Kumar
 ## @Email: pruthvikumar.123@gmail.com
-## @Desc: Script to initiate and orchestrate proton stack backup and cleanup.
+## @Desc: Script to initiate and orchestrate proton stack backup to remote dropbox locations and also initiate
+# remote location cleanup.
+## Pre-requisites: Please get your access token(s) to remote dropbox location(s) before you initiate this script.
 
 proton_backup_env_token=''
 proton_backup_pg_token=''

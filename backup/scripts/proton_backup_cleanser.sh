@@ -26,7 +26,8 @@
 
 ## @Author: Pruthvi Kumar
 ## @Email: pruthvikumar.123@gmail.com
-## @Desc: Script to initiate and orchestrate proton backup cleanup in remote site
+## @Desc: Script to initiate and orchestrate proton's backups to be cleaned in remote dropbox location.
+## Pre-requisites: Please get your access token(s) to remote dropbox location(s) before you initiate this script.
 
 while getopts e:p:r:s: option
 do
