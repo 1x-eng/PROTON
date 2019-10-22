@@ -36,7 +36,7 @@ proton_backup_redis_token=''
 proton_backup_sqlite_token=''
 
 echo -e "********* PROTON Backup & Remote Cleanup Job Initialized *********\n"
-echo -e "Please enter access token's to remote location(s) where PROTON's config and DB are stored\n"
+echo -e "Please enter access token's to remote location(s) where PROTON's config and DB are to be stored\n"
 
 while [[ ${proton_backup_env_token} == '' ]] || [[ ${proton_backup_pg_token} == '' ]] || [[ ${proton_backup_redis_token} == '' ]] || [[ ${proton_backup_sqlite_token} == '' ]]; do
     if [[ ${proton_backup_env_token} == '' ]]; then
