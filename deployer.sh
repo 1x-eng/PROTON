@@ -103,6 +103,7 @@ if [[ ${automated} == 'yes' ]]; then
     echo -e "DEPLOYER is proceeding in AUTOMATED mode\n"
     echo -e "Generating platform config \n"
 
+    cd ${ROOT_DIR}
     cd ..
     mkdir -p proton_db
     cd proton_db
@@ -130,7 +131,7 @@ EOF
 
     echo -e "Initializing PROTON Stack\n"
     ./cproton.sh -U yes
-    $(docker ps -a)
+    echo -e "\n"
 
     echo -e "*******************************************************"
     echo -e "PROTON Stack successfully initialized in automated mode"
