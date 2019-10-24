@@ -34,8 +34,6 @@ echo -e "1. You need to have a DNS mapped to a domain/sub-domain."
 echo -e "2. This DNS must be pointing to your remote PROTON server @ default http(80) & https(443) ports."
 echo -e "3. Should you opt in to Automated mode, deployer will need to have permission to create new directory from a level above this file\n"
 
-echo -e "\n"
-
 while getopts d:a: option
 do
  case "${option}"
@@ -86,7 +84,7 @@ server {
 EOT
 ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
 nginx -t
-service restart nginx
+service nginx restart
 echo -e "\n"
 
 # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
@@ -106,11 +104,11 @@ if [[ ${automated} == 'yes' ]]; then
     echo -e "Generating platform config \n"
 
     cd ..
-    mkdir -f proton_db
+    mkdir -p proton_db
     cd proton_db
-    mkdir -f pg
-    mkdir -f sqlite
-    mkdir -f redis
+    mkdir -p pg
+    mkdir -p sqlite
+    mkdir -p redis
 
     AUTOMATED_PROTON_DB_PATH=$(pwd)
     cd ${ROOT_DIR}
