@@ -116,8 +116,8 @@ if [[ ${automated} == 'yes' ]]; then
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
-PG_USERNAME= $(openssl rand -base64 12)
-PG_PASSWORD= $(openssl rand -base64 12)
+PG_USERNAME=$(openssl rand -base64 12)
+PG_PASSWORD=$(openssl rand -base64 12)
 PG_TARGET_DB=proton
 PG_TARGET_PORT=5432
 REDIS_TARGET_PORT=6379
