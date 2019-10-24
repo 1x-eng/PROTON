@@ -57,15 +57,21 @@ ROOT_DIR=$(pwd)
 echo -e "Preparing Infrastructure..."
 echo -e "[Step - 1] Installing Docker & Docker-Compose\n"
 
-apt-get update
-apt-get install -y docker # needs to be tested
-apt-get install -y docker-compose # Needs to be tested
+sudo apt-get update
+sudo apt-get install -y docker # needs to be tested
+sudo apt-get install -y docker-compose # Needs to be tested
 echo -e "\n"
+
+# Enable $USER to run docker
+echo -e "[Step -1a] Enabling ${USER} to run docker\n"
+sudo groupadd docker
+sudo gpasswd -a ${USER} docker
+newgrp docker
 
 # Install nginx and http reverse proxy to PROTON
 echo -e "[Step - 2] Installing NGINX and configuring HTTP reverse proxy to PROTON\n"
-apt-get update
-apt-get install -y nginx
+sudo apt-get update
+sudo apt-get install -y nginx
 unlink /etc/nginx/sites-enabled/default
 cd /etc/nginx/sites-available
 cat <<EOT > reverse-proxy.conf
@@ -89,11 +95,11 @@ echo -e "\n"
 
 # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
 echo -e "[Step -3] Configuring HTTPS reverse proxy to PROTON\n"
-apt-get update
-apt-get install -y software-properties-common
-add-apt-repository ppa:certbot/certbot -y
-apt-get update
-apt-get install -y python-certbot-nginx
+sudo apt-get update
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository ppa:certbot/certbot -y
+sudo apt-get update
+sudo apt-get install -y python-certbot-nginx
 certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d ${dns}
 echo -e "\n"
 
