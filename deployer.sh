@@ -90,7 +90,7 @@ server {
 EOT
 ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
 nginx -t
-service nginx restart
+sudo service nginx restart
 echo -e "\n"
 
 # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
