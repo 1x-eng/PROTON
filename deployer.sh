@@ -105,9 +105,7 @@ echo -e "\n"
 
 # Avoiding permission issues for PROTON stack.
 echo -e "[Step - 4] Granting PROTON stack with required folder level permissions."
-cd ..
-sudo chmod 777 -R ./PROTON
-cd ${ROOT_DIR}
+sudo chmod 777 -R ./
 echo -e "\n"
 
 echo -e "Infrastructure prep completed for PROTON\n"
@@ -123,6 +121,8 @@ if [[ ${automated} == 'yes' ]]; then
     mkdir -p pg
     mkdir -p sqlite
     mkdir -p redis
+
+    sudo chmod 777 -R ./
 
     AUTOMATED_PROTON_DB_PATH=$(pwd)
     cd ${ROOT_DIR}
