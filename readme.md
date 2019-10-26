@@ -160,7 +160,7 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
 - 1.0.0 - PROTON GA, 
 - Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
 
-# Sparkle Deployment Instructions
+# PROTON Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
 - [Step - 1] Install Docker and Docker-Compose
 ```bash
     sudo apt-get update
@@ -183,7 +183,7 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
     server {
                     listen 80;
                     listen [::]:80;
-                    server_name ${dns};
+                    server_name <dns here>;
     
                     access_log /var/log/nginx/reverse-access.log;
                     error_log /var/log/nginx/reverse-error.log;
@@ -204,7 +204,7 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
     sudo add-apt-repository ppa:certbot/certbot -y
     sudo apt-get update
     sudo apt-get install -y python-certbot-nginx
-    sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d <dns eg. temp.com here>
+    sudo certbot --nginx --non-interactive --agree-tos -m <email> -d <dns eg. temp.com here>
 ```
 - [Step - 5] Grant permission to PROTON Stack
 ```bash
