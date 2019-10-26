@@ -102,7 +102,7 @@ sudo apt-get install -y software-properties-common
 sudo add-apt-repository ppa:certbot/certbot -y
 sudo apt-get update
 sudo apt-get install -y python-certbot-nginx
-sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d ${dns}
+sudo certbot --nginx --non-interactive --agree-tos -d ${dns}
 echo -e "\n"
 
 # Avoiding permission issues for PROTON stack.
