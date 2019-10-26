@@ -94,13 +94,20 @@ sudo service nginx restart
 echo -e "\n"
 
 # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
-echo -e "[Step -3] Configuring HTTPS reverse proxy to PROTON\n"
+echo -e "[Step - 3] Configuring HTTPS reverse proxy to PROTON\n"
 sudo apt-get update
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository ppa:certbot/certbot -y
 sudo apt-get update
 sudo apt-get install -y python-certbot-nginx
 sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d ${dns}
+echo -e "\n"
+
+# Avoiding permission issues for PROTON stack.
+echo -e "[Step - 4] Granting PROTON stack with required folder level permissions."
+cd ..
+sudo chmod 777 -R ./PROTON
+cd ${ROOT_DIR}
 echo -e "\n"
 
 echo -e "Infrastructure prep completed for PROTON\n"
@@ -136,10 +143,6 @@ PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 EOF
 
     echo -e "Initializing PROTON Stack\n"
-    cd ..
-    sudo chmod 777 -R ./PROTON
-    cd ${ROOT_DIR}
-
     ./cproton.sh -U yes
     echo -e "\n"
 
