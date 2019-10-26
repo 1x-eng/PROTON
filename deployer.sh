@@ -29,6 +29,8 @@
 ## @Desc: Script to deploy PROTON by prepping remote (Ubuntu) environment with all required dependencies
 ## @Pre-requisites: THis script must be run as sudo.
 
+#TODO: Folder permission issues needs to be sorted to get the automated mode functional.
+
 echo -e "[Pre-Requisites] Only continue should you have met all the below PROTON deployer pre-requisites:"
 echo -e "1. You need to have a DNS mapped to a domain/sub-domain."
 echo -e "2. This DNS must be pointing to your remote PROTON server @ default http(80) & https(443) ports."

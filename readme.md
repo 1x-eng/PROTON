@@ -159,6 +159,60 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
 # Tags
 - 1.0.0 - PROTON GA, 
 - Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
+
+# Sparkle Deployment Instructions
+- [Step - 1] Install Docker and Docker-Compose
+```bash
+    sudo apt-get update
+    sudo apt-get install -y docker
+    sudo apt-get install -y docker-compose
+```
+- [Step - 2] Enable USER to run docker
+```bash
+    sudo groupadd -e docker
+    sudo gpasswd -a ${USER} docker
+    newgrp docker
+```
+- [Step - 3] Install NGINX and configure HTTP reverse proxy
+```bash
+    sudo apt-get update
+    sudo apt-get install -y nginx
+    unlink /etc/nginx/sites-enabled/default
+    cd /etc/nginx/sites-available
+    cat <<EOT > reverse-proxy.conf
+    server {
+                    listen 80;
+                    listen [::]:80;
+                    server_name ${dns};
+    
+                    access_log /var/log/nginx/reverse-access.log;
+                    error_log /var/log/nginx/reverse-error.log;
+    
+                    location / {
+                                proxy_pass http://127.0.0.1:3000;
+                }
+            }
+    EOT
+    ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+    sudo nginx -t
+    sudo service nginx restart
+```
+- [Step - 4] Configure HTTPS in NGINX reverse proxy
+```bash
+    sudo apt-get update
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository ppa:certbot/certbot -y
+    sudo apt-get update
+    sudo apt-get install -y python-certbot-nginx
+    sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d <dns eg. temp.com here>
+```
+- [Step - 5] Grant permission to PROTON Stack
+```bash
+    cd ~/PROTON
+    sudo chmod 777 -R ./
+```
+- Start PROTON stack using - `./cproton.sh -U yes`
+
 # License
 
 BSD 3-Clause License
