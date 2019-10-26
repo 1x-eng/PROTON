@@ -136,7 +136,7 @@ PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 EOF
 
     echo -e "Initializing PROTON Stack\n"
-    ./cproton.sh -U yes
+    sudo ./cproton.sh -U yes
     echo -e "\n"
 
     echo -e "*******************************************************"
