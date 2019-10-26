@@ -146,21 +146,7 @@ command: `./cproton.sh -s yes`
  ![PROTON_swagger_json](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_json.png)
  ![PROTON_swagger_yaml](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_yaml.png)
 
-
-# Features in active development:
-- 100% test coverage and auto-generated test cases for every new API generated using PROTON stack.
-- Auto-generated HELM charts and one click deploy onto GCP's GKE & AWS' EKS.
-- Pipelines to transfer form and to datawarehouse to database. Support for GCP's bigQuery and AWS's RedShift in progress.
-- Auto generated Swagger UI from PROTON generated openAPI specs.
-
-# Support
-For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensure to have a valid subject line, detailed message with appropriate stack trace to expect prompt/quick response.
-
-# Tags
-- 1.0.0 - PROTON GA, 
-- Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
-
-# PROTON Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+# PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
 - [Step - 1] Install Docker and Docker-Compose
 ```bash
     sudo apt-get update
@@ -212,6 +198,20 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
     sudo chmod 777 -R ./
 ```
 - Start PROTON stack using - `./cproton.sh -U yes`
+
+
+# Features in active development:
+- 100% test coverage and auto-generated test cases for every new API generated using PROTON stack.
+- Auto-generated HELM charts and one click deploy onto GCP's GKE & AWS' EKS.
+- Pipelines to transfer form and to datawarehouse to database. Support for GCP's bigQuery and AWS's RedShift in progress.
+- Auto generated Swagger UI from PROTON generated openAPI specs.
+
+# Support
+For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensure to have a valid subject line, detailed message with appropriate stack trace to expect prompt/quick response.
+
+# Tags
+- 1.0.0 - PROTON GA, 
+- Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
 
 # License
 
