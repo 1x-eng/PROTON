@@ -17,6 +17,9 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - PROTON also ships with `signup` and `login` routes to on-board & login users onto platform.
 - All of this, **containerised**!
 
+# PROTON Tech Stack Anatomy
+![PROTON tech stack anatomy](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/ProtonStackAnatomy.png)
+
 # Getting Started
 - Install docker on your development machine. 
     - Linux - https://docs.docker.com/install/linux/docker-ce/ubuntu/
