@@ -135,24 +135,22 @@ PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/postgres
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 EOF
 
-    echo -e "Initializing PROTON Stack\n"
-    sudo ./cproton.sh -U yes
-    echo -e "\n"
-
-    echo -e "*******************************************************"
-    echo -e "PROTON Stack successfully initialized in automated mode"
-    echo -e "*******************************************************\n"
+    echo -e "*********************************************************"
+    echo -e "Infrastructure prepped for PROTON Stack in automated mode"
+    echo -e "*********************************************************\n"
 
     echo -e "PS:"
-    echo -e "1. Check https://${dns} in your favourite browser or API client to be welcomed by PROTON."
-    echo -e "2. Should you want to view logs, use this command- docker logs -f proton"
-    echo -e "3. Should you want to see all PROTON stack's containers, use this command- docker ps -a"
-    echo -e "4. Deployer has structured your PROTON DB's to be mounted here - ${AUTOMATED_PROTON_DB_PATH}\n"
+    echo -e "1. Infrastructure prepped for PROTON stack successfully."
+    echo -e "2. You may initialize using cproton.sh -U yes"
+    echo -e "3. Then, check https://${dns} in your favourite browser or API client to be welcomed by PROTON."
+    echo -e "4. Should you want to view logs, use this command- docker logs -f proton"
+    echo -e "5. Should you want to see all PROTON stack's containers, use this command- docker ps -a"
+    echo -e "6. Deployer has structured your PROTON DB's to be mounted here - ${AUTOMATED_PROTON_DB_PATH}\n"
 else
     echo -e "PS:"
     echo -e "1. Infrastructure is prepared for PROTON stack"
     echo -e "2. Since you've not asked for automated mode, please continue to initialize PROTON stack manually."
-    echo -e "3. You may start with this command - ./cproton.sh -U yes"
+    echo -e "3. You may start with this command - cproton.sh -U yes"
     echo -e "4. Once PROTON stack is up, you may visit https://${dns} in yout favourite browser or API client to be greeted by PROTON\n"
 fi
 
