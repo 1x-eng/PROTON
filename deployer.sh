@@ -66,7 +66,6 @@ echo -e "\n"
 echo -e "[Step -1a] Enabling ${USER} to run docker\n"
 sudo groupadd docker
 sudo gpasswd -a ${USER} docker
-newgrp docker
 
 # Install nginx and http reverse proxy to PROTON
 echo -e "[Step - 2] Installing NGINX and configuring HTTP reverse proxy to PROTON\n"
