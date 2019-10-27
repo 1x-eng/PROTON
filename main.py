@@ -33,8 +33,6 @@ from mic.iface.middlewares.proton_prometheus import ProtonPrometheus
 from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
-from nucleus.email.email import ProtonEmail
-
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -44,11 +42,6 @@ __version__ = "1.0"
 """
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
-
-pe = ProtonEmail()
-response = pe.sg.send(pe.message)
-print(response.status_code, response.body, response.headers)
-
 
 class DefaultRouteHandler(object):
     """
