@@ -65,4 +65,5 @@ RUN chmod 777 -R /PROTON
 USER default_proton_user
 RUN echo -e "\n"
 
+RUN echo -e"********* PROTON port expose phase *********\n"
 EXPOSE 3000/tcp
