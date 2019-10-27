@@ -33,6 +33,7 @@ from mic.iface.middlewares.proton_prometheus import ProtonPrometheus
 from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
+from nucleus.email.email import ProtonEmail
 {% for ifaceController in ifaceControllers %}
 from mic.iface.controllers.{{ ifaceController.fileName }} import {{ ifaceController.controllerName }}
 {% endfor %}
@@ -45,6 +46,10 @@ __version__ = "1.0"
 """
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
+
+pe = ProtonEmail()
+response = pe.sg.send(pe.message)
+print(response.status_code, response.body, response.headers)
 
 
 class DefaultRouteHandler(object):
@@ -80,6 +85,7 @@ class FastServe(object):
 
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
+
 
 class RedirectToProm(object):
     """

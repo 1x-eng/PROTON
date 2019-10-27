@@ -44,6 +44,7 @@ if [[ -f .env ]]; then
     eval "$(grep ^PROTON_SQLITE_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_POSTGRES_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_REDIS_VOLUME_MOUNT= .env)"
+    eval "$(grep ^SENDGRID_API_KEY= .env)"
 
     if [[ -z "$PG_USERNAME" ]]; then
         while [[ -z "$PG_USERNAME" ]]
@@ -115,6 +116,15 @@ Please enter the absolute location where PROTON's redis can mount onto: " PROTON
         done
     fi
 
+    if [[ -z "$SENDGRID_API_KEY" ]]; then
+        while [[ -z "$SENDGRID_API_KEY" ]]
+        do
+            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \"
+            have a sendgrid account yet, please create a free account here - https://signup.sendgrid.com/ . Create \
+            an API key and paste that key here: " SENDGRID_API_KEY
+        done
+    fi
+
 else
 
     touch .env
@@ -160,6 +170,13 @@ PROTON_REDIS_VOLUME_MOUNT is the location that PROTON's redis container will mou
 Please enter the absolute location where PROTON's redis can mount onto: " PROTON_REDIS_VOLUME_MOUNT
         done
 
+    while [[ -z "$SENDGRID_API_KEY" ]]
+        do
+            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \"
+            have a sendgrid account yet, please create a free account here - https://signup.sendgrid.com/ . Create \
+            an API key and paste that key here: " SENDGRID_API_KEY
+        done
+
 fi
 
     cat << EOF > .env
@@ -175,6 +192,7 @@ PROTON_TARGET_PORT=$PROTON_TARGET_PORT
 PROTON_SQLITE_VOLUME_MOUNT=$PROTON_SQLITE_VOLUME_MOUNT
 PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
+SENDGRID_API_KEY=$SENDGRID_API_KEY
 EOF
 
 # configuring SQLITE mount path for the PROTON container.

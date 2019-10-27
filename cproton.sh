@@ -40,12 +40,14 @@ done
 
 
 if [[ -x "$(command -v docker)" && -x "$(command -v docker-compose)" ]]; then
-    if [[ "$(docker images -q proton_stretch:latest 2> /dev/null)" == "" ]]; then
-        docker build -t proton_stretch:latest .
-    fi
 
     # Validate existance of key environment variables.
     ./init-proton.sh
+
+    if [[ "$(docker images -q proton_stretch:latest 2> /dev/null)" == "" ]]; then
+        eval "$(grep ^SENDGRID_API_KEY= .env)"
+        docker build --build-arg SENDGRID_API_KEY=${SENDGRID_API_KEY} -t proton_stretch:latest .
+    fi
 
     if [[ -z "$up" && -z "$down" ]]; then
         if [[ -z "$(docker-compose ps -q proton)" ]]; then
