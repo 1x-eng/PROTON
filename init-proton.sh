@@ -119,7 +119,7 @@ Please enter the absolute location where PROTON's redis can mount onto: " PROTON
     if [[ -z "$SENDGRID_API_KEY" ]]; then
         while [[ -z "$SENDGRID_API_KEY" ]]
         do
-            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \"
+            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \
 have a sendgrid account yet, please create a free account here - https://signup.sendgrid.com/ . Create \
 an API key and paste that key here: " SENDGRID_API_KEY
         done
@@ -172,7 +172,7 @@ Please enter the absolute location where PROTON's redis can mount onto: " PROTON
 
     while [[ -z "$SENDGRID_API_KEY" ]]
         do
-            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \"
+            read -p "PROTON ships with abilities to send emails. This is dependent on sendgrid. If you don't \
 have a sendgrid account yet, please create a free account here - https://signup.sendgrid.com/ . Create \
 an API key and paste that key here: " SENDGRID_API_KEY
         done
