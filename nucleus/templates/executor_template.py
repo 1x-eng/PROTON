@@ -46,7 +46,6 @@ __version__ = "1.0"
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
 
-
 class DefaultRouteHandler(object):
     """
     PROTON's default route handler.
@@ -80,6 +79,7 @@ class FastServe(object):
 
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
+
 
 class RedirectToProm(object):
     """

@@ -27,26 +27,43 @@
 ## @Desc: Base PROTON Container with default sqlite and postgres config.
 
 FROM python:3.7.3-stretch
+
+RUN echo "********* ENV variables creation phase *********\n"
+ARG sendgrid_api_key
+ENV SENDGRID_API_KEY=${sendgrid_api_key}
+RUN echo "\n"
+
+RUN echo "********* PROTON dependencies installation phase *********\n"
 RUN apt-get update
 RUN apt-get install bash
-
 RUN apt-get install -y gcc g++ unixodbc-dev
+RUN echo "\n"
 
+RUN echo "********* PROTON folder structure creation phase *********\n"
 RUN mkdir -p /PROTON
 RUN mkdir -p /PROTON/proton-db
 RUN mkdir -p /PROTON/trace
+RUN echo "\n"
 
+RUN echo "********* PROTON user group & user creation phase *********\n"
 RUN groupadd proton_user_group
 RUN useradd -G proton_user_group default_proton_user
+RUN echo "\n"
 
+RUN echo "********* PROTON source code injection phase *********\n"
 WORKDIR /PROTON
 COPY . /PROTON
+RUN echo "\n"
 
+RUN echo "********* PROTONs PY dependencies installation phase *********\n"
 RUN python3 -m pip install -r requirements.txt --no-cache-dir
+RUN echo "\n"
 
+RUN echo "********* PROTON user ownership and restriction phase *********\n"
 RUN chown -R default_proton_user:proton_user_group /PROTON
 RUN chmod 777 -R /PROTON
-
 USER default_proton_user
+RUN echo "\n"
 
+RUN echo "********* PROTON port expose phase *********\n"
 EXPOSE 3000/tcp

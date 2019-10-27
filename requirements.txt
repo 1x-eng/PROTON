@@ -41,6 +41,7 @@ SQLAlchemy-Utils
 urllib3
 wrapt
 prometheus_client
+sendgrid
 #########################
 # END PROTON requirements
 #########################

@@ -28,6 +28,7 @@ from colorama import Fore
 from colorama import Style
 from datetime import datetime
 from nucleus.db.connection_manager import ConnectionManager
+from nucleus.email.email import ProtonEmail
 from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import Column
 from sqlalchemy import DateTime, Integer, String
@@ -42,7 +43,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class ProtonSignup(ConnectionManager, PasswordManager):
+class ProtonSignup(ConnectionManager, PasswordManager, ProtonEmail):
 
     def __init__(self):
         super(ProtonSignup, self).__init__()
@@ -142,6 +143,9 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                                 self.iam_signup_logger.info(
                                     '[ProtonSignup]: New signup of {} successfully completed in '
                                     'Sqlite.'.format(login_payload['user_name']))
+                                self.send_email(signup_payload['email'], 'Signup Successful', '<p>PROTON powered '
+                                                                                              'signup is '
+                                                                                              '<i>successful</i></p>')
                                 return {
                                     'status': True,
                                     'message': 'Signup is successful! Please try login.'
@@ -272,6 +276,9 @@ class ProtonSignup(ConnectionManager, PasswordManager):
                             self.iam_signup_logger.info(
                                 '[ProtonSignup]: New signup successfully completed in Postgresql for '
                                 '{}'.format(login_payload['user_name']))
+                            self.send_email(signup_payload['email'], 'Signup Successful', '<p>PROTON powered '
+                                                                                          'signup is '
+                                                                                          '<i>successful</i></p>')
                             return {
                                 'status': True,
                                 'message': 'Signup is successful! Please try login.'

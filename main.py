@@ -34,7 +34,6 @@ from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
 
-
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
 __license__ = "BSD 3-Clause License"
@@ -43,7 +42,6 @@ __version__ = "1.0"
 """
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
-
 
 class DefaultRouteHandler(object):
     """
@@ -76,6 +74,7 @@ class FastServe(object):
 
     def on_get(self, req, resp):
         resp.status = falcon.HTTP_200
+
 
 class RedirectToProm(object):
     """
