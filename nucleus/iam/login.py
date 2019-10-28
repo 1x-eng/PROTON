@@ -23,8 +23,10 @@
 
 import falcon
 import json
+import os
 from datetime import datetime
 from nucleus.db.connection_manager import ConnectionManager
+from nucleus.email.email import ProtonEmail
 from nucleus.iam.jwt_manager import JWTManager
 from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import MetaData
@@ -37,7 +39,7 @@ __license__ = "BSD 3-Clause License"
 __version__ = "1.0"
 
 
-class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
+class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
 
     def __init__(self):
         super(ProtonLogin, self).__init__()
@@ -116,10 +118,35 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                             stored_password = (connection.execute(query_stored_password)).fetchall()[0][0]
                             password_match = self.verify_password(stored_password, login_payload['password'])
 
+                            # Get registered email to notify upon login.
+                            user_registry_table = metadata.tables['PROTON_user_registry']
+                            query_user_registry_id = select([table.c.user_registry_id]).where(
+                                table.c.user_name == login_payload['user_name'])
+                            user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
+                            query_registered_email = select([user_registry_table.c.email]).where(
+                                user_registry_table.c.id == user_registry_id)
+                            registered_email = (connection.execute(query_registered_email)).fetchall()[0][0]
+
                             if not password_match:
                                 self.iam_login_logger.info(
                                     '[ProtonLogin]:[SQLite] Invalid password. Proton denies login for '
                                     '{}'.format(login_payload['user_name']))
+                                self.send_email(registered_email,
+                                                '{} - Invalid Login Attempt'.format(
+                                                    os.environ.get('APP_NAME')),
+                                                '<span>Hi {},<br />'
+                                                'Someone (hopefully you) '
+                                                'tried to login to {} with'
+                                                'invalid credentials. If '
+                                                'you did not make this '
+                                                'attempt, please contact '
+                                                '{} immediately.<br /><br />'
+                                                '<strong>We strongly advise'
+                                                'to choose strong passwords'
+                                                'to {} app.</strong>'.format(login_payload['user_name'],
+                                                                             os.environ.get('APP_NAME'),
+                                                                             os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                             os.environ.get('APP_NAME')))
                                 return {
                                     'status': False,
                                     'message': 'Invalid password. Please try again with valid credentials',
@@ -130,6 +157,22 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                     '[ProtonLogin]:[SQLite] Valid login. Proton login successful for '
                                     '{}'.format(login_payload['user_name']))
                                 token = self.generate_token(login_payload['user_name'])
+                                self.send_email(registered_email,
+                                                '{} - Successful Login'.format(
+                                                    os.environ.get('APP_NAME')),
+                                                '<span>Hi {},<br />'
+                                                'Someone (hopefully you) '
+                                                'has successfully logged in to {}.<br/>'
+                                                'If '
+                                                'you did not make this '
+                                                'attempt, please contact '
+                                                '{} immediately.<br /><br />'
+                                                '<strong>We strongly advise'
+                                                'to choose strong passwords'
+                                                'to {} app.</strong>'.format(login_payload['user_name'],
+                                                                             os.environ.get('APP_NAME'),
+                                                                             os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                             os.environ.get('APP_NAME')))
                                 return {
                                     'status': True,
                                     'message': 'Successful Login',
@@ -164,10 +207,35 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                 stored_password = (connection.execute(query_stored_password)).fetchall()[0][0]
                                 password_match = self.verify_password(stored_password, login_payload['password'])
 
+                                # Get registered email to notify upon login.
+                                user_registry_table = Table('PROTON_user_registry', metadata)
+                                query_user_registry_id = select([login_registry_table.c.user_registry_id]).where(
+                                    login_registry_table.c.user_name == login_payload['user_name'])
+                                user_registry_id = (connection.execute(query_user_registry_id)).fetchall()[0][0]
+                                query_registered_email = select([user_registry_table.c.email]).where(
+                                    user_registry_table.c.id == user_registry_id)
+                                registered_email = (connection.execute(query_registered_email)).fetchall()[0][0]
+
                                 if not password_match:
                                     self.iam_login_logger.info(
                                         '[ProtonLogin]:[Postgresql] Invalid password. Proton denies login for '
                                         '{}'.format(login_payload['user_name']))
+                                    self.send_email(registered_email,
+                                                    '{} - Invalid Login Attempt'.format(
+                                                        os.environ.get('APP_NAME')),
+                                                    '<span>Hi {},<br />'
+                                                    'Someone (hopefully you) '
+                                                    'tried to login to {} with'
+                                                    'invalid credentials. If '
+                                                    'you did not make this '
+                                                    'attempt, please contact '
+                                                    '{} immediately.<br /><br />'
+                                                    '<strong>We strongly advise'
+                                                    'to choose strong passwords'
+                                                    'to {} app.</strong>'.format(login_payload['user_name'],
+                                                                                 os.environ.get('APP_NAME'),
+                                                                                 os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                                 os.environ.get('APP_NAME')))
                                     return {
                                         'status': False,
                                         'message': 'Invalid password. Please try again with valid credentials.',
@@ -178,6 +246,22 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager):
                                         '[ProtonLogin]:[Postgresql] Valid login. Proton login successful for '
                                         '{}'.format(login_payload['user_name']))
                                     token = self.generate_token(login_payload['user_name'])
+                                    self.send_email(registered_email,
+                                                    '{} - Successful Login'.format(
+                                                        os.environ.get('APP_NAME')),
+                                                    '<span>Hi {},<br />'
+                                                    'Someone (hopefully you) '
+                                                    'has successfully logged in to {}.<br/>'
+                                                    'If '
+                                                    'you did not make this '
+                                                    'attempt, please contact '
+                                                    '{} immediately.<br /><br />'
+                                                    '<strong>We strongly advise'
+                                                    'to choose strong passwords'
+                                                    'to {} app.</strong>'.format(login_payload['user_name'],
+                                                                                 os.environ.get('APP_NAME'),
+                                                                                 os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                                 os.environ.get('APP_NAME')))
                                     return {
                                         'status': True,
                                         'message': 'Successful Login',
