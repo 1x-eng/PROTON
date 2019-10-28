@@ -136,7 +136,7 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                                     os.environ.get('APP_NAME')),
                                                 '<span>Hi {},<br /><br />'
                                                 'Someone (hopefully you) '
-                                                'tried to login to {} with'
+                                                'tried to login to {} with '
                                                 'invalid credentials. If '
                                                 'you did not make this '
                                                 'attempt, please contact '
@@ -230,7 +230,7 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                                         os.environ.get('APP_NAME')),
                                                     '<span>Hi {},<br /><br />'
                                                     'Someone (hopefully you) '
-                                                    'tried to login to {} with'
+                                                    'tried to login to {} with '
                                                     'invalid credentials. If '
                                                     'you did not make this '
                                                     'attempt, please contact '
