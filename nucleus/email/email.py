@@ -57,7 +57,7 @@ class ProtonEmail(object):
                                   'for {} at {}.</strong>'.format(os.environ.get('APP_NAME'),
                                                                   os.environ.get('APP_SUPPORT_EMAIL'))
 
-        proton_promotion_text = '<span style="font-size:6pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
+        proton_promotion_text = '<span style="font-size:8pt; font-family:Arial, sans-serif; color:#6a737d;"> ' \
                                 'This email & the underlying software for {} is powered by the ' \
                                 'PROTON framework - https://github.com/PruthviKumarBK/PROTON' \
                                 '</span>'.format(os.environ.get('APP_NAME'))
@@ -75,7 +75,9 @@ class ProtonEmail(object):
                             '<hr />' \
                             '{}' \
                             '<br />' \
+                            '<br />' \
                             '{}' \
+                            '<br />' \
                             '<br />' \
                             '{}'.format(html_content, dont_reply_warning_text, disclaimer_text, proton_promotion_text)
 
