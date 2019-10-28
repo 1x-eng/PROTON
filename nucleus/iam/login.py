@@ -134,19 +134,21 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                 self.send_email(registered_email,
                                                 '{} - Invalid Login Attempt'.format(
                                                     os.environ.get('APP_NAME')),
-                                                '<span>Hi {},<br />'
+                                                '<span>Hi {},<br /><br />'
                                                 'Someone (hopefully you) '
-                                                'tried to login to {} with'
+                                                'tried to login to {} with '
                                                 'invalid credentials. If '
                                                 'you did not make this '
                                                 'attempt, please contact '
                                                 '{} immediately.<br /><br />'
-                                                '<strong>We strongly advise'
-                                                'to choose strong passwords'
-                                                'to {} app.</strong>'.format(login_payload['user_name'],
-                                                                             os.environ.get('APP_NAME'),
-                                                                             os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                             os.environ.get('APP_NAME')))
+                                                '<i>We strongly advise '
+                                                'to choose strong password '
+                                                'to {} app. Examples of '
+                                                'strong password - https://1password.com/password-generator/'
+                                                '</i>'.format(login_payload['user_name'],
+                                                              os.environ.get('APP_NAME'),
+                                                              os.environ.get('APP_SUPPORT_EMAIL'),
+                                                              os.environ.get('APP_NAME')))
                                 return {
                                     'status': False,
                                     'message': 'Invalid password. Please try again with valid credentials',
@@ -160,19 +162,22 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                 self.send_email(registered_email,
                                                 '{} - Successful Login'.format(
                                                     os.environ.get('APP_NAME')),
-                                                '<span>Hi {},<br />'
+                                                '<span>Hi {},<br /><br />'
                                                 'Someone (hopefully you) '
-                                                'has successfully logged in to {}.<br/>'
+                                                'has successfully logged in to {}.<br/><br />'
                                                 'If '
                                                 'you did not make this '
                                                 'attempt, please contact '
                                                 '{} immediately.<br /><br />'
-                                                '<strong>We strongly advise'
-                                                'to choose strong passwords'
-                                                'to {} app.</strong>'.format(login_payload['user_name'],
-                                                                             os.environ.get('APP_NAME'),
-                                                                             os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                             os.environ.get('APP_NAME')))
+                                                '<i>We strongly advise '
+                                                'to choose strong password '
+                                                'to {} app. Examples of '
+                                                'strong password - '
+                                                'https://1password.com/password-generator/'
+                                                '</i>'.format(login_payload['user_name'],
+                                                              os.environ.get('APP_NAME'),
+                                                              os.environ.get('APP_SUPPORT_EMAIL'),
+                                                              os.environ.get('APP_NAME')))
                                 return {
                                     'status': True,
                                     'message': 'Successful Login',
@@ -223,19 +228,21 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                     self.send_email(registered_email,
                                                     '{} - Invalid Login Attempt'.format(
                                                         os.environ.get('APP_NAME')),
-                                                    '<span>Hi {},<br />'
+                                                    '<span>Hi {},<br /><br />'
                                                     'Someone (hopefully you) '
-                                                    'tried to login to {} with'
+                                                    'tried to login to {} with '
                                                     'invalid credentials. If '
                                                     'you did not make this '
                                                     'attempt, please contact '
                                                     '{} immediately.<br /><br />'
-                                                    '<strong>We strongly advise'
-                                                    'to choose strong passwords'
-                                                    'to {} app.</strong>'.format(login_payload['user_name'],
-                                                                                 os.environ.get('APP_NAME'),
-                                                                                 os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                                 os.environ.get('APP_NAME')))
+                                                    '<i>We strongly advise '
+                                                    'to choose strong password '
+                                                    'to {} app. Examples of '
+                                                    'strong password - https://1password.com/password-generator/'
+                                                    '</i>'.format(login_payload['user_name'],
+                                                                  os.environ.get('APP_NAME'),
+                                                                  os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                  os.environ.get('APP_NAME')))
                                     return {
                                         'status': False,
                                         'message': 'Invalid password. Please try again with valid credentials.',
@@ -249,19 +256,22 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                     self.send_email(registered_email,
                                                     '{} - Successful Login'.format(
                                                         os.environ.get('APP_NAME')),
-                                                    '<span>Hi {},<br />'
+                                                    '<span>Hi {},<br /><br />'
                                                     'Someone (hopefully you) '
-                                                    'has successfully logged in to {}.<br/>'
+                                                    'has successfully logged in to {}.<br/><br />'
                                                     'If '
                                                     'you did not make this '
                                                     'attempt, please contact '
                                                     '{} immediately.<br /><br />'
-                                                    '<strong>We strongly advise'
-                                                    'to choose strong passwords'
-                                                    'to {} app.</strong>'.format(login_payload['user_name'],
-                                                                                 os.environ.get('APP_NAME'),
-                                                                                 os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                                 os.environ.get('APP_NAME')))
+                                                    '<i>We strongly advise '
+                                                    'to choose strong password '
+                                                    'to {} app. Examples of '
+                                                    'strong password - '
+                                                    'https://1password.com/password-generator/'
+                                                    '</i>'.format(login_payload['user_name'],
+                                                                  os.environ.get('APP_NAME'),
+                                                                  os.environ.get('APP_SUPPORT_EMAIL'),
+                                                                  os.environ.get('APP_NAME')))
                                     return {
                                         'status': True,
                                         'message': 'Successful Login',
