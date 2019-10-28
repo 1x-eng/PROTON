@@ -52,7 +52,7 @@ class ProtonEmail(object):
         :param html_content: The content that user desires
         :return: Formatted HTML content.
         """
-        dont_reply_warning_text = '<strong>PS: Please do not reply to this email. This email is not monitored. ' \
+        dont_reply_warning_text = '<strong>PS: Please do not reply to this email. This email may not be monitored. ' \
                                   'For any queries, please contact support ' \
                                   'for {} at {}.</strong>'.format(os.environ.get('APP_NAME'),
                                                                   os.environ.get('APP_SUPPORT_EMAIL'))
