@@ -45,6 +45,34 @@ class ProtonEmail(object):
     def __init__(self):
         super(ProtonEmail, self).__init__()
 
+    @staticmethod
+    def __email_decorator(html_content):
+        """
+        Decorates email with disclaimer, logo and other good formatting.
+        :param html_content: The content that user desires
+        :return: Formatted HTML content.
+        """
+        proton_promotion_text = '<span style="font-size:6pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
+                                'This email & the underlying software for XYZ is powered by the ' \
+                                'PROTON framework - https://github.com/PruthviKumarBK/PROTON' \
+                                '</span>'
+
+        disclaimer_text = '<span style="font-size:8pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
+                          'The content of this email is confidential and intended for the recipient specified in ' \
+                          'message only. It is strictly forbidden to share any part of this message with any ' \
+                          'third party, without a written consent of the sender. If you received this message by ' \
+                          'mistake, please forward to support_proton@gmail.com and follow with its deletion, ' \
+                          'so that we can ensure such a mistake does not occur in the future.' \
+                          '</span>'
+
+        formatted_content = '{}' \
+                            '<hr />' \
+                            '{}' \
+                            '{}'.format(html_content, disclaimer_text, proton_promotion_text)
+
+        return formatted_content
+
+
     @classmethod
     def send_email(cls, to_email, subject, html_content, from_email='proton_framework@apricity.co.in'):
         """
@@ -57,11 +85,12 @@ class ProtonEmail(object):
         :return: A dictionary containing email status code, email body and email headers.
         """
         try:
+
             message = Mail(
                 from_email=from_email,
                 to_emails=to_email,
                 subject=subject,
-                html_content=html_content)
+                html_content=ProtonEmail.__email_decorator(html_content))
             response = cls.__sg.send(message)
             return {
                 'email_status_code': response.status_code,
