@@ -23,6 +23,7 @@
 
 import falcon
 import json
+import os
 import pandas as pd
 from colorama import Fore
 from colorama import Style
@@ -36,6 +37,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import MetaData
 from sqlalchemy import select
 from sqlalchemy import Table
+from threading import Thread
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -93,6 +95,11 @@ class ProtonSignup(ConnectionManager, PasswordManager, ProtonEmail):
                 return validate_payload_contents(payload)
             return False
 
+        def threaded_send_email(registered_email):
+            self.send_email(registered_email, '{} - Signup Successful'.format(os.environ.get('APP_NAME')),
+                            '<span> Hi, <br/>'
+                            'PROTON powered signup is <i>successful</i>. Please login to continue.</span>')
+
         if validate_signup_payload(input_payload):
             try:
                 signup_payload = {
@@ -143,9 +150,9 @@ class ProtonSignup(ConnectionManager, PasswordManager, ProtonEmail):
                                 self.iam_signup_logger.info(
                                     '[ProtonSignup]: New signup of {} successfully completed in '
                                     'Sqlite.'.format(login_payload['user_name']))
-                                self.send_email(signup_payload['email'], 'Signup Successful', '<p>PROTON powered '
-                                                                                              'signup is '
-                                                                                              '<i>successful</i></p>')
+
+                                Thread(target=threaded_send_email, args=(signup_payload['email']))
+
                                 return {
                                     'status': True,
                                     'message': 'Signup is successful! Please try login.'
@@ -276,9 +283,9 @@ class ProtonSignup(ConnectionManager, PasswordManager, ProtonEmail):
                             self.iam_signup_logger.info(
                                 '[ProtonSignup]: New signup successfully completed in Postgresql for '
                                 '{}'.format(login_payload['user_name']))
-                            self.send_email(signup_payload['email'], 'Signup Successful', '<p>PROTON powered '
-                                                                                          'signup is '
-                                                                                          '<i>successful</i></p>')
+
+                            Thread(target=threaded_send_email, args=(signup_payload['email']))
+
                             return {
                                 'status': True,
                                 'message': 'Signup is successful! Please try login.'

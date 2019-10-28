@@ -32,6 +32,7 @@ from nucleus.iam.password_manager import PasswordManager
 from sqlalchemy import MetaData
 from sqlalchemy import select
 from sqlalchemy import Table
+from threading import Thread
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
 __copyright__ = "Copyright (C) 2018 Pruthvi Kumar | http://www.apricity.co.in"
@@ -87,6 +88,49 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                 return validate_payload_contents(payload)
             return False
 
+        def threaded_send_email(email_type, email_address):
+            if email_type == 'success':
+                self.send_email(email_address,
+                                '{} - Successful Login'.format(
+                                    os.environ.get('APP_NAME')),
+                                '<span>Hi {},<br /><br />'
+                                'Someone (hopefully you) '
+                                'has successfully logged in to {}.<br/><br />'
+                                'If '
+                                'you did not make this '
+                                'attempt, please contact '
+                                '{} immediately.<br /><br />'
+                                '<i>We strongly advise '
+                                'to choose strong password '
+                                'to {} app. Examples of '
+                                'strong password - '
+                                'https://1password.com/password-generator/'
+                                '</i>'.format(login_payload['user_name'],
+                                              os.environ.get('APP_NAME'),
+                                              os.environ.get('APP_SUPPORT_EMAIL'),
+                                              os.environ.get('APP_NAME')))
+            elif email_type == 'failure':
+                self.send_email(registered_email,
+                                '{} - Invalid Login Attempt'.format(
+                                    os.environ.get('APP_NAME')),
+                                '<span>Hi {},<br /><br />'
+                                'Someone (hopefully you) '
+                                'tried to login to {} with '
+                                'invalid credentials. If '
+                                'you did not make this '
+                                'attempt, please contact '
+                                '{} immediately.<br /><br />'
+                                '<i>We strongly advise '
+                                'to choose strong password '
+                                'to {} app. Examples of '
+                                'strong password - https://1password.com/password-generator/'
+                                '</i>'.format(login_payload['user_name'],
+                                              os.environ.get('APP_NAME'),
+                                              os.environ.get('APP_SUPPORT_EMAIL'),
+                                              os.environ.get('APP_NAME')))
+            else:
+                pass
+
         if validate_login_payload(login_payload):
             try:
                 login_payload.update({'last_login_date_time': datetime.now()})
@@ -128,56 +172,25 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                             registered_email = (connection.execute(query_registered_email)).fetchall()[0][0]
 
                             if not password_match:
+                                Thread(target=threaded_send_email, args=('failure', registered_email)).start()
+
                                 self.iam_login_logger.info(
                                     '[ProtonLogin]:[SQLite] Invalid password. Proton denies login for '
                                     '{}'.format(login_payload['user_name']))
-                                self.send_email(registered_email,
-                                                '{} - Invalid Login Attempt'.format(
-                                                    os.environ.get('APP_NAME')),
-                                                '<span>Hi {},<br /><br />'
-                                                'Someone (hopefully you) '
-                                                'tried to login to {} with '
-                                                'invalid credentials. If '
-                                                'you did not make this '
-                                                'attempt, please contact '
-                                                '{} immediately.<br /><br />'
-                                                '<i>We strongly advise '
-                                                'to choose strong password '
-                                                'to {} app. Examples of '
-                                                'strong password - https://1password.com/password-generator/'
-                                                '</i>'.format(login_payload['user_name'],
-                                                              os.environ.get('APP_NAME'),
-                                                              os.environ.get('APP_SUPPORT_EMAIL'),
-                                                              os.environ.get('APP_NAME')))
+
                                 return {
                                     'status': False,
                                     'message': 'Invalid password. Please try again with valid credentials',
                                     'token': None
                                 }
                             else:
+                                Thread(target=threaded_send_email, args=('success', registered_email)).start()
+
                                 self.iam_login_logger.info(
                                     '[ProtonLogin]:[SQLite] Valid login. Proton login successful for '
                                     '{}'.format(login_payload['user_name']))
                                 token = self.generate_token(login_payload['user_name'])
-                                self.send_email(registered_email,
-                                                '{} - Successful Login'.format(
-                                                    os.environ.get('APP_NAME')),
-                                                '<span>Hi {},<br /><br />'
-                                                'Someone (hopefully you) '
-                                                'has successfully logged in to {}.<br/><br />'
-                                                'If '
-                                                'you did not make this '
-                                                'attempt, please contact '
-                                                '{} immediately.<br /><br />'
-                                                '<i>We strongly advise '
-                                                'to choose strong password '
-                                                'to {} app. Examples of '
-                                                'strong password - '
-                                                'https://1password.com/password-generator/'
-                                                '</i>'.format(login_payload['user_name'],
-                                                              os.environ.get('APP_NAME'),
-                                                              os.environ.get('APP_SUPPORT_EMAIL'),
-                                                              os.environ.get('APP_NAME')))
+
                                 return {
                                     'status': True,
                                     'message': 'Successful Login',
@@ -222,56 +235,23 @@ class ProtonLogin(ConnectionManager, PasswordManager, JWTManager, ProtonEmail):
                                 registered_email = (connection.execute(query_registered_email)).fetchall()[0][0]
 
                                 if not password_match:
+                                    Thread(target=threaded_send_email, args=('failure', registered_email)).start()
+
                                     self.iam_login_logger.info(
                                         '[ProtonLogin]:[Postgresql] Invalid password. Proton denies login for '
                                         '{}'.format(login_payload['user_name']))
-                                    self.send_email(registered_email,
-                                                    '{} - Invalid Login Attempt'.format(
-                                                        os.environ.get('APP_NAME')),
-                                                    '<span>Hi {},<br /><br />'
-                                                    'Someone (hopefully you) '
-                                                    'tried to login to {} with '
-                                                    'invalid credentials. If '
-                                                    'you did not make this '
-                                                    'attempt, please contact '
-                                                    '{} immediately.<br /><br />'
-                                                    '<i>We strongly advise '
-                                                    'to choose strong password '
-                                                    'to {} app. Examples of '
-                                                    'strong password - https://1password.com/password-generator/'
-                                                    '</i>'.format(login_payload['user_name'],
-                                                                  os.environ.get('APP_NAME'),
-                                                                  os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                  os.environ.get('APP_NAME')))
                                     return {
                                         'status': False,
                                         'message': 'Invalid password. Please try again with valid credentials.',
                                         'token': None
                                     }
                                 else:
+                                    Thread(target=threaded_send_email, args=('success', registered_email)).start()
+
                                     self.iam_login_logger.info(
                                         '[ProtonLogin]:[Postgresql] Valid login. Proton login successful for '
                                         '{}'.format(login_payload['user_name']))
                                     token = self.generate_token(login_payload['user_name'])
-                                    self.send_email(registered_email,
-                                                    '{} - Successful Login'.format(
-                                                        os.environ.get('APP_NAME')),
-                                                    '<span>Hi {},<br /><br />'
-                                                    'Someone (hopefully you) '
-                                                    'has successfully logged in to {}.<br/><br />'
-                                                    'If '
-                                                    'you did not make this '
-                                                    'attempt, please contact '
-                                                    '{} immediately.<br /><br />'
-                                                    '<i>We strongly advise '
-                                                    'to choose strong password '
-                                                    'to {} app. Examples of '
-                                                    'strong password - '
-                                                    'https://1password.com/password-generator/'
-                                                    '</i>'.format(login_payload['user_name'],
-                                                                  os.environ.get('APP_NAME'),
-                                                                  os.environ.get('APP_SUPPORT_EMAIL'),
-                                                                  os.environ.get('APP_NAME')))
                                     return {
                                         'status': True,
                                         'message': 'Successful Login',
