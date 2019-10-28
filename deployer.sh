@@ -30,6 +30,7 @@
 ## @Pre-requisites: THis script must be run as sudo.
 
 #TODO: Folder permission issues needs to be sorted to get the automated mode functional.
+#TODO: In Automated mode, APP_NAME, APP_SUPPORT_EMAIL & SENDGRID_KEY needs to be populated. Auto mode will not succeed unless these are satisfied.
 
 echo -e "[Pre-Requisites] Only continue should you have met all the below PROTON deployer pre-requisites:"
 echo -e "1. You need to have a DNS mapped to a domain/sub-domain."

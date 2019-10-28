@@ -28,6 +28,8 @@
 ## @Email: pruthvikumar.123@gmail.com
 ## @Desc: Script to generate .test-env required by CI to test cproton.
 
+#TODO: APP_NAME, APP_SUPPORT_EMAIL & SENDGRID_KEY needs to be published for test environments. PROTON will not bootstrap missing these key vars.
+
 touch .test-env
 mkdir -p /tmp/proton_test/sqlite
 mkdir -p /tmp/proton_test/postgres

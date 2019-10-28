@@ -71,9 +71,12 @@ class ProtonEmail(object):
                           '</span>'.format(os.environ.get('APP_SUPPORT_EMAIL'))
 
         formatted_content = '{}' \
+                            '<br />' \
                             '<hr />' \
                             '{}' \
+                            '<br />' \
                             '{}' \
+                            '<br />' \
                             '{}'.format(html_content, dont_reply_warning_text, disclaimer_text, proton_promotion_text)
 
         return formatted_content
