@@ -52,26 +52,31 @@ class ProtonEmail(object):
         :param html_content: The content that user desires
         :return: Formatted HTML content.
         """
+        dont_reply_warning_text = '<strong>PS: Please do not reply to this email. This email is not monitored. ' \
+                                  'For any queries, please contact support ' \
+                                  'for {} at {}.</strong>'.format(os.environ.get('APP_NAME'),
+                                                                  os.environ.get('APP_SUPPORT_EMAIL'))
+
         proton_promotion_text = '<span style="font-size:6pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
-                                'This email & the underlying software for XYZ is powered by the ' \
+                                'This email & the underlying software for {} is powered by the ' \
                                 'PROTON framework - https://github.com/PruthviKumarBK/PROTON' \
-                                '</span>'
+                                '</span>'.format(os.environ.get('APP_NAME'))
 
         disclaimer_text = '<span style="font-size:8pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
                           'The content of this email is confidential and intended for the recipient specified in ' \
                           'message only. It is strictly forbidden to share any part of this message with any ' \
                           'third party, without a written consent of the sender. If you received this message by ' \
-                          'mistake, please forward to support_proton@gmail.com and follow with its deletion, ' \
+                          'mistake, please forward to {} and follow with its deletion, ' \
                           'so that we can ensure such a mistake does not occur in the future.' \
-                          '</span>'
+                          '</span>'.format(os.environ.get('APP_SUPPORT_EMAIL'))
 
         formatted_content = '{}' \
                             '<hr />' \
                             '{}' \
-                            '{}'.format(html_content, disclaimer_text, proton_promotion_text)
+                            '{}' \
+                            '{}'.format(html_content, dont_reply_warning_text, disclaimer_text, proton_promotion_text)
 
         return formatted_content
-
 
     @classmethod
     def send_email(cls, to_email, subject, html_content, from_email='proton_framework@apricity.co.in'):
@@ -81,7 +86,7 @@ class ProtonEmail(object):
         :param to_email: valid email to which email needs to be sent to.
         :param subject: Email subject
         :param html_content: Email content.(Can include HTML markups)
-        :param from_email: valid email from which email has to be sent from. (default to proton_framework@apricity.co.in)
+        :param from_email: valid email from which email has to be sent from. (default: proton_framework@apricity.co.in)
         :return: A dictionary containing email status code, email body and email headers.
         """
         try:
