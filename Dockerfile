@@ -30,7 +30,11 @@ FROM python:3.7.3-stretch
 
 RUN echo "********* ENV variables creation phase *********\n"
 ARG sendgrid_api_key
+ARG app_name
+ARG app_support_email
 ENV SENDGRID_API_KEY=${sendgrid_api_key}
+ENV APP_NAME=${app_name}
+ENV APP_SUPPORT_EMAIL=${app_support_email}
 RUN echo "\n"
 
 RUN echo "********* PROTON dependencies installation phase *********\n"

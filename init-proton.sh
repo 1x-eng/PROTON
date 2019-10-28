@@ -34,6 +34,8 @@ echo -e "-----------------------------------------------------------------------
 
 if [[ -f .env ]]; then
     # check if env contains all required variables.
+    eval "$(grep ^APP_NAME= .env)"
+    eval "$(grep ^APP_SUPPORT_EMAIL= .env)"
     eval "$(grep ^PG_USERNAME= .env)"
     eval "$(grep ^PG_PASSWORD= .env)"
     eval "$(grep ^PG_TARGET_DB= .env)"
@@ -45,6 +47,21 @@ if [[ -f .env ]]; then
     eval "$(grep ^PROTON_POSTGRES_VOLUME_MOUNT= .env)"
     eval "$(grep ^PROTON_REDIS_VOLUME_MOUNT= .env)"
     eval "$(grep ^SENDGRID_API_KEY= .env)"
+
+    if [[ -z "$APP_NAME" ]]; then
+        while [[ -z "$APP_NAME" ]]
+        do
+            read -p "Please enter the name of your APP which PROTON needs to empower: " APP_NAME
+        done
+    fi
+
+    if [[ -z "$APP_SUPPORT_EMAIL" ]]; then
+        while [[ -z "$APP_SUPPORT_EMAIL" ]]
+        do
+            read -p "Please enter the email address of your support center/support person: " APP_SUPPORT_EMAIL
+        done
+    fi
+
 
     if [[ -z "$PG_USERNAME" ]]; then
         while [[ -z "$PG_USERNAME" ]]
@@ -135,6 +152,16 @@ else
     PROTON_BIND_ADDRESS=0.0.0.0
     PROTON_TARGET_PORT=3000
 
+    while [[ -z "$APP_NAME" ]]
+        do
+            read -p "Please enter the name of your APP which PROTON needs to empower: " APP_NAME
+        done
+
+    while [[ -z "$APP_SUPPORT_EMAIL" ]]
+        do
+            read -p "Please enter the email address of your support center/support person: " APP_SUPPORT_EMAIL
+        done
+
     while [[ -z "$PG_USERNAME" ]]
         do
             read -p "By default, PROTON ships with support for postgres.\
@@ -182,6 +209,8 @@ fi
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+APP_NAME=$APP_NAME
+APP_SUPPORT_EMAIL=$APP_SUPPORT_EMAIL
 PG_USERNAME=$PG_USERNAME
 PG_PASSWORD=$PG_PASSWORD
 PG_TARGET_DB=$PG_TARGET_DB
