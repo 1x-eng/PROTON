@@ -69,11 +69,11 @@ do
         read -p "Enter mount path for PROTON's PG restoration: " pg_mount_path
     fi
 
-    if [[ ${sqlite_mount_path} == '' ]]; then
+    if [[ ${redis_mount_path} == '' ]]; then
         read -p "Enter mount path for PROTON's Redis restoration: " redis_mount_path
     fi
 
-    if [[ ${redis_mount_path} == '' ]]; then
+    if [[ ${sqlite_mount_path} == '' ]]; then
         read -p "Enter mount path for PROTON's Sqlite restoration: " sqlite_mount_path
     fi
 done
