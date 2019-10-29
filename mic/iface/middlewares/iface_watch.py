@@ -160,6 +160,8 @@ class Iface_watch(CacheManager):
                             if 'cache_ready' in request.context:
                                 if request.context['cache_ready'] is True:
                                     route_path_contents = request.path.split('_')[1:]
+                                    route_path_contents = [route_path for route_path in route_path_contents if
+                                                           route_path not in ['delete', 'update']]
                                     cache_key = '_'.join(route_path_contents)
                                     deleted_cache_entries = cache_processor()['delete_all_containing_key'](
                                         cache_instance, cache_key)
