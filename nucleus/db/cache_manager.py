@@ -60,10 +60,15 @@ class CacheManager(ProtonConfig, LogUtilities):
             :return: redis_instance object.
             """
             try:
-                redis_instance = redis.StrictRedis(host=cls.__redisConfig['host'], port=cls.__redisConfig['port'],
-                                                   db=cls.__redisConfig['db'])
-                cls.cache_manager_logger.info('Successfully instantiated cache!')
-                return redis_instance
+                if not hasattr(cls, 'redis_instance'):
+                    pool = redis.ConnectionPool(host=cls.__redisConfig['host'], port=cls.__redisConfig['port'],
+                                                db=cls.__redisConfig['db'])
+                    setattr(cls, 'redis_instance', redis.StrictRedis(connection_pool=pool))
+                    cls.cache_manager_logger.info('Successfully generated new cache instance via pool!')
+                else:
+                    cls.cache_manager_logger.info('Redis instance from pool is available. The same will be returned.')
+                return cls.redis_instance
+
             except Exception as e:
                 cls.cache_manager_logger.exception('Exception while instantiating cache. Details: {}'.format(str(e)))
 
