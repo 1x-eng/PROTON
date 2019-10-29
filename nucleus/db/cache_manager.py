@@ -127,10 +127,31 @@ class CacheManager(ProtonConfig, LogUtilities):
                                                     'Details: {}'.format(key, str(e))))
                 return False
 
+        def delete_all_containing_key(redis_instance, key_substring):
+            """
+            Delete all entries from cache containing given key_substring
+            :param redis_instance:  A valid redis instance as provided by instantiate_cache.
+            :param key_substring: substring of redis keys
+            :return: List of deleted keys.
+            """
+            try:
+                deleted_keys = []
+                for key in redis_instance.scan_iter('*{}*'.format(key_substring)):
+                    redis_instance.delete(key)
+                    deleted_keys.append(key)
+                cls.cache_manager_logger.info('Deleted all cache entries containing key - {}\nDeleted '
+                                              'entries are: {}'.format(key_substring, ' ,'.join(str(x) for x in
+                                                                                                deleted_keys)))
+                return deleted_keys
+            except Exception as e:
+                cls.cache_manager_logger.exception('Unable to delete cache entries containing given substring - {}.'
+                                                   'Details: {}'.format(key_substring, str(e)))
+
         return {
             'init_cache': instantiate_cache,
             'set_to_cache': set_to_cache,
             'get_from_cache': get_from_cache,
             'ping_cache': ping_cache,
-            'delete_from_cache': delete_from_cache
+            'delete_from_cache': delete_from_cache,
+            'delete_all_containing_key': delete_all_containing_key
         }
