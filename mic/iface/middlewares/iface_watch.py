@@ -129,9 +129,10 @@ class Iface_watch(CacheManager):
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
         else:
-            def cache_service(cache_processor, request, logger):
-                cache_instance = cache_processor()['init_cache']()
-                cache_existence = cache_processor()['ping_cache'](cache_instance)
+            def cache_service(request, logger):
+                thread_dedicated_cache_manager = CacheManager()
+                cache_instance = thread_dedicated_cache_manager.cache_processor()['init_cache']()
+                cache_existence = thread_dedicated_cache_manager.cache_processor()['ping_cache'](cache_instance)
 
                 if cache_existence:
                     try:
@@ -142,14 +143,18 @@ class Iface_watch(CacheManager):
                             for key, value in request.params.items():
                                 cache_key = cache_key + '_' + key + '_' + value
 
-                            cache_response = cache_processor()['get_from_cache'](cache_instance,
-                                                                                 'c_{}'.format(cache_key))
+                            cache_response = thread_dedicated_cache_manager.cache_processor()['get_from_cache'](
+                                cache_instance, 'c_{}'.format(cache_key))
                             if cache_response is None:
-                                cache_processor()['set_to_cache'](cache_instance, 'c_{}'.format(cache_key),
-                                                                  json.dumps(resp.body))
+                                thread_dedicated_cache_manager.cache_processor()['set_to_cache'](cache_instance,
+                                                                                                 'c_{}'.format(
+                                                                                                     cache_key),
+                                                                                                 json.dumps(resp.body))
                                 time_when_set = int(time.time())
-                                cache_processor()['set_to_cache'](cache_instance,
-                                                                  'c_setTime_{}'.format(cache_key), time_when_set)
+                                thread_dedicated_cache_manager.cache_processor()['set_to_cache'](cache_instance,
+                                                                                                 'c_setTime_{}'.format(
+                                                                                                     cache_key),
+                                                                                                 time_when_set)
                                 logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
                                 print(
                                     Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
@@ -163,7 +168,8 @@ class Iface_watch(CacheManager):
                                     route_path_contents = [route_path for route_path in route_path_contents if
                                                            route_path not in ['delete', 'update']]
                                     cache_key = '_'.join(route_path_contents)
-                                    deleted_cache_entries = cache_processor()['delete_all_containing_key'](
+                                    deleted_cache_entries = thread_dedicated_cache_manager.cache_processor()[
+                                        'delete_all_containing_key'](
                                         cache_instance, cache_key)
                                     logger.info('Deleted all cache entries containing key - {}\nDeleted '
                                                 'entries are: {}'.format(cache_key, ', '.join(str(x) for x in
@@ -174,4 +180,4 @@ class Iface_watch(CacheManager):
                                          'Details: {}'.format(str(e)))
 
             # Cache ops will not hold PROTON response. This will be actioned in a different thread.
-            Thread(target=cache_service, args=(self.cache_processor, req, self.logger)).start()
+            Thread(target=cache_service, args=(req, self.logger)).start()
