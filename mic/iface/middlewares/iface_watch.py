@@ -55,7 +55,7 @@ class Iface_watch(CacheManager):
         :return:
         """
         self.timer["start"] = time.time()
-        self.logger.info('[Iface_watch] | Requested Route: {}'.format(req.path))
+        self.logger.info('[Iface_watch] | Requested Route: {}; Type of request: {}'.format(req.path, req.method))
 
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
@@ -125,8 +125,9 @@ class Iface_watch(CacheManager):
         :param req_succeded:
         :return:
         """
-        self.logger.info('[Iface_watch] | Response status: {} | '
-                         'Response time: {} seconds'.format(req_succeded, time.time() - self.timer["start"]))
+        self.logger.info('[Iface_watch] | Response status for route - {} of type - {}: {} | '
+                         'Response time: {} seconds'.format(req.path, req.method,
+                                                            req_succeded, time.time() - self.timer["start"]))
 
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
