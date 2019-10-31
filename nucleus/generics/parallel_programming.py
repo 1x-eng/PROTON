@@ -25,6 +25,7 @@
 from gevent import monkey
 monkey.patch_socket()
 monkey.patch_ssl()
+
 # ensure monkey patching for gevents to work their charm.
 # remember - monkey patching is a necessary evil here.
 import gevent
@@ -163,6 +164,23 @@ class Parallel_Programming:
                     '[Parallel Programming] - Error completing Non-HTTP resolver. Stack trace to follow')
                 logger.exception(str(e))
 
-        __map_type = {'http': __http_calls_resolver, 'non-http': __non_http_resolver}
+        def __async_resolver(target_function, args):
+            """
+            Use this function when you want non-blocking sequence of execution.
+            :param target_function: Target function that threads should execute (This function should be in scope)
+            :param args: [Tuple] Arguments expected by target function.
+            :return: Void
+            """
+            try:
+                gevent.spawn(target_function, args).start()
+                gevent.sleep(0) # This is required to kickstart gevent co-routines since there will be no join.
+                logger.info('[Parallel Programming] Async resolver invoked to execute function - '
+                            '{} and args - {}'.format(target_function, args))
+            except Exception as e:
+                logger.exception(
+                    '[Parallel Programming] - Error completing async resolver. Stack trace to follow')
+                logger.exception(str(e))
+
+        __map_type = {'http': __http_calls_resolver, 'non-http': __non_http_resolver, 'async': __async_resolver}
 
         return __map_type[type](target_function, args)

@@ -26,6 +26,7 @@ import json
 import time
 from colorama import Fore, Style
 from nucleus.db.cache_manager import CacheManager
+from nucleus.generics.parallel_programming import Parallel_Programming
 from threading import Thread
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
@@ -129,10 +130,18 @@ class Iface_watch(CacheManager):
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
         else:
-            def cache_service(request, logger):
-                thread_dedicated_cache_manager = CacheManager()
-                cache_instance = thread_dedicated_cache_manager.cache_processor()['init_cache']()
-                cache_existence = thread_dedicated_cache_manager.cache_processor()['ping_cache'](cache_instance)
+            def cache_service(args):
+                """
+                cache_service' args[0] must be cache_processor, args[1] must be request and args[2] must be logger
+                :param args: args[0] must be cache_processor, args[1] must be request and args[2] must be logger
+                :return: void
+                """
+                cache_processor = args[0]
+                request = args[1]
+                logger = args[2]
+
+                cache_instance = cache_processor()['init_cache']()
+                cache_existence = cache_processor()['ping_cache'](cache_instance)
 
                 if cache_existence:
                     try:
@@ -143,18 +152,14 @@ class Iface_watch(CacheManager):
                             for key, value in request.params.items():
                                 cache_key = cache_key + '_' + key + '_' + value
 
-                            cache_response = thread_dedicated_cache_manager.cache_processor()['get_from_cache'](
-                                cache_instance, 'c_{}'.format(cache_key))
+                            cache_response = cache_processor()['get_from_cache'](cache_instance,
+                                                                                 'c_{}'.format(cache_key))
                             if cache_response is None:
-                                thread_dedicated_cache_manager.cache_processor()['set_to_cache'](cache_instance,
-                                                                                                 'c_{}'.format(
-                                                                                                     cache_key),
-                                                                                                 json.dumps(resp.body))
+                                cache_processor()['set_to_cache'](cache_instance, 'c_{}'.format(cache_key),
+                                                                  json.dumps(resp.body))
                                 time_when_set = int(time.time())
-                                thread_dedicated_cache_manager.cache_processor()['set_to_cache'](cache_instance,
-                                                                                                 'c_setTime_{}'.format(
-                                                                                                     cache_key),
-                                                                                                 time_when_set)
+                                cache_processor()['set_to_cache'](cache_instance,
+                                                                  'c_setTime_{}'.format(cache_key), time_when_set)
                                 logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
                                 print(
                                     Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
@@ -168,8 +173,7 @@ class Iface_watch(CacheManager):
                                     route_path_contents = [route_path for route_path in route_path_contents if
                                                            route_path not in ['delete', 'update']]
                                     cache_key = '_'.join(route_path_contents)
-                                    deleted_cache_entries = thread_dedicated_cache_manager.cache_processor()[
-                                        'delete_all_containing_key'](
+                                    deleted_cache_entries = cache_processor()['delete_all_containing_key'](
                                         cache_instance, cache_key)
                                     logger.info('Deleted all cache entries containing key - {}\nDeleted '
                                                 'entries are: {}'.format(cache_key, ', '.join(str(x) for x in
@@ -180,4 +184,5 @@ class Iface_watch(CacheManager):
                                          'Details: {}'.format(str(e)))
 
             # Cache ops will not hold PROTON response. This will be actioned in a different thread.
-            Thread(target=cache_service, args=(req, self.logger)).start()
+            pp = Parallel_Programming()
+            pp.concurrency_wrapper('async', cache_service, self.cache_processor, req, self.logger)
