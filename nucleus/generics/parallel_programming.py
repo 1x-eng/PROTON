@@ -172,10 +172,11 @@ class Parallel_Programming:
             :return: Void
             """
             try:
-                gevent.spawn(target_function, args).start()
-                gevent.sleep(0) # This is required to kickstart gevent co-routines since there will be no join.
-                logger.info('[Parallel Programming] Async resolver invoked to execute function - '
-                            '{} and args - {}'.format(target_function, args))
+                g = gevent.spawn(target_function, args)
+                gevent.sleep(0)  # This is required to kickstart gevent co-routines since there will be no join.
+                logger.info('[Parallel Programming] Async resolver {} invoked to execute function - '
+                            '{} and args - {}'.format(g, target_function, args))
+
             except Exception as e:
                 logger.exception(
                     '[Parallel Programming] - Error completing async resolver. Stack trace to follow')

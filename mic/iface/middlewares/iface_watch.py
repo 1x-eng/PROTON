@@ -131,59 +131,45 @@ class Iface_watch(CacheManager):
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
         else:
-            def cache_service(args):
-                """
-                cache_service' args[0] must be cache_processor, args[1] must be request and args[2] must be logger
-                :param args: args[0] must be cache_processor, args[1] must be request and args[2] must be logger
-                :return: void
-                """
-                cache_processor = args[0]
-                request = args[1]
-                logger = args[2]
+            cache_instance = self.cache_processor()['init_cache']()
+            cache_existence = self.cache_processor()['ping_cache'](cache_instance)
 
-                cache_instance = cache_processor()['init_cache']()
-                cache_existence = cache_processor()['ping_cache'](cache_instance)
+            if cache_existence:
+                try:
+                    if 'cache_ready' in req.context:
+                        if req.method != 'POST' and req.context['cache_ready'] is True:
+                            route_path_contents = req.path.split('_')[1:]
+                            cache_key = '_'.join(route_path_contents)
 
-                if cache_existence:
-                    try:
-                        if 'cache_ready' in request.context:
-                            if request.method != 'POST' and request.context['cache_ready'] is True:
-                                route_path_contents = request.path.split('_')[1:]
+                            for key, value in req.params.items():
+                                cache_key = cache_key + '_' + key + '_' + value
+
+                            cache_response = self.cache_processor()['get_from_cache'](cache_instance,
+                                                                                      'c_{}'.format(cache_key))
+                            if cache_response is None:
+                                self.cache_processor()['set_to_cache'](cache_instance, 'c_{}'.format(cache_key),
+                                                                       json.dumps(resp.body))
+                                time_when_set = int(time.time())
+                                self.cache_processor()['set_to_cache'](cache_instance,
+                                                                       'c_setTime_{}'.format(cache_key), time_when_set)
+                                self.logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
+                                print(
+                                    Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
+                                                 'Subsequent requests for this route will be serviced by '
+                                                 'cache.'.format(req.path) + Style.RESET_ALL)
+                        else:
+                            # Delete respective route in cache so subsequent GET can serve latest content.
+                            if req.context['cache_ready'] is True:
+                                route_path_contents = req.path.split('_')[1:]
+                                route_path_contents = [route_path for route_path in route_path_contents if
+                                                       route_path not in ['delete', 'update']]
                                 cache_key = '_'.join(route_path_contents)
+                                deleted_cache_entries = self.cache_processor()['delete_all_containing_key'](
+                                    cache_instance, cache_key)
+                                self.logger.info('Deleted all cache entries containing key - {}\nDeleted '
+                                                 'entries are: {}'.format(cache_key, ', '.join(str(x) for x in
+                                                                                               deleted_cache_entries)))
 
-                                for key, value in request.params.items():
-                                    cache_key = cache_key + '_' + key + '_' + value
-
-                                cache_response = cache_processor()['get_from_cache'](cache_instance,
-                                                                                     'c_{}'.format(cache_key))
-                                if cache_response is None:
-                                    cache_processor()['set_to_cache'](cache_instance, 'c_{}'.format(cache_key),
-                                                                      json.dumps(resp.body))
-                                    time_when_set = int(time.time())
-                                    cache_processor()['set_to_cache'](cache_instance,
-                                                                      'c_setTime_{}'.format(cache_key), time_when_set)
-                                    logger.info('Cache set for key : {} @ {}'.format('c_' + cache_key, time_when_set))
-                                    print(
-                                        Fore.GREEN + 'Cache is set for route {} along with consideration for query params. '
-                                                     'Subsequent requests for this route will be serviced by '
-                                                     'cache.'.format(request.path) + Style.RESET_ALL)
-                            else:
-                                # Delete respective route in cache so subsequent GET can serve latest content.
-                                if request.context['cache_ready'] is True:
-                                    route_path_contents = request.path.split('_')[1:]
-                                    route_path_contents = [route_path for route_path in route_path_contents if
-                                                           route_path not in ['delete', 'update']]
-                                    cache_key = '_'.join(route_path_contents)
-                                    deleted_cache_entries = cache_processor()['delete_all_containing_key'](
-                                        cache_instance, cache_key)
-                                    logger.info('Deleted all cache entries containing key - {}\nDeleted '
-                                                'entries are: {}'.format(cache_key, ', '.join(str(x) for x in
-                                                                                              deleted_cache_entries)))
-
-                    except Exception as e:
-                        logger.exception('[Iface_watch]. Error while extracting response from cache. '
-                                         'Details: {}'.format(str(e)))
-
-            # Cache ops will not hold PROTON response. This will be actioned in a different thread.
-            pp = Parallel_Programming()
-            pp.concurrency_wrapper('async', cache_service, self.cache_processor, req, self.logger)
+                except Exception as e:
+                    self.logger.exception('[Iface_watch]. Error while extracting response from cache. '
+                                          'Details: {}'.format(str(e)))
