@@ -26,6 +26,7 @@ import json
 import time
 from colorama import Fore, Style
 from nucleus.db.cache_manager import CacheManager
+from nucleus.generics.parallel_programming import Parallel_Programming
 from threading import Thread
 
 __author__ = "Pruthvi Kumar, pruthvikumar.123@gmail.com"
@@ -129,7 +130,16 @@ class Iface_watch(CacheManager):
         if req.path in ['/', '/fast-serve', '/metrics', '/proton-prom', '/proton-grafana']:
             pass
         else:
-            def cache_service(cache_processor, request, logger):
+            def cache_service(args):
+                """
+                cache_service' args[0] must be cache_processor, args[1] must be request and args[2] must be logger
+                :param args: args[0] must be cache_processor, args[1] must be request and args[2] must be logger
+                :return: void
+                """
+                cache_processor = args[0]
+                request = args[1]
+                logger = args[2]
+
                 cache_instance = cache_processor()['init_cache']()
                 cache_existence = cache_processor()['ping_cache'](cache_instance)
 
@@ -174,4 +184,5 @@ class Iface_watch(CacheManager):
                                          'Details: {}'.format(str(e)))
 
             # Cache ops will not hold PROTON response. This will be actioned in a different thread.
-            Thread(target=cache_service, args=(self.cache_processor, req, self.logger)).start()
+            pp = Parallel_Programming()
+            pp.concurrency_wrapper('async', cache_service, self.cache_processor, req, self.logger)
