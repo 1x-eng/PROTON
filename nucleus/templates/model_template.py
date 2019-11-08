@@ -168,7 +168,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
-        def perform_insert_operation(db_flavour, db_name, schema_name, table_name, input_payload):
+        def perform_insert_operation(db_flavour, db_name, schema_name, table_name, expected_metadata, input_payload):
             """
             Closure for Insert Operation!
             This is also a proxy for CREATE operation. If table does not exist, SQL Alchemy will create one.
@@ -180,6 +180,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             :param db_flavour: One of the supported versions. Must have an entry in dataBaseConfig.ini
             :param db_name: Name of target Database
             :param table_name: table_name into which the given payload is to be uploaded.
+            :param expected_metadata: A dict whose key is a column name and value is expected datatype for that column.
             :return: A boolean indicating success/failure of Insert Operation.
             """
             # Do this with SQL Alchemy and Pandas.
@@ -196,6 +197,42 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                             # check if schema exists & create one if not.
                             schema_status = self.pg_schema_generator(self.__alchemy_engine[db_flavour], schema_name)
                             if schema_status:
+                                # check if table exists & create one if not.
+                                table_exists = self.__alchemy_engine[db_flavour].has_table(table_name)
+                                if not table_exists:
+                                    self.model_{{modelName}}_logger.info('[{{modelName}}]: {} does not exist. It will'
+                                                                         ' be created with PROTON default __id (serial)'
+                                                                         ' and ____creation_timestamp_utc (datetime).'
+                                                                         ''.format(table_name))
+                                    columns = ['__id SERIAL',
+                                               '__creation_timestamp_utc timestamp NOT NULL DEFAULT NOW()']
+
+                                    for column_name, column_type in expected_metadata.items():
+                                        columns.append(
+                                            '{} {} '
+                                            'NULL'.format(column_name,
+                                                          'varchar' if column_type.__name__ == 'str' else column_type.__name__))
+
+                                    sql_create_table = """
+                                        CREATE TABLE {{ binding_schema_name | sqlsafe }}.{{ binding_table_name | sqlsafe }} (
+                                        {{ binding_columns | sqlsafe }});
+                                    """
+                                    binding_params_create_table = {
+                                        'binding_schema_name': schema_name,
+                                        'binding_table_name': table_name,
+                                        'binding_columns': ', '.join(columns)
+                                    }
+
+                                    with self.__db_flavour_to_cursor_generator_map[db_flavour](
+                                            self.__cursor_engine) as cursor:
+                                        __j_sql = JinjaSql(param_style='pyformat')
+                                        query, bind_params = __j_sql.prepare_query(sql_create_table,
+                                                                                   binding_params_create_table)
+                                        cursor.execute(query, bind_params)
+
+                                self.model_{{modelName}}_logger.info('[{{modelName}}] {} created according to PROTON '
+                                                                     'standards.'.format(table_name))
+
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                            if_exists='append', schema=schema_name)
                             else:
