@@ -106,8 +106,8 @@ class Ctrl_{{ controllerName }}(Creator, Reader, Updater, Deleter, Parallel_Prog
 
             expected_metadata = {
                 'id': int,
-                'firstName': str,
-                'lastName': str,
+                'first_name': str,
+                'last_name': str,
                 'age': float
             }
 

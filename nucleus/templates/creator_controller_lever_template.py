@@ -45,7 +45,11 @@ class Creator(Model_{{ modelName }}):
                                               input_payload))
 
                 if all(r['status'] for r in validation_results):
-                    self.transaction['insert'](db_flavour, db_name, schema_name, table_name, input_payload)
+                    insert_validity = self.transaction['insert'](db_flavour, db_name, schema_name, table_name,
+                                                                 expected_metadata, input_payload)
+                    if isinstance(insert_validity, dict):
+                        return insert_validity
+
                     return {
                         'message': 'Insert operation to {}.{} table in {} database under {} '
                                    'is successful'.format(schema_name, table_name, db_name, db_flavour),
