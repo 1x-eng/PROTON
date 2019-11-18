@@ -105,7 +105,9 @@ class ProtonUserReset(ConnectionManager, PasswordManager, ProtonEmail, MyUtiliti
                                             'status': False
                                         })
                                     else:
-                                        password_update_query = login_registry_table.update().where(login_registry_table.c.user_registry_id==user_existence[0][0]).values(password=self.hash_password(reset_payload['password']))
+                                        password_update_query = login_registry_table.update().where(
+                                            login_registry_table.c.user_registry_id == user_existence[0][0]).values(
+                                            password=self.hash_password(reset_payload['password']))
                                         password_update_results = (connection.execute(password_update_query))
 
                                         if self.iam_user_reset_logger.info(password_update_results.rowcount) != 0:
