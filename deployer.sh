@@ -29,55 +29,58 @@
 ## @Desc: Script to deploy PROTON by prepping remote (Ubuntu) environment with all required dependencies
 ## @Pre-requisites: THis script must be run as sudo.
 
-#TODO: Folder permission issues needs to be sorted to get the automated mode functional.
-#TODO: In Automated mode, APP_NAME, APP_SUPPORT_EMAIL & SENDGRID_KEY needs to be populated. Auto mode will not succeed unless these are satisfied.
-
-echo -e "[Pre-Requisites] Only continue should you have met all the below PROTON deployer pre-requisites:"
+echo -e "[Pre-Requisites] Only continue should you have met all the below PROTON deployer pre-requisites:\n"
 echo -e "1. You need to have a DNS mapped to a domain/sub-domain."
 echo -e "2. This DNS must be pointing to your remote PROTON server @ default http(80) & https(443) ports."
 echo -e "3. Should you opt in to Automated mode, deployer will need to have permission to create new directory from a level above this file\n"
 
-while getopts d:a: option
+
+echo -e "[How to] Run Deployer:\n"
+echo -e "1. ./deployer.sh -d api.sparkle.apricity.co.in This will prep infrastructure, web-server, reverse proxy and makes the platform containerised proton ready"
+echo -e "2. a. If you wanted to run the platform for the first time and wanted to spin up the platform with defaults; then use, ./deployer.sh -a yes"
+echo -e "   b. If you wanted to restore existing most recent platform and spin up the platform; then use, ./deployer.sh -r yes\n"
+
+
+while getopts d:a:r: option
 do
  case "${option}"
  in
  d) dns=${OPTARG};;
  a) automated=${OPTARG};;
+ r) restore=${OPTARG};;
  *) : ;;
  esac
 done
 
-if [[ -z ${dns} ]]; then
-    echo -e "PROTON deployer cannot be initialized unless mandatory server dns is provided\n"
-    echo -e "Please meet all pre-requisites and re-initialize PROTON deployer. Thanks \n"
-    exit 1
-fi
-
-# Install docker & docker-compose
-echo -e "********* PROTON DEPLOYER INITIALIZED *********\n"
 ROOT_DIR=$(pwd)
+USER_NAME=${USER}
 
-echo -e "Preparing Infrastructure..."
-echo -e "[Step - 1] Installing Docker & Docker-Compose\n"
 
-sudo apt-get update
-sudo apt-get install -y docker # needs to be tested
-sudo apt-get install -y docker-compose # Needs to be tested
-echo -e "\n"
+if [[ ! -z ${dns} ]]; then
+    # Install docker & docker-compose
+    echo -e "\n"
+    echo -e "********* PROTON DEPLOYER INITIALIZED *********\n"
 
-# Enable $USER to run docker
-echo -e "[Step -1a] Enabling ${USER} to run docker\n"
-sudo groupadd docker
-sudo gpasswd -a ${USER} docker
-echo -e "\n"
+    echo -e "Preparing Infrastructure..."
+    echo -e "[Step - 1] Installing Docker & Docker-Compose\n"
 
-# Install nginx and http reverse proxy to PROTON
-echo -e "[Step - 2] Installing NGINX and configuring HTTP reverse proxy to PROTON\n"
-sudo apt-get update
-sudo apt-get install -y nginx
-unlink /etc/nginx/sites-enabled/default
-cd /etc/nginx/sites-available
-cat <<EOT > reverse-proxy.conf
+    sudo apt-get update
+    sudo apt-get install -y docker # needs to be tested
+    sudo apt-get install -y docker-compose # Needs to be tested
+    echo -e "\n"
+
+    # Enable $USER to run docker
+    echo -e "[Step -1a] Enabling ${USER_NAME} to run docker\n"
+    sudo usermod -a -G docker ${USER_NAME}
+    echo -e "\n"
+
+    # Install nginx and http reverse proxy to PROTON
+    echo -e "[Step - 2] Installing NGINX and configuring HTTP reverse proxy to PROTON\n"
+    sudo apt-get update
+    sudo apt-get install -y nginx
+    sudo unlink /etc/nginx/sites-enabled/default
+    cd /etc/nginx/sites-available
+    sudo cat <<EOT > reverse-proxy.conf
 server {
                 listen 80;
                 listen [::]:80;
@@ -91,48 +94,57 @@ server {
             }
         }
 EOT
-ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
-sudo nginx -t
-sudo service nginx restart
-echo -e "\n"
+    sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+    sudo nginx -t
+    sudo service nginx restart
+    echo -e "\n"
 
-# Configure HTTPS and reverse proxy HTTPS as default to PROTON.
-echo -e "[Step - 3] Configuring HTTPS reverse proxy to PROTON\n"
-sudo apt-get update
-sudo apt-get install -y software-properties-common
-sudo add-apt-repository ppa:certbot/certbot -y
-sudo apt-get update
-sudo apt-get install -y python-certbot-nginx
-sudo certbot --nginx --non-interactive --agree-tos -d ${dns}
-echo -e "\n"
+    # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
+    echo -e "[Step - 3] Configuring HTTPS reverse proxy to PROTON\n"
+    sudo apt-get update
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository ppa:certbot/certbot -y
+    sudo apt-get update
+    sudo apt-get install -y python-certbot-nginx
+    sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d ${dns}
+    echo -e "\n"
 
-# Avoiding permission issues for PROTON stack.
-echo -e "[Step - 4] Granting PROTON stack with required folder level permissions."
-sudo chmod 777 -R ./
-echo -e "\n"
+    # Avoiding permission issues for PROTON stack.
+    echo -e "[Step - 4] Granting PROTON stack with required folder level permissions."
+    cd ${ROOT_DIR}
+    sudo chmod 777 -R ./
+    echo -e "\n"
 
-echo -e "Infrastructure prep completed for PROTON\n"
+    echo -e "Infrastructure prep completed for PROTON\n"
+    sudo newgrp docker
+fi
 
 if [[ ${automated} == 'yes' ]]; then
     echo -e "DEPLOYER is proceeding in AUTOMATED mode\n"
-    echo -e "Generating platform config \n"
+    echo -e "Generating platform config here - ${ROOT_DIR}\n"
 
-    cd ${ROOT_DIR}
-    cd ..
+    cd /home/${USER_NAME}
     mkdir -p proton_db
     cd proton_db
+    echo -e "Generating mount paths for proton databases here - $(pwd)"
+    AUTOMATED_PROTON_DB_PATH=$(pwd)
+    rm -rf ./*
+
     mkdir -p pg
     mkdir -p sqlite
     mkdir -p redis
 
+    echo -e "Granting permissions for Proton databases."
+    cd ..
     sudo chmod 777 -R ./
 
-    AUTOMATED_PROTON_DB_PATH=$(pwd)
+    echo -e "Generating PROTONs core .env"
     cd ${ROOT_DIR}
-
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+APP_NAME=ProtonDerivative
+APP_SUPPORT_EMAIL=pruthvikumar.123@gmail.com
 PG_USERNAME=$(openssl rand -base64 12)
 PG_PASSWORD=$(openssl rand -base64 12)
 PG_TARGET_DB=proton
@@ -141,8 +153,9 @@ REDIS_TARGET_PORT=6379
 PROTON_BIND_ADDRESS=0.0.0.0
 PROTON_TARGET_PORT=3000
 PROTON_SQLITE_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/sqlite
-PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/postgres
+PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/pg
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
+SENDGRID_API_KEY=NA
 EOF
 
     echo -e "Initializing PROTON Stack\n"
@@ -157,13 +170,87 @@ EOF
     echo -e "1. Check https://${dns} in your favourite browser or API client to be welcomed by PROTON."
     echo -e "2. Should you want to view logs, use this command- docker logs -f proton"
     echo -e "3. Should you want to see all PROTON stack's containers, use this command- docker ps -a"
-    echo -e "4. Deployer has structured your PROTON DB's to be mounted here - ${AUTOMATED_PROTON_DB_PATH}\n"
-else
+    echo -e "4. Deployer has structured your PROTON DB's to be mounted here - ${AUTOMATED_PROTON_DB_PATH}"
+    echo -e "5. The automated mode doesn't enable PROTON's ability to send email notifications on both successful and failed login'. You may enable this feature by providing your sendgrid key to .env file\n"
+
+fi
+if [[ ${restore} == 'yes' ]]; then
+    echo -e "Deployer is instantiating PROTON Restore. Restoration is an interactive process. Please help with valid inputs."
+    echo -e "********* PS: Please only use this mount path for PROTON restoration: /tmp/proton_restore *********\n"
+
+    sudo apt-get install -y python-pip
+    pip install dropbox
+
+    cd /tmp
+    mkdir -p proton_restore
+    cd proton_restore
+    PROTON_RESTORE_LOCATION=$(pwd)
+
+    cd ${ROOT_DIR}
+    cd ./backup/scripts/
+
+    ./proton_restore.sh
+
+    cd ${ROOT_DIR}
+    mv -f ${PROTON_RESTORE_LOCATION}/.env ./
+
+    cd /home/${USER_NAME}
+    mkdir -p proton_db
+    cd proton_db
+    rm -rf ./*
+
+    mv -f ${PROTON_RESTORE_LOCATION}/pg ./
+    mv -f ${PROTON_RESTORE_LOCATION}/redis ./
+    mv -f ${PROTON_RESTORE_LOCATION}/sqlite ./
+    cd ..
+    sudo chmod -R 777 ./*
+
+    cd ${ROOT_DIR}
+
+    eval "$(grep ^APP_NAME= .env)"
+    eval "$(grep ^APP_SUPPORT_EMAIL= .env)"
+    eval "$(grep ^PG_USERNAME= .env)"
+    eval "$(grep ^PG_PASSWORD= .env)"
+    eval "$(grep ^PG_TARGET_DB= .env)"
+    eval "$(grep ^PG_TARGET_PORT= .env)"
+    eval "$(grep ^REDIS_TARGET_PORT= .env)"
+    eval "$(grep ^PROTON_BIND_ADDRESS= .env)"
+    eval "$(grep ^PROTON_TARGET_PORT= .env)"
+    eval "$(grep ^SENDGRID_API_KEY= .env)"
+
+    rm -rf ./.env
+
+    PROTON_SQLITE_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/sqlite
+    PROTON_POSTGRES_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/pg
+    PROTON_REDIS_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/redis
+
+    cat << EOF > .env
+# PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
+# PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
+APP_NAME=${APP_NAME}
+APP_SUPPORT_EMAIL=${APP_SUPPORT_EMAIL}
+PG_USERNAME=${PG_USERNAME}
+PG_PASSWORD=${PG_PASSWORD}
+PG_TARGET_DB=${PG_TARGET_DB}
+PG_TARGET_PORT=${PG_TARGET_PORT}
+REDIS_TARGET_PORT=${REDIS_TARGET_PORT}
+PROTON_BIND_ADDRESS=${PROTON_BIND_ADDRESS}
+PROTON_TARGET_PORT=${PROTON_TARGET_PORT}
+PROTON_SQLITE_VOLUME_MOUNT=${PROTON_SQLITE_VOLUME_MOUNT}
+PROTON_POSTGRES_VOLUME_MOUNT=${PROTON_POSTGRES_VOLUME_MOUNT}
+PROTON_REDIS_VOLUME_MOUNT=${PROTON_REDIS_VOLUME_MOUNT}
+SENDGRID_API_KEY=${SENDGRID_API_KEY}
+EOF
+
+    ./cproton.sh -U yes
+fi
+if [[ -z ${dns} ]] || [[ -z ${automated} ]] || [[ -z ${restore} ]]; then
+    echo -e "\n"
     echo -e "PS:"
-    echo -e "1. Infrastructure is prepared for PROTON stack"
-    echo -e "2. Since you've not asked for automated mode, please continue to initialize PROTON stack manually."
-    echo -e "3. You may start with this command - ./cproton.sh -U yes"
-    echo -e "4. Once PROTON stack is up, you may visit https://${dns} in yout favourite browser or API client to be greeted by PROTON\n"
+    echo -e "1. Deployer can prepare infrastructure for PROTON via - ./deployer.sh -d <your-api-server-dns>.com"
+    echo -e "2. Deployer can initialize PROTON stack in automated mode via - ./deployer.sh -a yes"
+    echo -e "3. Deployer can restore your production PROTON stack and revive in your current server via - ./deployer.sh -r yes"
+    echo -e "Any other command to deployer will go unrecognized\n"
 fi
 
 
