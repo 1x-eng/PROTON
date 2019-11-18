@@ -53,6 +53,7 @@ class TokenAuthenticator(LogUtilities, ProtonConfig, JWTManager):
                          '/fast-serve',
                          '/signup',
                          '/login',
+                         '/reset',
                          '/metrics',
                          '/proton-prom',
                          '/proton-grafana']):

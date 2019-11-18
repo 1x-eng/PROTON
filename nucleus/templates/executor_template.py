@@ -33,6 +33,7 @@ from mic.iface.middlewares.proton_prometheus import ProtonPrometheus
 from mic.iface.middlewares.token_authenticator import TokenAuthenticator
 from nucleus.iam.login import IctrlProtonLogin
 from nucleus.iam.signup import IctrlProtonSignup
+from nucleus.iam.reset import IctrlProtonPasswordReset
 {% for ifaceController in ifaceControllers %}
 from mic.iface.controllers.{{ ifaceController.fileName }} import {{ ifaceController.controllerName }}
 {% endfor %}
@@ -45,6 +46,7 @@ __version__ = "1.0"
 """
 PROTON executor: Point WSGI server to this file and reach out to available routes!
 """
+
 
 class DefaultRouteHandler(object):
     """
@@ -60,6 +62,7 @@ class DefaultRouteHandler(object):
         }
         response['availableRoutes'].append('/login')
         response['availableRoutes'].append('/signup')
+        response['availableRoutes'].append('/reset')
         response['availableRoutes'].append('/proton-prom')
         response['availableRoutes'].append('/proton-grafana')
         {%for route in routes %}
@@ -117,6 +120,7 @@ app.add_route('/', DefaultRouteHandler())
 app.add_route('/fast-serve', FastServe())
 app.add_route('/login', IctrlProtonLogin())
 app.add_route('/signup', IctrlProtonSignup())
+app.add_route('/reset', IctrlProtonPasswordReset())
 app.add_route('/metrics', prom)
 app.add_route('/proton-prom', RedirectToProm())
 app.add_route('/proton-grafana', RedirectToGrafana())
