@@ -63,8 +63,8 @@ class Creator(Model_{{ modelName }}):
                     'message': 'Insert operation to {}.{} table in {} database under {} was '
                                'unsuccessful'.format(schema_name, table_name, db_name, db_flavour),
                     'reason': 'Cannot insert nothing! Please provide valid input payload that complies with '
-                              'expected datatypes of sparkle sections table. '
-                              'Expected types: {}'.format(str(expected_metadata)),
+                              'expected datatypes of for your {}.{} table. '
+                              'Expected types: {}'.format(schema_name, table_name, str(expected_metadata)),
                     'status': False
                 }
 

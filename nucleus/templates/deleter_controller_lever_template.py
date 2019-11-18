@@ -44,8 +44,8 @@ class Deleter(Model_{{modelName}}):
             # {{modelName}} specific deletion logic goes below
             # PS:
             # 1. You can access update method from model as below:
-            #    eg. update_status = self.transaction['delete'](sql, binding_params)
-            # 2. update_status is a dict containing 'status'(bool) and 'affected_rowcount'(int)
+            #    eg. delete_status = self.transaction['delete'](sql, binding_params)
+            # 2. delete_status is a dict containing 'status'(bool) and 'affected_rowcount'(int)
             ###########################################################################################################
             pass
 
