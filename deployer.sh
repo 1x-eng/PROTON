@@ -163,7 +163,8 @@ PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/pg
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 SENDGRID_API_KEY=NA
 EOF
-    sudo chown ${USER_NAME}:${USER_NAME} ./*
+    sudo chown ${NON_ROOT_USER}:${NON_ROOT_USER} ./*
+    sudo chmod 777 -R ./
     echo -e "Initializing PROTON Stack\n"
     ./cproton.sh -U yes
     echo -e "\n"
