@@ -80,7 +80,7 @@ if [[ ! -z ${dns} ]]; then
     sudo apt-get install -y nginx
     sudo unlink /etc/nginx/sites-enabled/default
     cd /etc/nginx/sites-available
-    sudo cat <<EOT > reverse-proxy.conf
+    sudo bash -c "cat <<EOT > reverse-proxy.conf
 server {
                 listen 80;
                 listen [::]:80;
@@ -94,6 +94,7 @@ server {
             }
         }
 EOT
+"
     sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
     sudo nginx -t
     sudo service nginx restart
