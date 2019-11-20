@@ -80,7 +80,7 @@ if [[ ! -z ${dns} ]]; then
     sudo apt-get install -y nginx
     sudo unlink /etc/nginx/sites-enabled/default
     cd /etc/nginx/sites-available
-    sudo cat <<EOT > reverse-proxy.conf
+    sudo bash -c "cat <<EOT > reverse-proxy.conf
 server {
                 listen 80;
                 listen [::]:80;
@@ -94,6 +94,7 @@ server {
             }
         }
 EOT
+"
     sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
     sudo nginx -t
     sudo service nginx restart
@@ -123,7 +124,11 @@ if [[ ${automated} == 'yes' ]]; then
     echo -e "DEPLOYER is proceeding in AUTOMATED mode\n"
     echo -e "Generating platform config here - ${ROOT_DIR}\n"
 
-    cd /home/${USER_NAME}
+    # Assumption - Before this section, ./deployer -a <dns> is presumed to have run. This would have changed user to root.
+    NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
+
+    # Volume mounts to live in ORIGINAL user's home directory.
+    cd /home/${NON_ROOT_USER}
     mkdir -p proton_db
     cd proton_db
     echo -e "Generating mount paths for proton databases here - $(pwd)"
@@ -195,7 +200,10 @@ if [[ ${restore} == 'yes' ]]; then
     cd ${ROOT_DIR}
     mv -f ${PROTON_RESTORE_LOCATION}/.env ./
 
-    cd /home/${USER_NAME}
+     # Assumption - Before this section, ./deployer -a <dns> is presumed to have run. This would have changed user to root.
+    NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
+
+    cd /home/${NON_ROOT_USER}
     mkdir -p proton_db
     cd proton_db
     rm -rf ./*
@@ -221,9 +229,9 @@ if [[ ${restore} == 'yes' ]]; then
 
     rm -rf ./.env
 
-    PROTON_SQLITE_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/sqlite
-    PROTON_POSTGRES_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/pg
-    PROTON_REDIS_VOLUME_MOUNT=/home/${USER_NAME}/proton_db/redis
+    PROTON_SQLITE_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/sqlite
+    PROTON_POSTGRES_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/pg
+    PROTON_REDIS_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/redis
 
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
