@@ -206,7 +206,7 @@ an API key and paste that key here: " SENDGRID_API_KEY
 
 fi
 
-    cat << EOF > .env
+    sudo bash -c "cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
 APP_NAME=$APP_NAME
@@ -223,12 +223,17 @@ PROTON_POSTGRES_VOLUME_MOUNT=$PROTON_POSTGRES_VOLUME_MOUNT
 PROTON_REDIS_VOLUME_MOUNT=$PROTON_REDIS_VOLUME_MOUNT
 SENDGRID_API_KEY=$SENDGRID_API_KEY
 EOF
+"
 
 # configuring SQLITE mount path for the PROTON container.
-mkdir -p ./proton_vars
-rm -f ./proton_vars/proton_sqlite_config.txt
-touch ./proton_vars/proton_sqlite_config.txt
-echo "/PROTON/proton-db/proton-sqlite.db" >> ./proton_vars/proton_sqlite_config.txt
+sudo mkdir -p ./proton_vars
+sudo rm -f ./proton_vars/proton_sqlite_config.txt
+sudo touch ./proton_vars/proton_sqlite_config.txt
+sudo bash -c "cat << EOF > ./proton_vars/proton_sqlite_config.txt
+/PROTON/proton-db/proton-sqlite.db
+EOF
+"
+sudo chmod 777 -R ./proton_vars
 
 echo -e "-------------------------------------------------------------------------------------------------------------------"
 echo -e "\e[33m PROTON has all vitals checked and set. \e[0m"
