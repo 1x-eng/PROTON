@@ -145,6 +145,7 @@ if [[ ${automated} == 'yes' ]]; then
 
     echo -e "Generating PROTONs core .env"
     cd ${ROOT_DIR}
+
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
 # PS: DO NOT DELETE ANY VARIABLES OR RENAME THEM. PROTON'S CONTAINERS RELY ON THESE VARIABLES.
@@ -162,11 +163,8 @@ PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/pg
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 SENDGRID_API_KEY=NA
 EOF
-
+    sudo chown ${USER_NAME}:${USER_NAME} ./*
     echo -e "Initializing PROTON Stack\n"
-    cd ..
-    sudo chmod 777 -R ./*
-    cd ${ROOT_DIR}
     ./cproton.sh -U yes
     echo -e "\n"
 
