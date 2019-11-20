@@ -159,6 +159,9 @@ SENDGRID_API_KEY=NA
 EOF
 
     echo -e "Initializing PROTON Stack\n"
+    cd ..
+    sudo chmod 777 -R ./*
+    cd ${ROOT_DIR}
     ./cproton.sh -U yes
     echo -e "\n"
 
