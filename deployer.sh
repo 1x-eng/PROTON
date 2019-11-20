@@ -71,7 +71,8 @@ if [[ ! -z ${dns} ]]; then
 
     # Enable $USER to run docker
     echo -e "[Step -1a] Enabling ${USER_NAME} to run docker\n"
-    sudo usermod -a -G docker ${USER_NAME}
+    sudo groupadd docker
+    sudo usermod -aG docker ${USER_NAME}
     echo -e "\n"
 
     # Install nginx and http reverse proxy to PROTON
