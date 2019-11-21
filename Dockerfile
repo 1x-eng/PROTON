@@ -63,9 +63,9 @@ RUN echo "\n"
 
 RUN echo "********* PROTON user ownership and restriction phase *********\n"
 RUN chown -R ${proton_host_uid}:${proton_host_gid} /PROTON
-USER ${proton_host_uid}
 RUN mkdir -p /PROTON/proton-db
 RUN mkdir -p /PROTON/trace
+USER ${proton_host_uid}
 RUN echo "\n"
 
 RUN echo "********* PROTON port expose phase *********\n"
