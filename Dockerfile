@@ -47,8 +47,8 @@ RUN apt-get install -y gcc g++ unixodbc-dev
 RUN echo "\n"
 
 RUN echo "********* PROTON user group & user creation phase *********\n"
-RUN groupadd --gid ${proton_host_gid}
-RUN useradd --gid ${proton_host_gid} --uid ${proton_host_uid}
+RUN groupadd -f -g ${proton_host_gid} proton_user_group
+RUN useradd -G proton_user_group -u ${proton_host_uid} default_proton_user
 RUN echo "\n"
 
 RUN echo "********* PROTON folder structure creation & source code injection phase *********\n"
@@ -62,7 +62,7 @@ RUN python3 -m pip install -r requirements.txt --no-cache-dir
 RUN echo "\n"
 
 RUN echo "********* PROTON user ownership and restriction phase *********\n"
-RUN chown -R ${proton_host_uid}:${proton_host_gid} /PROTON/*
+RUN chown ${proton_host_uid}:${proton_host_gid} /PROTON
 RUN mkdir -p /PROTON/proton-db
 RUN mkdir -p /PROTON/trace
 #RUN chmod 777 -R /PROTON/*
