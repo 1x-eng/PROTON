@@ -64,6 +64,8 @@ echo -e "\e[36m
 
 \e[0m"
 
+echo -e "Running as - ${USER}\n"
+
 if [[ "$protonTest" == 'yes' ]]; then
 
     echo "Acknowledging test request for PROTON"
