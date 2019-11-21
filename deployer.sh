@@ -111,25 +111,25 @@ EOT
     sudo certbot --nginx --non-interactive --agree-tos -m pruthvikumar.123@gmail.com -d ${dns}
     echo -e "\n"
 
-    # Avoiding permission issues for PROTON stack.
-    echo -e "[Step - 4] Granting PROTON stack with required folder level permissions."
-    cd ${ROOT_DIR}
-    sudo chmod 777 -R ./
-    echo -e "\n"
-
     echo -e "Infrastructure prep completed for PROTON\n"
-    sudo newgrp docker
+    newgrp docker
 fi
 
 if [[ ${automated} == 'yes' ]]; then
     echo -e "DEPLOYER is proceeding in AUTOMATED mode\n"
     echo -e "Generating platform config here - ${ROOT_DIR}\n"
 
-    # Assumption - Before this section, ./deployer -a <dns> is presumed to have run. This would have changed user to root.
-    NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
+    # Reject if running as root.
+    if [[ ${EUID} != 0 ]]; then
+        :
+    else
+        NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
+        echo -e "Cannot proceed as root. Please re-issue this command as ${NON_ROOT_USER}\n"
+        exit 1
+    fi
 
     # Volume mounts to live in ORIGINAL user's home directory.
-    cd /home/${NON_ROOT_USER}
+    cd /home/${USER}
     mkdir -p proton_db
     cd proton_db
     echo -e "Generating mount paths for proton databases here - $(pwd)"
@@ -141,8 +141,8 @@ if [[ ${automated} == 'yes' ]]; then
     mkdir -p redis
 
     echo -e "Granting permissions for Proton databases."
-    cd ..
-    sudo chmod 777 -R ./
+    cd /home/${USER}
+    sudo chown $(id -u):$(id -g) /home/${USER}/proton_db
 
     echo -e "Generating PROTONs core .env"
     cd ${ROOT_DIR}
@@ -164,8 +164,7 @@ PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/pg
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 SENDGRID_API_KEY=NA
 EOF
-    sudo chown ${NON_ROOT_USER}:${NON_ROOT_USER} ./*
-    sudo chmod 777 -R ./
+    sudo chown $(id -u):$(id -g) ./
     echo -e "Initializing PROTON Stack\n"
     ./cproton.sh -U yes
     echo -e "\n"
@@ -186,6 +185,15 @@ if [[ ${restore} == 'yes' ]]; then
     echo -e "Deployer is instantiating PROTON Restore. Restoration is an interactive process. Please help with valid inputs."
     echo -e "********* PS: Please only use this mount path for PROTON restoration: /tmp/proton_restore *********\n"
 
+    # Reject if running as root.
+    if [[ ${EUID} != 0 ]]; then
+        :
+    else
+        NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
+        echo -e "Cannot proceed as root. Please re-issue this command as ${NON_ROOT_USER}\n"
+        exit 1
+    fi
+
     sudo apt-get install -y python-pip
     pip install dropbox
 
@@ -202,10 +210,7 @@ if [[ ${restore} == 'yes' ]]; then
     cd ${ROOT_DIR}
     mv -f ${PROTON_RESTORE_LOCATION}/.env ./
 
-     # Assumption - Before this section, ./deployer -a <dns> is presumed to have run. This would have changed user to root.
-    NON_ROOT_USER=`echo ${SUDO_USER:-${USER}}`
-
-    cd /home/${NON_ROOT_USER}
+    cd /home/${USER}
     mkdir -p proton_db
     cd proton_db
     rm -rf ./*
@@ -214,7 +219,7 @@ if [[ ${restore} == 'yes' ]]; then
     mv -f ${PROTON_RESTORE_LOCATION}/redis ./
     mv -f ${PROTON_RESTORE_LOCATION}/sqlite ./
     cd ..
-    sudo chmod -R 777 ./*
+    sudo chown $(id -u):$(id -g) /home/${USER}/proton_db
 
     cd ${ROOT_DIR}
 
@@ -231,9 +236,9 @@ if [[ ${restore} == 'yes' ]]; then
 
     rm -rf ./.env
 
-    PROTON_SQLITE_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/sqlite
-    PROTON_POSTGRES_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/pg
-    PROTON_REDIS_VOLUME_MOUNT=/home/${NON_ROOT_USER}/proton_db/redis
+    PROTON_SQLITE_VOLUME_MOUNT=/home/${USER}/proton_db/sqlite
+    PROTON_POSTGRES_VOLUME_MOUNT=/home/${USER}/proton_db/pg
+    PROTON_REDIS_VOLUME_MOUNT=/home/${USER}/proton_db/redis
 
     cat << EOF > .env
 # PS: ANY CHANGES HERE WILL AFFECT BUILD PROCESS.
