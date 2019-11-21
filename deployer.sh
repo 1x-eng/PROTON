@@ -183,7 +183,9 @@ EOF
 fi
 if [[ ${restore} == 'yes' ]]; then
     echo -e "Deployer is instantiating PROTON Restore. Restoration is an interactive process. Please help with valid inputs."
-    echo -e "********* PS: Please only use this mount path for PROTON restoration: /tmp/proton_restore *********\n"
+    echo -e "***************************************************************************************************************"
+    echo -e "*********** PS: Please only use this mount path for PROTON restoration: /tmp/proton_restore  ******************"
+    echo -e "***************************************************************************************************************\n"
 
     # Reject if running as root.
     if [[ ${EUID} != 0 ]]; then
