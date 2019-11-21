@@ -78,7 +78,7 @@ else
     if [[ -z "$environment" || "$environment" != 'test' ||  "$protonTest" != 'yes' ]]; then
         # Default environment = production
 
-        echo "${USER} is instantiating PROTON in production environment"
+        echo "USER with id - $(id -u) who belongs to group $(id -g) is instantiating PROTON in production environment"
 
         # Validate existance of key environment variables.
         ./init-proton.sh
