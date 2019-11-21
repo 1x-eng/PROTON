@@ -212,7 +212,7 @@ if [[ ${restore} == 'yes' ]]; then
 
     cd /home/${USER}
     mkdir -p proton_db
-    cd proton_db
+    cd /home/${USER}/proton_db
     rm -rf ./*
 
     mv -f ${PROTON_RESTORE_LOCATION}/pg ./
