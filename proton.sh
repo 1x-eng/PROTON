@@ -64,8 +64,6 @@ echo -e "\e[36m
 
 \e[0m"
 
-echo -e "Running as - ${USER}\n"
-
 if [[ "$protonTest" == 'yes' ]]; then
 
     echo "Acknowledging test request for PROTON"
@@ -80,7 +78,7 @@ else
     if [[ -z "$environment" || "$environment" != 'test' ||  "$protonTest" != 'yes' ]]; then
         # Default environment = production
 
-        echo "Instantiating PROTON in production environment"
+        echo "${USER} is instantiating PROTON in production environment"
 
         # Validate existance of key environment variables.
         ./init-proton.sh
