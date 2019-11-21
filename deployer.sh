@@ -142,7 +142,7 @@ if [[ ${automated} == 'yes' ]]; then
 
     echo -e "Granting permissions for Proton databases."
     cd /home/${USER}
-    sudo chown $(id -u):$(id -g) /home/${USER}/proton_db
+    sudo chown -R $(id -u):$(id -g) /home/${USER}/proton_db
 
     echo -e "Generating PROTONs core .env"
     cd ${ROOT_DIR}
@@ -164,7 +164,7 @@ PROTON_POSTGRES_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/pg
 PROTON_REDIS_VOLUME_MOUNT=${AUTOMATED_PROTON_DB_PATH}/redis
 SENDGRID_API_KEY=NA
 EOF
-    sudo chown $(id -u):$(id -g) ./
+    sudo chown -R $(id -u):$(id -g) ./
     echo -e "Initializing PROTON Stack\n"
     ./cproton.sh -U yes
     echo -e "\n"
@@ -219,7 +219,7 @@ if [[ ${restore} == 'yes' ]]; then
     mv -f ${PROTON_RESTORE_LOCATION}/redis ./
     mv -f ${PROTON_RESTORE_LOCATION}/sqlite ./
     cd ..
-    sudo chown $(id -u):$(id -g) /home/${USER}/proton_db
+    sudo chown -R $(id -u):$(id -g) /home/${USER}/proton_db
 
     cd ${ROOT_DIR}
 
