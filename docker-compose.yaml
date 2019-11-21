@@ -4,6 +4,7 @@ services:
     container_name: proton_postgres
     restart: always
     image: postgres
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     environment:
       - POSTGRES_USER=${PG_USERNAME}
       - POSTGRES_PASSWORD=${PG_PASSWORD}
@@ -16,6 +17,7 @@ services:
     container_name: proton_redis
     restart: always
     image: redis
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     volumes:
       - ${PROTON_REDIS_VOLUME_MOUNT}:/data
     ports:
@@ -25,8 +27,6 @@ services:
     restart: always
     image: proton_stretch
     user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
-    working_dir: ${HOME}
-    stdin_open: true
     ports:
       - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
     expose:
