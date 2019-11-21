@@ -64,8 +64,8 @@ RUN python3 -m pip install -r requirements.txt --no-cache-dir
 RUN echo "\n"
 
 RUN echo "********* PROTON user ownership and restriction phase *********\n"
-RUN chown -R default_proton_user:proton_user_group /PROTON
-RUN chmod 777 -R /PROTON
+RUN chown -R default_proton_user:proton_user_group /PROTON/*
+RUN chmod 777 -R /PROTON/*
 USER default_proton_user
 RUN echo "\n"
 
