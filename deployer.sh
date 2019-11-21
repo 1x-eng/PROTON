@@ -65,8 +65,7 @@ if [[ ! -z ${dns} ]]; then
     echo -e "[Step - 1] Installing Docker & Docker-Compose\n"
 
     sudo apt-get update
-    sudo apt-get install -y docker # needs to be tested
-    sudo apt-get install -y docker-compose # Needs to be tested
+    sudo apt-get install -y docker docker-compose
     echo -e "\n"
 
     # Enable $USER to run docker
