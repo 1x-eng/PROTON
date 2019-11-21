@@ -98,6 +98,7 @@ EOT
     sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
     sudo nginx -t
     sudo service nginx restart
+    cd ${ROOT_DIR}
     echo -e "\n"
 
     # Configure HTTPS and reverse proxy HTTPS as default to PROTON.
