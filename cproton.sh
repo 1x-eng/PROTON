@@ -41,6 +41,10 @@ done
 
 if [[ -x "$(command -v docker)" && -x "$(command -v docker-compose)" ]]; then
 
+    # Get Host userID and GroupId to help mirror the same inside the container
+    export PROTON_HOST_UID=$(id -u)
+    export PROTON_HOST_GID=$(id -g)
+
     # Validate existance of key environment variables.
     ./init-proton.sh
 
