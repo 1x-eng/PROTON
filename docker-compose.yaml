@@ -4,6 +4,7 @@ services:
     container_name: proton_postgres
     restart: always
     image: postgres
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     environment:
       - POSTGRES_USER=${PG_USERNAME}
       - POSTGRES_PASSWORD=${PG_PASSWORD}
@@ -16,6 +17,7 @@ services:
     container_name: proton_redis
     restart: always
     image: redis
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     volumes:
       - ${PROTON_REDIS_VOLUME_MOUNT}:/data
     ports:
@@ -24,6 +26,7 @@ services:
     container_name: proton
     restart: always
     image: proton_stretch
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     ports:
       - ${PROTON_TARGET_PORT}:${PROTON_TARGET_PORT}
     expose:
@@ -31,6 +34,10 @@ services:
     volumes:
       - .:/PROTON
       - ${PROTON_SQLITE_VOLUME_MOUNT}:/PROTON/proton-db
+      - /etc/group:/etc/group:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+    tty: true
     depends_on:
       - pg
       - redis

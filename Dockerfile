@@ -32,9 +32,12 @@ RUN echo "********* ENV variables creation phase *********\n"
 ARG sendgrid_api_key
 ARG app_name
 ARG app_support_email
+ARG proton_host_uid
+ARG proton_host_gid
 ENV SENDGRID_API_KEY=${sendgrid_api_key}
 ENV APP_NAME=${app_name}
 ENV APP_SUPPORT_EMAIL=${app_support_email}
+
 RUN echo "\n"
 
 RUN echo "********* PROTON dependencies installation phase *********\n"
@@ -43,18 +46,13 @@ RUN apt-get install bash
 RUN apt-get install -y gcc g++ unixodbc-dev
 RUN echo "\n"
 
-RUN echo "********* PROTON folder structure creation phase *********\n"
-RUN mkdir -p /PROTON
-RUN mkdir -p /PROTON/proton-db
-RUN mkdir -p /PROTON/trace
-RUN echo "\n"
-
 RUN echo "********* PROTON user group & user creation phase *********\n"
-RUN groupadd proton_user_group
-RUN useradd -G proton_user_group default_proton_user
+RUN groupadd -f -g ${proton_host_gid} proton_user_group
+RUN useradd -G proton_user_group -u ${proton_host_uid} default_proton_user
 RUN echo "\n"
 
-RUN echo "********* PROTON source code injection phase *********\n"
+RUN echo "********* PROTON folder structure creation & source code injection phase *********\n"
+RUN mkdir -p /PROTON
 WORKDIR /PROTON
 COPY . /PROTON
 RUN echo "\n"
@@ -64,9 +62,10 @@ RUN python3 -m pip install -r requirements.txt --no-cache-dir
 RUN echo "\n"
 
 RUN echo "********* PROTON user ownership and restriction phase *********\n"
-RUN chown -R default_proton_user:proton_user_group /PROTON
-RUN chmod 777 -R /PROTON
-USER default_proton_user
+RUN chown -R ${proton_host_uid}:${proton_host_gid} /PROTON
+RUN mkdir -p /PROTON/proton-db
+RUN mkdir -p /PROTON/trace
+USER ${proton_host_uid}
 RUN echo "\n"
 
 RUN echo "********* PROTON port expose phase *********\n"
