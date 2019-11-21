@@ -218,7 +218,7 @@ if [[ ${restore} == 'yes' ]]; then
     mv -f ${PROTON_RESTORE_LOCATION}/pg ./
     mv -f ${PROTON_RESTORE_LOCATION}/redis ./
     mv -f ${PROTON_RESTORE_LOCATION}/sqlite ./
-    cd ..
+
     sudo chown -R $(id -u):$(id -g) /home/${USER}/proton_db
 
     cd ${ROOT_DIR}
