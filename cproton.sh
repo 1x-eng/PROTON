@@ -58,6 +58,8 @@ if [[ -x "$(command -v docker)" && -x "$(command -v docker-compose)" ]]; then
         --build-arg sendgrid_api_key=${SENDGRID_API_KEY} \
         --build-arg app_name=${APP_NAME} \
         --build-arg app_support_email=${APP_SUPPORT_EMAIL} \
+        --build-arg proton_host_uid=${PROTON_HOST_UID} \
+        --build-arg proton_host_gid=${PROTON_HOST_GID} \
         -t proton_stretch:latest .
 
     fi
