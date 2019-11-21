@@ -47,8 +47,8 @@ RUN apt-get install -y gcc g++ unixodbc-dev
 RUN echo "\n"
 
 RUN echo "********* PROTON user group & user creation phase *********\n"
-RUN groupadd -g ${proton_host_gid}
-RUN useradd -g ${proton_host_gid} -u ${proton_host_uid}
+RUN groupadd --gid ${proton_host_gid}
+RUN useradd --gid ${proton_host_gid} --uid ${proton_host_uid}
 RUN echo "\n"
 
 RUN echo "********* PROTON folder structure creation & source code injection phase *********\n"
