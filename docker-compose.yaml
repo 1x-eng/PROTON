@@ -24,7 +24,7 @@ services:
     container_name: proton
     restart: always
     image: proton_stretch
-    user: ${PROTON_UID}:${PROTON_GID}
+    user: ${PROTON_HOST_UID}:${PROTON_HOST_GID}
     working_dir: ${HOME}
     stdin_open: true
     ports:
