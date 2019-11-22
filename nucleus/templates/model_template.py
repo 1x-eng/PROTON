@@ -186,6 +186,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             """
             # Do this with SQL Alchemy and Pandas.
             consistency_of_keys = self.validate_list_of_dicts_consistency(input_payload)
+            exception_is_raised = False
             if consistency_of_keys:
                 try:
                     data_to_be_inserted = pd.DataFrame(input_payload)
@@ -282,14 +283,31 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     print(Fore.LIGHTRED_EX + '[{{modelName}}]: {}'.format(str(e)) + Style.RESET_ALL)
                     if connection:
                         connection.close()
+                    exception_is_raised = True
                 finally:
                     if connection:
                         connection.close()
+
+                    if exception_is_raised:
+                        return {
+                            'message': 'Insert operation could not be completed either due to non-adherence to PROTON '
+                                       'insert operation standards / a HTTP 500.',
+                            'status': False
+                        }
             else:
-                        self.model_{{ modelName }}_logger.exception('[{{modelName}}]: To perform successful INSERT operation, ensure the input list '
-                                              'of dictionaries is consistent in terms of `keys`.')
-                        print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
-                              'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
+
+                self.model_{{ modelName }}_logger.exception('[{{modelName}}]: To perform successful INSERT operation, '
+                                                            'ensure the input list of dictionaries is consistent in '
+                                                            'terms of `keys`.')
+                print(Fore.LIGHTRED_EX + '[{{modelName}}]: To perform successful INSERT operation, ensure the input '
+                      'list of dictionaries is consistent in terms of `keys`.' + Style.RESET_ALL)
+
+                return {
+                    'message': 'Insert operation was not attempted as given payload is not consistent.',
+                    'status': False,
+                    'reason': 'To perform successful INSERT operation, ensure the input list of dictionaries is '
+                              'consistent in terms of `keys`'
+                }
 
         def perform_update_or_delete_operation(sql, binding_params):
             """
