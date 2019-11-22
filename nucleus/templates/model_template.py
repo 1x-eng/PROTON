@@ -187,6 +187,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             # Do this with SQL Alchemy and Pandas.
             consistency_of_keys = self.validate_list_of_dicts_consistency(input_payload)
             exception_is_raised = False
+            exception_details = ''
             if consistency_of_keys:
                 try:
                     data_to_be_inserted = pd.DataFrame(input_payload)
@@ -209,8 +210,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                                         SELECT EXISTS (
                                            SELECT 1
                                            FROM   information_schema.tables 
-                                           WHERE  table_schema = {{ binding_schema_name | sqlsafe}}
-                                           AND    table_name = {{ binding_table_name | sqlsafe}}
+                                           WHERE  table_schema = {{ binding_schema_name }}
+                                           AND    table_name = {{ binding_table_name }}
                                         );
                                     {% endraw %}
                                     """
@@ -284,6 +285,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     if connection:
                         connection.close()
                     exception_is_raised = True
+                    exception_details = str(e)
                 finally:
                     if connection:
                         connection.close()
@@ -292,7 +294,8 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                         return {
                             'message': 'Insert operation could not be completed either due to non-adherence to PROTON '
                                        'insert operation standards / a HTTP 500.',
-                            'status': False
+                            'status': False,
+                            'reason': exception_details
                         }
             else:
 
