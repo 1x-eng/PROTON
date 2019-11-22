@@ -199,55 +199,76 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                             schema_status = self.pg_schema_generator(self.__alchemy_engine[db_flavour], schema_name)
                             if schema_status:
                                 # check if table exists & create one if not.
-                                table_exists = self.__alchemy_engine[db_flavour].dialect.has_table(self.__alchemy_engine[db_flavour], table_name)
-                                if not table_exists:
-                                    self.model_{{modelName}}_logger.info('[{{modelName}}]: {} does not exist. It will'
-                                                                         ' be created with PROTON default __id (serial)'
-                                                                         ' and ____creation_timestamp_utc (datetime).'
-                                                                         ''.format(table_name))
-                                    columns = ['__id SERIAL',
-                                               '__creation_timestamp_utc timestamp NOT NULL DEFAULT NOW()']
+                                with self.__db_flavour_to_cursor_generator_map[db_flavour](
+                                        self.__cursor_engine) as cursor:
+                                    __j_sql = JinjaSql(param_style='pyformat')
 
-                                    column_names = [*expected_metadata]
-                                    mixed_case_exists = any(
-                                        column_name.islower() for column_name in column_names) and any(
-                                        column_name.isupper() for column_name in column_names)
-
-                                    if mixed_case_exists:
-                                        return {
-                                            'message': 'Postgres column names are best served when they do not contain '
-                                                       'mixed case or camel case or upper case. Please refactor your '
-                                                       'payload to contain lower case for all column names.',
-                                            'status': False
-                                        }
-
-                                    for column_name, column_type in expected_metadata.items():
-                                        columns.append(
-                                            '{} {} '
-                                            'NULL'.format(column_name,
-                                                          'varchar' if column_type.__name__ == 'str' else column_type.__name__))
-
-                                    sql_create_table = """
+                                    sql_check_table_existence = """
                                     {% raw %}
-                                        CREATE TABLE {{ binding_schema_name | sqlsafe}}.{{ binding_table_name | sqlsafe}} (
-                                        {{ binding_columns | sqlsafe}});
+                                        SELECT EXISTS (
+                                           SELECT 1
+                                           FROM   information_schema.tables 
+                                           WHERE  table_schema = {{ binding_schema_name | sqlsafe}}
+                                           AND    table_name = {{ binding_table_name | sqlsafe}}
+                                        );
                                     {% endraw %}
                                     """
-                                    binding_params_create_table = {
+                                    binding_params_table_existence = {
                                         'binding_schema_name': schema_name,
-                                        'binding_table_name': table_name,
-                                        'binding_columns': ', '.join(columns)
+                                        'binding_table_name': table_name
                                     }
 
-                                    with self.__db_flavour_to_cursor_generator_map[db_flavour](
-                                            self.__cursor_engine) as cursor:
-                                        __j_sql = JinjaSql(param_style='pyformat')
-                                        query, bind_params = __j_sql.prepare_query(sql_create_table,
-                                                                                   binding_params_create_table)
-                                        cursor.execute(query, bind_params)
+                                    query_check_table_existence, bind_params_table_existence = __j_sql.prepare_query(
+                                        sql_check_table_existence, binding_params_table_existence)
 
-                                    self.model_{{modelName}}_logger.info('[{{modelName}}] {} created according to '
-                                                                         'PROTON standards.'.format(table_name))
+                                    cursor.execute(query_check_table_existence, bind_params_table_existence)
+                                    table_exists_status = cursor.fetchall()
+
+                                    if not table_exists_status[0][0]:
+                                        self.model_{{modelName}}_logger.info('[{{modelName}}]: {} does not exist. It will'
+                                                                             ' be created with PROTON default __id (serial)'
+                                                                             ' and ____creation_timestamp_utc (datetime).'
+                                                                             ''.format(table_name))
+                                        columns = ['__id SERIAL',
+                                                   '__creation_timestamp_utc timestamp NOT NULL DEFAULT NOW()']
+
+                                        column_names = [*expected_metadata]
+                                        mixed_case_exists = any(
+                                            column_name.islower() for column_name in column_names) and any(
+                                            column_name.isupper() for column_name in column_names)
+
+                                        if mixed_case_exists:
+                                            return {
+                                                'message': 'Postgres column names are best served when they do not contain '
+                                                           'mixed case or camel case or upper case. Please refactor your '
+                                                           'payload to contain lower case for all column names.',
+                                                'status': False
+                                            }
+
+                                        for column_name, column_type in expected_metadata.items():
+                                            columns.append(
+                                                '{} {} '
+                                                'NULL'.format(column_name,
+                                                              'varchar' if column_type.__name__ == 'str' else column_type.__name__))
+
+                                        sql_create_table = """
+                                        {% raw %}
+                                            CREATE TABLE {{ binding_schema_name | sqlsafe}}.{{ binding_table_name | sqlsafe}} (
+                                            {{ binding_columns | sqlsafe}});
+                                        {% endraw %}
+                                        """
+                                        binding_params_create_table = {
+                                            'binding_schema_name': schema_name,
+                                            'binding_table_name': table_name,
+                                            'binding_columns': ', '.join(columns)
+                                        }
+
+                                        query_create_table, bind_params_create_table = __j_sql.prepare_query(
+                                            sql_create_table, binding_params_create_table)
+                                        cursor.execute(query_create_table, bind_params_create_table)
+
+                                        self.model_{{modelName}}_logger.info('[{{modelName}}] {} created according to '
+                                                                             'PROTON standards.'.format(table_name))
 
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                            if_exists='append', schema=schema_name)
