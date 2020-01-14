@@ -59,8 +59,10 @@ class ProtonEmail(object):
 
         proton_promotion_text = '<span style="font-size:8pt; font-family:Arial, sans-serif; color:#6a737d;"> ' \
                                 'This email & the underlying software for {} is powered by the ' \
-                                '<a href="https://github.com/PruthviKumarBK/PROTON">PROTON framework</a> - ' \
-                                'Ⓒ <a href="https://adroitcorp.com.au">Adroit Software Corporation</a>' \
+                                '<a href="https://github.com/PruthviKumarBK/PROTON" target="_blank">' \
+                                'PROTON framework</a> - ' \
+                                'Ⓒ <a href="https://adroitcorp.com.au" target="_blank">' \
+                                'Adroit Software Corporation</a>' \
                                 '</span>'.format(os.environ.get('APP_NAME'))
 
         disclaimer_text = '<span style="font-size:8pt; font-family:Arial, sans-serif; color:#9b9b9b;"> ' \
