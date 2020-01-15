@@ -24,6 +24,7 @@
 
 import json
 import pandas as pd
+import re
 from colorama import Fore
 from colorama import Style
 from jinjasql import JinjaSql
@@ -74,6 +75,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         TODO: SPECIFY DB Flavour. Make getter work for all supported flavours of PROTON.
         :return:
         """
+        @MyUtilities.type_validator(str, str, dict)
         def get_data_for_model(db_flavour, sql, binding_params):
             """
 
@@ -133,14 +135,15 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     return response
                 except Exception as e:
                     connection.rollback()
-                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. '
+                                                                'Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
                     return {
                         'results': [],
                         'message': 'Server unable to service request. Error - 500'
                     }
-            else:
+            elif db_flavour in ['postgresql']:
                 # Prodgrade databases
                 try:
                     with self.__db_flavour_to_cursor_generator_map[db_flavour](self.__cursor_engine) as cursor:
@@ -148,13 +151,18 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                         return _get_data_utility(__j_sql, cursor)
 
                 except Exception as e:
-                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. Details: {}'.format(str(e)))
+                    self.model_{{ modelName }}_logger.exception('[{{modelName}}] - Exception during GETTER. '
+                                                                'Details: {}'.format(str(e)))
                     print(Fore.LIGHTRED_EX + '[{{modelName}}] - Exception during GETTER. '
                                              'Details: {}'.format(str(e)) + Style.RESET_ALL)
                     return {
                         'results': [],
                         'message': 'Server unable to service request. Error - 500'
                     }
+            else:
+                return {
+                    'message': 'Unsupported db flavour. PROTON supports Sqlite, Postgresql only at the moment.'
+                }
 
         return {
             "get_model_data": get_data_for_model,
@@ -168,6 +176,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
+        @MyUtilities.type_validator(str, str, str, str, dict, dict)
         def perform_insert_operation(db_flavour, db_name, schema_name, table_name, expected_metadata, input_payload):
             """
             Closure for Insert Operation!
@@ -275,8 +284,9 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                                 data_to_be_inserted.to_sql(table_name, self.__alchemy_engine[db_flavour], index=False,
                                                            if_exists='append', schema=schema_name)
                             else:
-                                self.model_{{ modelName }}_logger.info('[{{modelName}}]: Schema specified not found. Insert operation could '
-                                                 'not be completed. Check connectionManager logs for stack trace.')
+                                self.model_{{ modelName }}_logger.info('[{{modelName}}]: Schema specified not found. '
+                                                                       'Insert operation could not be completed. '
+                                                                       'Check connectionManager logs for stack trace.')
                         transaction.commit()
                     connection.close()
                 except Exception as e:
@@ -312,6 +322,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                               'consistent in terms of `keys`'
                 }
 
+        @MyUtilities.type_validator(str, dict)
         def perform_update_or_delete_operation(sql, binding_params):
             """
             TODO: Facilitate UPDATE &/ DELETE Operation on SQLITE.
@@ -342,16 +353,29 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             """
 
             try:
-                with self.pg_cursor_generator(self.__cursor_engine) as cursor:
-                    __j_sql = JinjaSql(param_style='pyformat')
-                    query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
-                    cursor.execute(query, bind_params)
-                return {
-                    'status': True,
-                    'affected_rowcount': cursor.rowcount
-                }
+                check_if_update = re.compile('update', re.I)
+                check_if_delete = re.compile('delete', re.I)
+
+                if sql.match(check_if_update) or sql.match(check_if_delete):
+                    with self.pg_cursor_generator(self.__cursor_engine) as cursor:
+                        __j_sql = JinjaSql(param_style='pyformat')
+                        query, bind_params = __j_sql.prepare_query(self.generate_sql_template(sql), binding_params)
+                        cursor.execute(query, bind_params)
+                    return {
+                        'status': True,
+                        'affected_rowcount': cursor.rowcount
+                    }
+                else:
+                    return {
+                        'status': False,
+                        'message': 'Illegal use of this method. Please utilize this method to only perform UPDATE '
+                                   'or Delete operation on PROTON supported databases.'
+                    }
+
+
             except Exception as e:
-                self.model_{{ modelName }}_logger.exception('[{{modelName}} - Exception during UPDATE operation. Details: {}]'.format(str(e)))
+                self.model_{{ modelName }}_logger.exception('[{{modelName}} - Exception during UPDATE operation. '
+                                                            'Details: {}]'.format(str(e)))
                 print(Fore.LIGHTRED_EX + '[{{modelName}} -  Exception during UPDATE operation. Details: '
                       '{}]'.format(str(e)) + Style.RESET_ALL)
                 return {

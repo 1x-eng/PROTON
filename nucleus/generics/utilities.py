@@ -107,3 +107,18 @@ class MyUtilities(object):
                 'status': False,
                 'message': 'Validation not possible unless actual payload(dict) and type map(dict) are provided.'
             }
+
+    @staticmethod
+    def type_validator(*types):
+
+        def validate_acceptance(f):
+            assert len(types) == f.__code__.co_argcount
+
+            def new_f(*args, **kwargs):
+                for (a, t) in zip(args, types):
+                    assert isinstance(a, t), "arg {} does not match {}".format(a, t)
+                return f(*args, **kwargs)
+            new_f.__name__ = f.__name__
+            return new_f
+        return validate_acceptance
+
