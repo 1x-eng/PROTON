@@ -161,7 +161,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
                     }
             else:
                 return {
-                    'message': 'Unsupported db flavour. PROTON supports Sqlite, Postgresql only at the moment.'
+                    'message': 'Unsupported db flavour. PROTON supports sqlite, postgresql only at the moment.'
                 }
 
         return {
