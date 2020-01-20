@@ -159,6 +159,15 @@ command: `./cproton.sh -s yes`
  ![PROTON_swagger_yaml](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_yaml.png)
 
 # PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+- If you had a DNS handy and wanted PROTON initialized and ready on your remote server, you just need this: ` ./deployer.sh -d <your_dns>`
+    - This will prep infrastructure, web-server, reverse proxy and makes the platform containerised proton ready.
+- If you wanted to run the platform for the first time and wanted to spin up the platform with defaults; then use: `./deployer.sh -a yes`
+    - Here, you are telling PROTON to run in automated or express mode. So, there will be no prompts for any user inputs. But, PROTON will spin up the platform with defaults.
+- If you were using PROTON's backup services and wanted to restore your MIC stack from one remote server to another, use this: `./deployer.sh -r yes`
+    - You will be asked for your backup server keys (PROTON comes with support for Dropbox to backup). Follow the prompts and end of it, you should have PROTON stack up and running in your new server with contents restored from backup location!
+
+- ** If you preferred to take things into your own hands for deployment, we recommend the following: **
+
 - [Step - 1] Install Docker and Docker-Compose
 ```bash
     sudo apt-get update
