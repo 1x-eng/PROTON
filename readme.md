@@ -116,12 +116,21 @@ Now that you are interested, see how you get PROTON to work for you:
         calls took only 25~35ms. This is because of cache supporting all subsequent calls.
 
 - Your next question should be, how to generate new API's to my heart's content?
-- Find `controller` for your respective MIC where you want new method and just define a new function encapsulating your 
-business logic
- ![PROTON_new_custom_method](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_method_code.png)
-    - Look into lines 230-270. This is where you define your new methods.
-    - Line 275 is where you include your new method. 
-    - Did you notice how the query parameter is passed into your SQL? That is **SQL Injection Safe** by the way!
+- For every new MIC stack that you generate (via `cproton.sh -s <your_api_name>`), PROTON generates a dedicated controller and 
+that controller will be comprised of following levers (All of them are **SQL Injection safe**):
+    - Create Lever
+    - Read Lever
+    - Update Lever
+    - Delete Lever
+    - Example: ![PROTON_Controller_Levers](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/NewApiControllerLevers.png)
+    
+    - Since your controller is in charge or CRUD operation or anything encapsulating/extending CRUD ops, the above structure should 
+    help make your codebase more readable and maintainable.
+    - Whilst you are free to extend your controller with any other functionality, if that functionality is related to CRUD ops, 
+    we recommend having a dedicated method in its respective lever and leveraging that method in respective controller.
+    - Ah, by the way, all the importing is taken care of. So, just code in that additional method and reference that in your controller.
+    - Should you choose to delete your API at any stage later, do not worry about cleaning up anything manually! Coz, PROTON deletes all that is related to respective MIC stack when it's issued with delete command.
+    
 - Done coding? You have now tell PROTON to include your method and generate API route. Do that by issuing this 
 command: `./cproton.sh -s yes`
  ![PROTON_cproton_update](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_cproton_update_command.png)
