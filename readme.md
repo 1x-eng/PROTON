@@ -158,7 +158,31 @@ command: `./cproton.sh -s yes`
  ![PROTON_swagger_json](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_json.png)
  ![PROTON_swagger_yaml](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_yaml.png)
 
-# PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+# Miscellaneous
+
+## PROTON Automated Backup
+- PROTON also ships with ability to backup vitals (secrets + db volume mounts) to cold storage. By default, PROTON ships with support for Dropbox.
+- To initiate backup, 
+    - Create a dropbox account for yourself and create an app under your own dropbox account in the "App Console" - https://www.dropbox.com/developers/apps
+        - An example would be:
+            - API type - Dropbox API
+            - Type of data access as "App folder - Access to a single folder created specifically for your app"
+            - App name as "PROTON Backup"
+            - Create App & then click on "Generate access token". You want to keep this access token safe as this is what PROTON backup orchestrator will need.
+    - With your access token handy, now navigate to `backup` folder in PROTON home directory.
+    - Initiate backup using `./scripts/proton_backup_orchestrator.sh`
+    - Comply with command line prompts and provide access token when asked for.
+    - That's it. You're PROTON vitals will get backup to this remote location via cron job.
+    - Ah, all of this also has an audit trail. You may `cat` those reports available under `backup/reports` folder.
+    
+- Similar to backups, PROTON also ships with ability to restore PROTON vitals from a remote dropbox location to your local machine or remote server.
+- In order to initiate restoration, ensure you have the access token handy for your remote backup folder and navigate to `backup` folder in PROTON home directory.
+    - Initiate restoration using `./scripts/proton_restore.sh`
+    - Comply with command line prompts and provide access token when asked for.
+    - That's it. Now, enjoy your backup come live in your desired location. You may start PROTON leveraging these backup's by modifying your `.env`
+    
+
+## PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
 - If you had a DNS handy and wanted PROTON initialized and ready on your remote server, you just need this: ` ./deployer.sh -d <your_dns>`
     - This will prep infrastructure, web-server, reverse proxy and makes the platform containerised proton ready.
 - If you wanted to run the platform for the first time and wanted to spin up the platform with defaults; then use: `./deployer.sh -a yes`
