@@ -116,12 +116,21 @@ Now that you are interested, see how you get PROTON to work for you:
         calls took only 25~35ms. This is because of cache supporting all subsequent calls.
 
 - Your next question should be, how to generate new API's to my heart's content?
-- Find `controller` for your respective MIC where you want new method and just define a new function encapsulating your 
-business logic
- ![PROTON_new_custom_method](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_method_code.png)
-    - Look into lines 230-270. This is where you define your new methods.
-    - Line 275 is where you include your new method. 
-    - Did you notice how the query parameter is passed into your SQL? That is **SQL Injection Safe** by the way!
+- For every new MIC stack that you generate (via `cproton.sh -s <your_api_name>`), PROTON generates a dedicated controller and 
+that controller will be comprised of following levers (All of them are **SQL Injection safe**):
+    - Create Lever
+    - Read Lever
+    - Update Lever
+    - Delete Lever
+    - Example: ![PROTON_Controller_Levers](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/NewApiControllerLevers.png)
+    
+    - Since your controller is in charge or CRUD operation or anything encapsulating/extending CRUD ops, the above structure should 
+    help make your codebase more readable and maintainable.
+    - Whilst you are free to extend your controller with any other functionality, if that functionality is related to CRUD ops, 
+    we recommend having a dedicated method in its respective lever and leveraging that method in respective controller.
+    - Ah, by the way, all the importing is taken care of. So, just code in that additional method and reference that in your controller.
+    - Should you choose to delete your API at any stage later, do not worry about cleaning up anything manually! Coz, PROTON deletes all that is related to respective MIC stack when it's issued with delete command.
+    
 - Done coding? You have now tell PROTON to include your method and generate API route. Do that by issuing this 
 command: `./cproton.sh -s yes`
  ![PROTON_cproton_update](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_cproton_update_command.png)
@@ -149,7 +158,40 @@ command: `./cproton.sh -s yes`
  ![PROTON_swagger_json](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_json.png)
  ![PROTON_swagger_yaml](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_swagger_yaml.png)
 
-# PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+# Miscellaneous
+
+## PROTON Automated Backup & Restoration
+- PROTON also ships with ability to backup vitals (secrets + db volume mounts) to cold storage. By default, PROTON ships with support for Dropbox.
+- To initiate backup, 
+    - Create a dropbox account for yourself and create an app under your own dropbox account in the "App Console" - https://www.dropbox.com/developers/apps
+        - An example would be:
+            - API type - Dropbox API
+            - Type of data access as "App folder - Access to a single folder created specifically for your app"
+            - App name as "PROTON Backup"
+            - Create App & then click on "Generate access token". You want to keep this access token safe as this is what PROTON backup orchestrator will need.
+    - With your access token handy, now navigate to `backup` folder in PROTON home directory.
+    - Initiate backup using `./scripts/proton_backup_orchestrator.sh`
+    - Comply with command line prompts and provide access token when asked for.
+    - That's it. You're PROTON vitals will get backup to this remote location via cron job.
+    - Ah, all of this also has an audit trail. You may `cat` those reports available under `backup/reports` folder.
+    
+- Similar to backups, PROTON also ships with ability to restore PROTON vitals from a remote dropbox location to your local machine or remote server.
+- In order to initiate restoration, ensure you have the access token handy for your remote backup folder and navigate to `backup` folder in PROTON home directory.
+    - Initiate restoration using `./scripts/proton_restore.sh`
+    - Comply with command line prompts and provide access token when asked for.
+    - That's it. Now, enjoy your backup come live in your desired location. You may start PROTON leveraging these backup's by modifying your `.env`
+    
+
+## PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+- If you had a DNS handy and wanted PROTON initialized and ready on your remote server, you just need this: ` ./deployer.sh -d <your_dns>`
+    - This will prep infrastructure, web-server, reverse proxy and makes the platform containerised proton ready.
+- If you wanted to run the platform for the first time and wanted to spin up the platform with defaults; then use: `./deployer.sh -a yes`
+    - Here, you are telling PROTON to run in automated or express mode. So, there will be no prompts for any user inputs. But, PROTON will spin up the platform with defaults.
+- If you were using PROTON's backup services and wanted to restore your MIC stack from one remote server to another, use this: `./deployer.sh -r yes`
+    - You will be asked for your backup server keys (PROTON comes with support for Dropbox to backup). Follow the prompts and end of it, you should have PROTON stack up and running in your new server with contents restored from backup location!
+
+- ** If you preferred to take things into your own hands for deployment, we recommend the following: **
+
 - [Step - 1] Install Docker and Docker-Compose
 ```bash
     sudo apt-get update
@@ -216,11 +258,16 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
 - 1.0.0 - PROTON GA, 
 - Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
 
+# Credits
+![Adroit-Logo](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/AdroitLogo.png)
+
+PROTON is a product of Adroit Software Corporation (ABN 426 3819 0066) (https://adroitcorp.com.au)
+
 # License
 
 BSD 3-Clause License
 
-Copyright (c) 2018, Pruthvi Kumar
+Copyright (c) 2018, Pruthvi Kumar & Adroit Software Corporation (https://www.adroitcorp.com.au)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
