@@ -258,11 +258,16 @@ For any  feedback or issues write to Pruthvi @ pruthvikumar.123@gmail.com. Ensur
 - 1.0.0 - PROTON GA, 
 - Anything less than 1.0.0 - PROTON on-prem & PROTON alpha.
 
+# Credits
+![Adroit-Logo](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/AdroitLogo.png)
+
+PROTON is a product of Adroit Software Corporation (ABN 426 3819 0066) (https://adroitcorp.com.au)
+
 # License
 
 BSD 3-Clause License
 
-Copyright (c) 2018, Pruthvi Kumar
+Copyright (c) 2018, Pruthvi Kumar & Adroit Software Corporation (https://www.adroitcorp.com.au)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
