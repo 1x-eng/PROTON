@@ -160,7 +160,7 @@ command: `./cproton.sh -s yes`
 
 # Miscellaneous
 
-## PROTON Automated Backup
+## PROTON Automated Backup & Restoration
 - PROTON also ships with ability to backup vitals (secrets + db volume mounts) to cold storage. By default, PROTON ships with support for Dropbox.
 - To initiate backup, 
     - Create a dropbox account for yourself and create an app under your own dropbox account in the "App Console" - https://www.dropbox.com/developers/apps
