@@ -37,6 +37,22 @@ class MyUtilities(object):
     """
 
     @staticmethod
+    def type_validator(*types):
+
+        def validate_acceptance(f):
+            assert len(types) == f.__code__.co_argcount
+
+            def new_f(*args, **kwargs):
+                for (a, t) in zip(args, types):
+                    assert isinstance(a, t), "arg {} does not match {}".format(a, t)
+                return f(*args, **kwargs)
+
+            new_f.__name__ = f.__name__
+            return new_f
+
+        return validate_acceptance
+
+    @staticmethod
     def validate_list_of_dicts_consistency(list_of_dicts):
         """
         Validate id all the key value pairs in a list of dictionaries contain same keys.
@@ -45,8 +61,17 @@ class MyUtilities(object):
         :param list_of_dicts: A list of dictionaries
         :return: A boolean indicating consistency
         """
-        c_rd = copy.deepcopy(list_of_dicts)
-        return any(reduce(lambda i1, i2: i1 if i1 == i2 else [], map(lambda rd: list(rd.keys()), c_rd)))
+        if type(list_of_dicts) is not list:
+            return False
+        else:
+            if len(list_of_dicts) < 1:
+                return False
+            else:
+                if not all(map(lambda d: True if type(d) is dict else False, list_of_dicts)):
+                    return False
+                else:
+                    c_rd = copy.deepcopy(list_of_dicts)
+                    return any(reduce(lambda i1, i2: i1 if i1 == i2 else [], map(lambda rd: list(rd.keys()), c_rd)))
 
     @staticmethod
     def validate_proton_post_payload(post_payload):
@@ -107,18 +132,3 @@ class MyUtilities(object):
                 'status': False,
                 'message': 'Validation not possible unless actual payload(dict) and type map(dict) are provided.'
             }
-
-    @staticmethod
-    def type_validator(*types):
-
-        def validate_acceptance(f):
-            assert len(types) == f.__code__.co_argcount
-
-            def new_f(*args, **kwargs):
-                for (a, t) in zip(args, types):
-                    assert isinstance(a, t), "arg {} does not match {}".format(a, t)
-                return f(*args, **kwargs)
-            new_f.__name__ = f.__name__
-            return new_f
-        return validate_acceptance
-
