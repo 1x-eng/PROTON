@@ -102,6 +102,10 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             :return:
             """
 
+            import psycopg2
+            import sqlite3
+
+            @MyUtilities.type_validator(str, (sqlite3.Cursor, psycopg2.extensions.cursor))
             def _get_data_utility(___j_sql, _cursor):
                 """
                 Reusable utility across all PROTON supported db flavours. Falls back on parent's scope to obtain
@@ -176,7 +180,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         :return:
         """
 
-        @MyUtilities.type_validator(str, str, str, str, dict, dict)
+        @MyUtilities.type_validator(str, str, str, str, dict, list)
         def perform_insert_operation(db_flavour, db_name, schema_name, table_name, expected_metadata, input_payload):
             """
             Closure for Insert Operation!
