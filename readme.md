@@ -21,13 +21,14 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 ![PROTON tech stack anatomy](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/ProtonStackAnatomy.png)
 
 # Getting Started
-- Install docker on your development machine. 
+- Install latest version of docker on your development machine/server. 
     - Linux - https://docs.docker.com/install/linux/docker-ce/ubuntu/
     - Mac - https://docs.docker.com/docker-for-mac/install/
     - Windows - https://docs.docker.com/docker-for-windows/install/
+- Install latest version of docker-compose on your development machine/server (https://docs.docker.com/compose/install/)
 - Clone PROTON to your desired location `git clone https://github.com/PruthviKumarBK/PROTON.git`
 - Change directory to PROTON `cd ~/PROTON/`
-- `./cproton.sh -U yes` PROTON will ask your input for few key environment variables.
+- `./cproton.sh -U yes` PROTON will ask your input for few key environment variables; please comply. (Use absolute address; not relative for file paths)
 - Wait for the platform to bootstrap; once **done**, visit `http://localhost:3000`. 
 - Congratulations. you've got your server-side setup!
 
