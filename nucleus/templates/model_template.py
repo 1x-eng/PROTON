@@ -75,7 +75,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         TODO: SPECIFY DB Flavour. Make getter work for all supported flavours of PROTON.
         :return:
         """
-        @MyUtilities.type_validator(str, JinjaSql, dict)
+        @MyUtilities.type_validator(str, str, dict)
         def get_data_for_model(db_flavour, sql, binding_params):
             """
 
