@@ -75,7 +75,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
         TODO: SPECIFY DB Flavour. Make getter work for all supported flavours of PROTON.
         :return:
         """
-        @MyUtilities.type_validator(str, str, dict)
+        @MyUtilities.type_validator(str, JinjaSql, dict)
         def get_data_for_model(db_flavour, sql, binding_params):
             """
 
@@ -105,7 +105,7 @@ class Model_{{ modelName }}(ConnectionManager, MyUtilities):
             import psycopg2
             import sqlite3
 
-            @MyUtilities.type_validator(str, (sqlite3.Cursor, psycopg2.extensions.cursor))
+            @MyUtilities.type_validator(JinjaSql, (sqlite3.Cursor, psycopg2.extensions.cursor))
             def _get_data_utility(___j_sql, _cursor):
                 """
                 Reusable utility across all PROTON supported db flavours. Falls back on parent's scope to obtain
