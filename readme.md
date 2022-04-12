@@ -36,7 +36,7 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - Use `/signup` route to sign up users to platform.
 ![PROTON_postgres_signup](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_signup.gif)
 - You could swap `db` by changing `db_flavor` in POST payload. Supports `sqlite` & `postgresql`.
--`signup` and `login` validation for free. For example - What happens if 
+- `signup` and `login` validation for free. For example - What happens if 
 someone tries to signup with the same email / username?
 ![PROTON_postgres_signup_validation](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_signup_validation.png)
 ![PROTON_postgres_login_validation_invalid_username](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_username.png)
