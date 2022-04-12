@@ -9,8 +9,8 @@ Thanks for checking it out!
 
 - Proton aims at easing server-side development for all Python enthusiasts. 
 - Proton bootstraps templated backend by relying on code generating code with minimum dev effort. 
-- A few CLI commands to setup production ready server side stack with managed DB connections <small>(PROTON ships with postgresql)</small>, 
-managed caching <small>(PROTON ships with redis)</small>, managed JWT authenticated routes, descriptive logging, 
+- A few CLI commands to setup production ready server side stack with managed DB connections <small>(Proton ships with postgresql)</small>, 
+managed caching <small>(Proton ships with redis)</small>, managed JWT authenticated routes, descriptive logging, 
 managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - Automates `signup` & `login` with necessaary validations.
 - All of this, **containerised**
@@ -24,9 +24,8 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
     - Mac - https://docs.docker.com/docker-for-mac/install/
     - Windows - https://docs.docker.com/docker-for-windows/install/
 - Install latest version of docker-compose on your development machine/server (https://docs.docker.com/compose/install/)
-- Clone PROTON to your desired location `git clone https://github.com/PruthviKumarBK/PROTON.git`
-- Change directory to Proton `cd ~/PROTON/`
-- `./cproton.sh -U yes` PROTON will ask your input for few key environment variables; please comply. (Use absolute address; not relative for file paths)
+- Clone `git clone https://github.com/1x-eng/PROTON.git & Change directory `cd ~/PROTON/`
+- `./cproton.sh -U yes`, please comply to CLI prompts(Use absolute address; not relative for file paths)
 - Wait for the platform to bootstrap; once **done**, visit `http://localhost:3000`. 
 - Congratulations. you've got your server-side setup!
 
