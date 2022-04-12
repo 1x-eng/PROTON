@@ -35,8 +35,7 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - Proton comes with out-of-box support for `Signup` and `Login`. 
 - Use `/signup` route to sign up users to platform.
 ![PROTON_postgres_signup](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_signup.gif)
-- Did you want to use `sqlite` instead of postgres for a quick POC? No worries, just change the `db_flavour` in POST payload to 
-'sqlite'
+- You could swap `db` by changing `db_flavor` in POST payload. Supports `sqlite` & `postgresql`.
 -`signup` and `login` validation for free. For example - What happens if 
 someone tries to signup with the same email / username?
 ![PROTON_postgres_signup_validation](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_signup_validation.png)
@@ -84,15 +83,14 @@ the framework of your choice
     - ![PROTON_get_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic_get_call.gif)
     - <i>POST call:</i>
     - ![PROTON_post_call](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_postgres.gif)
-    - And, if you wanted to target sqlite, just change `db_flavour` of your POST `JSON` payload to 'sqlite'.
+    - And, if you wanted to target sqlite, just change `db_flavour` of your POST `JSON` payload to `sqlite`.
     - ![PROTON_sqlite_post](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_post_sqlite.png)
     - <i>GET call involving Concurrency / Multi-threading</i>
     - ![PROTON_multi_threading](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_concurrency_route.gif)
         - Notice how first call took about 1 second (if not for multi-threading, this takes about 5 seconds) and subsequent
         calls took only 25~35ms. Thanks for cacheing.
 
-- For every new MIC stack that you generate (via `cproton.sh -s <your_api_name>`), PROTON generates a dedicated controller and 
-which deals with CRUD ops:
+- For every new MIC stack that you generate (via `cproton.sh -s <your_api_name>`), Proton generates a dedicated controller (to drive CRUD ops):
     - Example: ![PROTON_Controller_Levers](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/NewApiControllerLevers.png)
     
 - Deploy using `./cproton.sh -s yes`
