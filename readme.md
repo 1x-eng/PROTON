@@ -90,7 +90,7 @@ the framework of your choice
         - Notice how first call took about 1 second (if not for multi-threading, this takes about 5 seconds) and subsequent
         calls took only 25~35ms. Thanks for cacheing.
 
-- For every new MIC stack that you generate (via `cproton.sh -s <your_api_name>`), Proton generates a dedicated controller (to drive CRUD ops):
+- For every new MIC stack that you create (via `cproton.sh -s <your_api_name>`), Proton generates a dedicated controller (to drive CRUD ops):
     - Example: ![PROTON_Controller_Levers](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/NewApiControllerLevers.png)
     
 - Deploy using `./cproton.sh -s yes`
