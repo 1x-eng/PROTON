@@ -36,17 +36,16 @@ managed monitoring (Prometheus & Grafana) and auto-generated openAPI specs.
 - Use `/signup` route to sign up users to platform.
 ![PROTON_postgres_signup](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_signup.gif)
 - Did you want to use `sqlite` instead of postgres for a quick POC? No worries, just change the `db_flavour` in POST payload to 
-'sqlite' and you're taken care of!
--`signup` and `login` routes validations for free. For example - What happens if 
-someone tries to signup with same email / username?
+'sqlite'
+-`signup` and `login` validation for free. For example - What happens if 
+someone tries to signup with the same email / username?
 ![PROTON_postgres_signup_validation](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_signup_validation.png)
-- Use '/login' route to login after successful signup. 
-![PROTON_postgres_login](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_login.gif)
-- Did you observe the `token` post successful login? That one command to setup the platform has prepared JWT Token 
-Authentication with minimum dev effort.
-- `login` validation for free.
 ![PROTON_postgres_login_validation_invalid_username](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_username.png)
 ![PROTON_postgres_login_validation_invalid_password](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_login_invalid_password.png)
+- Use '/login' route to login after successful signup. 
+![PROTON_postgres_login](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_postgres_login.gif)
+- See the `token` post successful login - That one command to setup the platform has prepared JWT Token 
+Authentication with minimum dev effort.
 - Prometheus & grafana leveraged for monitoring purposes 
 ![PROTON_Prom_Grafana](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_Home_Prom_Graf.png)
 ![Proton_Prometheus](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_Prom.png)
@@ -69,14 +68,14 @@ Why do we need this despite many zillion frameworks? Potentially, to help get aw
 - writing; rather, re-writing same boiler plate code everytime you wanted to generate a new API using 
 the framework of your choice
 - managing database connectivity and dealing with connectivity issues everytime you touch codebase
-- cacheing & performance tuning
-- logging & monitoring
+- configuring cacheing & performance tuning
+- configuring logging & monitoring
 - authentication & authorization
 - container ready backend
 
 # Getting Started
 
-- Generate new API (you can do all CRUD ops on that API) by issuing one command `./cproton.sh -n myNewApi`
+- Generate new API (you can do all CRUD ops on that API) by this one command `./cproton.sh -n myNewApi`
 ![PROTON_new_mic](https://github.com/PruthviKumarBK/PROTON-Screengrabs/blob/master/PROTON_new_mic.gif)
 
     - what you see above is an API endpoint auto-generated for the MIC name you provided.
