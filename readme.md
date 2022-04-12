@@ -134,12 +134,12 @@ the framework of your choice
     - Initiate restoration using `./scripts/proton_restore.sh`
     
 
-## PROTON Remote Deployment Instructions - (Considering base machine of Ubuntu-18.04LTS)
+## Deployment Instructions - (Tested on Ubuntu-18.04LTS)
 - If you have a pre-configured DNS handy, use ` ./deployer.sh -d <your_dns>`
 - If you wanted to run the platform for the first time and ok to proceed with defaults; then use: `./deployer.sh -a yes`
 - If you were using Proton's backup services, to kickstart restoration use this: `./deployer.sh -r yes`
 
-- ** Prefer manual approach? This could help: **
+### Prefer manual approach? This could help:
 
 - [Step - 1] Install Docker and Docker-Compose
 ```bash
